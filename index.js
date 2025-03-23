@@ -1,17 +1,19 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors');  // Add CORS to allow cross-origin requests
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 // Replace with your Face++ API credentials
-const API_KEY = 'your-api-key';
-const API_SECRET = 'your-api-secret';
+const API_KEY = process.env.API_KEY || 'your-api-key';
+const API_SECRET = process.env.API_SECRET || 'your-api-secret';
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+app.use(cors());  // Allow cross-origin requests
 
-// **Test route to check if API is working**
+// Test route to check if the API is working
 app.get('/test', (req, res) => {
     res.send('Smile detection API is working!');
 });
@@ -19,8 +21,11 @@ app.get('/test', (req, res) => {
 // Endpoint for detecting smile
 app.post('/detect-smile', async (req, res) => {
     try {
-        // Get image URL from the request body
         const imageUrl = req.body.imageUrl;
+
+        if (!imageUrl) {
+            return res.status(400).json({ success: false, message: 'No image URL provided' });
+        }
 
         // Call Face++ API for smile detection
         const response = await axios.post('https://api-us.faceplusplus.com/facepp/v3/detect', null, {
@@ -41,7 +46,8 @@ app.post('/detect-smile', async (req, res) => {
             res.json({ success: false, message: 'No smile detected' });
         }
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        console.error(error); // Log the error for debugging purposes
+        res.status(500).json({ success: false, message: 'Error processing the image' });
     }
 });
 
