@@ -2,13 +2,12 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');  // Add CORS to allow cross-origin requests
 
-const app = express();
-const port = process.env.PORT || 10000; // Render will set PORT automatically
-
+const app = express(); // Initialize app
+const port = process.env.PORT || 3000; // Define port
 
 // Replace with your Face++ API credentials
 const API_KEY = process.env.API_KEY || 'your-api-key';
-const API_SECRET = process.env.API_SECRET || '-api-secret';
+const API_SECRET = process.env.API_SECRET || 'your-api-secret';
 
 // Middleware to parse JSON bodies
 app.use(express.json());
