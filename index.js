@@ -3,7 +3,7 @@ const axios = require('axios');
 const cors = require('cors');  // Add CORS to allow cross-origin requests
 
 const app = express();
-const port = process.env.PORT || 10000;
+const port = process.env.PORT || 3000;
 
 // Replace with your Face++ API credentials
 const API_KEY = process.env.API_KEY || 'your-api-key';
@@ -13,13 +13,13 @@ const API_SECRET = process.env.API_SECRET || 'your-api-secret';
 app.use(express.json());
 app.use(cors());  // Allow cross-origin requests
 
-// Test route to check if the API is working
-app.get('/test', (req, res) => {
+// Root route for testing
+app.get('/', (req, res) => {
     res.send('Smile detection API is working!');
 });
 
-// Root endpoint for detecting smile (instead of /detect-smile)
-app.post('/', async (req, res) => {
+// Handle POST request to the root URL and detect smile
+app.post('/', async (req, res) => {  // Use / (root) for smile detection
     try {
         const imageUrl = req.body.imageUrl;
 
