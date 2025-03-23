@@ -11,6 +11,11 @@ const API_SECRET = 'your-api-secret';
 // Middleware to parse JSON bodies
 app.use(express.json());
 
+// **Test route to check if API is working**
+app.get('/test', (req, res) => {
+    res.send('Smile detection API is working!');
+});
+
 // Endpoint for detecting smile
 app.post('/detect-smile', async (req, res) => {
     try {
