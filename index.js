@@ -1,6 +1,6 @@
 const express = require('express');
 const axios = require('axios');
-const cors = require('cors');  // Add CORS to allow cross-origin requests
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -13,13 +13,13 @@ const API_SECRET = process.env.API_SECRET || 'your-api-secret';
 app.use(express.json());
 app.use(cors());  // Allow cross-origin requests
 
-// Root route for testing
-app.get('/', (req, res) => {
+// Test route to check if the API is working
+app.get('/test', (req, res) => {
     res.send('Smile detection API is working!');
 });
 
-// Handle POST request to the root URL and detect smile
-app.post('/', async (req, res) => {  // Use / (root) for smile detection
+// Endpoint for detecting smile (restoring this route)
+app.post('/detect-smile', async (req, res) => {
     try {
         const imageUrl = req.body.imageUrl;
 
@@ -46,7 +46,7 @@ app.post('/', async (req, res) => {  // Use / (root) for smile detection
             res.json({ success: false, message: 'No smile detected' });
         }
     } catch (error) {
-        console.error(error); // Log the error for debugging purposes
+        console.error(error);
         res.status(500).json({ success: false, message: 'Error processing the image' });
     }
 });
