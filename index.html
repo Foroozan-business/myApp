@@ -1,45 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Smile Detector 😄</title>
-</head>
-<body>
-  <h2>Smile Booth</h2>
-  <video id="video" width="320" height="240" autoplay></video><br>
-  <button onclick="takePhoto()">Take My Photo</button><br><br>
-  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-  <p id="result">Your smile result will appear here.</p>
+<script>
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  const resultText = document.getElementById('result');
 
-  <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const resultText = document.getElementById('result');
+  // Show live camera preview
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(stream => { video.srcObject = stream; })
+    .catch(err => { console.error("Camera error:", err); });
 
-    // Ask for camera access
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => { video.srcObject = stream; })
-      .catch(err => { console.error("Camera error:", err); });
+  function takePhoto() {
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    const base64Image = canvas.toDataURL('image/jpeg');
 
-    function takePhoto() {
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const base64Image = canvas.toDataURL('image/jpeg');
+    // DEBUG: print base64 image to console
+    console.log("Captured image length:", base64Image.length);
 
-      // Send to your Render API
-      fetch('https://myapp-xn74.onrender.com/detect-smile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64Image })
-      })
-      .then(res => res.json())
-      .then(data => {
-        resultText.textContent = data.message || "Something went wrong!";
-      })
-      .catch(err => {
-        console.error("Error:", err);
-        resultText.textContent = "Failed to analyze image.";
-      });
-    }
-  </script>
-</body>
-</html>
+    // Send to Render API
+    fetch('https://myapp-xn74.onrender.com/detect-smile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: base64Image })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("API response:", data);
+      resultText.textContent = data.message || "Something went wrong!";
+    })
+    .catch(err => {
+      console.error("Fetch error:", err);
+      resultText.textContent = "Failed to analyze image.";
+    });
+  }
+</script>
