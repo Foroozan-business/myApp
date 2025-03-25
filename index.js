@@ -38,30 +38,26 @@ app.post('/detect-smile', async (req, res) => {
         params: {
           api_key: API_KEY,
           api_secret: API_SECRET,
-          image_base64: imageBase64,
-          return_attributes: 'smile',
+          image_base64: imageBase64
+          // ❌ return_attributes: 'smile' — removed for now
         },
       }
     );
 
-    const smile = response.data.faces[0]?.attributes?.smile?.value;
+    // Face++ still returns face data, just without smile score
+    const faceCount = response.data.faces?.length;
 
-    if (smile !== undefined) {
-      const message =
-        smile > 50
-          ? 'Such a beautiful smile!'
-          : 'Try for a real smile 😊';
-      res.json({ success: true, message });
+    if (faceCount && faceCount > 0) {
+      res.json({ success: true, message: `Face detected! (${faceCount})` });
     } else {
-      res.json({ success: false, message: 'No smile detected' });
+      res.json({ success: false, message: 'No face detected' });
     }
   } catch (error) {
     console.error('Error during smile detection:', error.response?.data || error.message);
-
     res.status(500).json({
       success: false,
       message: 'Error processing the image',
-      debug: error.response?.data || error.message  // ✅ Return detailed error in response
+      debug: error.response?.data || error.message
     });
   }
 });
