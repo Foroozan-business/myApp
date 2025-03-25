@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 const API_KEY = process.env.API_KEY || 'your-api-key';
 const API_SECRET = process.env.API_SECRET || 'your-api-secret';
 
-app.use(express.json({ limit: '10mb' })); // In case image is large
+app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 
 // Root route
@@ -25,14 +25,12 @@ app.get('/test', (req, res) => {
 // Smile detection endpoint
 app.post('/detect-smile', async (req, res) => {
   try {
-    // --- 🔧 HARDCODED TEST BASE64 IMAGE (SMALL JPG) ---
+    // 🔧 HARDCODED BASE64 IMAGE FOR TESTING
     const base64Data =
       'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUSEhIVFRUVFRUVFRUVFRUVFRUVFRUXFhUVFRUYHSggGBolHRUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKgBLAMBIgACEQEDEQH/xAAbAAABBQEBAAAAAAAAAAAAAAAEAAIDBQYBB//EADgQAAIBAgQCCAUDBwUBAAAAAAABAgMRBBIhMQVBUWEGEzKRobHBIzJCUpHR4fAUYnKisuHwJDRTY3OCkqL/xAAZAQADAQEBAAAAAAAAAAAAAAABAgMABAX/xAAlEQEBAQEAAgICAgMBAAAAAAAAAQIRAyExBBJBUWEicYETFGH/2gAMAwEAAhEDEQA/AOaKUUooorB//2Q==';
 
-    // Strip the base64 header
     const imageBase64 = base64Data.split(',')[1];
 
-    // Send to Face++ API
     const response = await axios.post(
       'https://api-us.faceplusplus.com/facepp/v3/detect',
       null,
@@ -58,10 +56,13 @@ app.post('/detect-smile', async (req, res) => {
       res.json({ success: false, message: 'No smile detected' });
     }
   } catch (error) {
-    console.error('Error:', error.response?.data || error.message);
-    res
-      .status(500)
-      .json({ success: false, message: 'Error processing the image' });
+    console.error('Error during smile detection:', error.response?.data || error.message);
+
+    res.status(500).json({
+      success: false,
+      message: 'Error processing the image',
+      debug: error.response?.data || error.message  // ✅ Return detailed error in response
+    });
   }
 });
 
