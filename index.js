@@ -19,45 +19,52 @@ app.get('/', (req, res) => {
 
 // Test route
 app.get('/test', (req, res) => {
-    res.send('Smile detection API is working!');
+  res.send('Smile detection API is working!');
 });
 
 // Smile detection endpoint
 app.post('/detect-smile', async (req, res) => {
-    try {
-        const base64Data = req.body.image;
+  try {
+    // --- 🔧 HARDCODED TEST BASE64 IMAGE (SMALL JPG) ---
+    const base64Data =
+      'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxISEhUSEhIVFRUVFRUVFRUVFRUVFRUVFRUXFhUVFRUYHSggGBolHRUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKgBLAMBIgACEQEDEQH/xAAbAAABBQEBAAAAAAAAAAAAAAAEAAIDBQYBB//EADgQAAIBAgQCCAUDBwUBAAAAAAABAgMRBBIhMQVBUWEGEzKRobHBIzJCUpHR4fAUYnKisuHwJDRTY3OCkqL/xAAZAQADAQEBAAAAAAAAAAAAAAABAgMABAX/xAAlEQEBAQEAAgICAgMBAAAAAAAAAQIRAyExBBJBUWEicYETFGH/2gAMAwEAAhEDEQA/AOaKUUooorB//2Q==';
 
-        if (!base64Data || !base64Data.startsWith('data:image')) {
-            return res.status(400).json({ success: false, message: 'No valid base64 image provided' });
-        }
+    // Strip the base64 header
+    const imageBase64 = base64Data.split(',')[1];
 
-        // Remove data:image/jpeg;base64, from the front
-        const imageBase64 = base64Data.split(',')[1];
+    // Send to Face++ API
+    const response = await axios.post(
+      'https://api-us.faceplusplus.com/facepp/v3/detect',
+      null,
+      {
+        params: {
+          api_key: API_KEY,
+          api_secret: API_SECRET,
+          image_base64: imageBase64,
+          return_attributes: 'smile',
+        },
+      }
+    );
 
-        const response = await axios.post('https://api-us.faceplusplus.com/facepp/v3/detect', null, {
-            params: {
-                api_key: API_KEY,
-                api_secret: API_SECRET,
-                image_base64: imageBase64,
-                return_attributes: 'smile'
-            }
-        });
+    const smile = response.data.faces[0]?.attributes?.smile?.value;
 
-        const smile = response.data.faces[0]?.attributes?.smile?.value;
-
-        if (smile !== undefined) {
-            const message = smile > 50 ? 'Such a beautiful smile!' : 'Try for a real smile 😊';
-            res.json({ success: true, message });
-        } else {
-            res.json({ success: false, message: 'No smile detected' });
-        }
-
-    } catch (error) {
-        console.error('Error:', error.response?.data || error.message);
-        res.status(500).json({ success: false, message: 'Error processing the image' });
+    if (smile !== undefined) {
+      const message =
+        smile > 50
+          ? 'Such a beautiful smile!'
+          : 'Try for a real smile 😊';
+      res.json({ success: true, message });
+    } else {
+      res.json({ success: false, message: 'No smile detected' });
     }
+  } catch (error) {
+    console.error('Error:', error.response?.data || error.message);
+    res
+      .status(500)
+      .json({ success: false, message: 'Error processing the image' });
+  }
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
