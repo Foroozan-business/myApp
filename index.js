@@ -1,47 +1,32 @@
 const express = require('express');
 const axios = require('axios');
-const cors = require('cors');
+const cors = require('cors');  // Add CORS to allow cross-origin requests
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-// Replace with your Face++ API credentials
-const API_KEY = process.env.API_KEY || 'your-api-key';
 const API_SECRET = process.env.API_SECRET || 'your-api-secret';
 
-// Middleware to parse JSON bodies
 app.use(express.json());
 app.use(cors());  // Allow cross-origin requests
 
-// Test route to check if the API is working
-app.get('/test', (req, res) => {
-    res.send('Smile detection API is working!');
+// Root route for testing (This is working already, so leave it intact)
+app.get('/', (req, res) => {
+    res.send('API is working!');
 });
 
-// Endpoint for detecting smile (restoring this route)
+// Endpoint for detecting smile
 app.post('/detect-smile', async (req, res) => {
     try {
         const imageUrl = req.body.imageUrl;
 
-        if (!imageUrl) {
-            return res.status(400).json({ success: false, message: 'No image URL provided' });
-        }
-
-        // Call Face++ API for smile detection
-        const response = await axios.post('https://api-us.faceplusplus.com/facepp/v3/detect', null, {
-            params: {
-                api_key: API_KEY,
-                api_secret: API_SECRET,
-                image_url: imageUrl, // Image URL sent by the app
-                return_attributes: 'smile'
-            }
+        // Assuming you're using some external API or logic to detect smiles
+        const response = await axios.post('YOUR_SMILE_DETECTION_API_URL', {
+            imageUrl,
+            headers: { 'Authorization': `Bearer ${API_SECRET}` }
         });
 
-        // Check if Face++ detected any faces and their smile attribute
-        const smileData = response.data.faces[0]?.attributes?.smile?.value;
-
-        if (smileData !== undefined) {
-            res.json({ success: true, smile: smileData });
+        if (response.data.smileDetected) {
+            res.json({ success: true, message: 'Smile detected!' });
         } else {
             res.json({ success: false, message: 'No smile detected' });
         }
