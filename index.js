@@ -14,7 +14,7 @@ app.use(cors());
 
 // Root route
 app.get('/', (req, res) => {
-    res.send('API is working!');
+  res.json({ status: "API is working!" });
 });
 
 // Test route
