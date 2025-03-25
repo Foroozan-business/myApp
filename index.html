@@ -1,36 +1,62 @@
-<script>
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  const resultText = document.getElementById('result');
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smile Detector 😄</title>
+</head>
+<body>
+  <h2>Smile Booth</h2>
 
-  // Show live camera preview
-  navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => { video.srcObject = stream; })
-    .catch(err => { console.error("Camera error:", err); });
+  <!-- Camera Preview -->
+  <video id="video" width="320" height="240" autoplay></video><br>
 
-  function takePhoto() {
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    
-    const base64Image = canvas.toDataURL('image/jpeg');
+  <!-- Capture Button -->
+  <button id="snapBtn">Take My Photo</button><br><br>
 
-    // DEBUG: print base64 image to console
-    console.log("Captured image length:", base64Image.length);
+  <!-- Canvas to draw photo -->
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
 
-    // Send to Render API
-    fetch('https://myapp-xn74.onrender.com/detect-smile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: base64Image })
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log("API response:", data);
-      resultText.textContent = data.message || "Something went wrong!";
-    })
-    .catch(err => {
-      console.error("Fetch error:", err);
-      resultText.textContent = "Failed to analyze image.";
+  <!-- Result Message -->
+  <p id="result">Your smile result will appear here.</p>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const resultText = document.getElementById('result');
+    const snapBtn = document.getElementById('snapBtn');
+
+    // Access the camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        console.error("Camera error:", err);
+        resultText.textContent = "Camera access failed.";
+      });
+
+    snapBtn.addEventListener("click", function takePhoto() {
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const base64Image = canvas.toDataURL('image/jpeg');
+
+      resultText.textContent = "Checking for your smile... 😊";
+
+      // Send photo to backend
+      fetch('https://myapp-xn74.onrender.com/detect-smile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Image })
+      })
+      .then(res => res.json())
+      .then(data => {
+        console.log("API response:", data);
+        resultText.textContent = data.message || "Couldn't analyze image.";
+      })
+      .catch(err => {
+        console.error("Error:", err);
+        resultText.textContent = "Failed to send photo to server.";
+      });
     });
-  }
-</script>
+  </script>
+</body>
+</html>
