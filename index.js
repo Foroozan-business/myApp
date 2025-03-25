@@ -1,3 +1,18 @@
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
+
+const app = express(); // ✅ MUST BE HERE BEFORE USING app
+
+const port = process.env.PORT || 3000;
+
+app.use(express.json({ limit: '10mb' }));
+app.use(cors());
+
+app.get('/', (req, res) => {
+  res.send('Smile detection API is working!');
+});
+
 app.post('/detect-smile', async (req, res) => {
   try {
     const base64Data = req.body.image;
@@ -13,8 +28,8 @@ app.post('/detect-smile', async (req, res) => {
       null,
       {
         params: {
-          api_key: API_KEY,
-          api_secret: API_SECRET,
+          api_key: process.env.API_KEY || 'your-api-key',
+          api_secret: process.env.API_SECRET || 'your-api-secret',
           image_base64: imageBase64
         }
       }
@@ -36,4 +51,8 @@ app.post('/detect-smile', async (req, res) => {
       debug: error.response?.data || error.message
     });
   }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
