@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smile Booth 😊</title>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+
+    video, img {
+      border-radius: 12px;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Hi Smilie! Welcome to Smile Booth.</h1>
+
+  <p id="smileCount">Smile of the Week: 0</p>
+
+  <video id="video" autoplay></video><br />
+  <button id="snapBtn">Take My Smile 📸</button>
+  <canvas id="canvas" style="display:none;"></canvas><br />
+  <img id="photo" src="" alt="Your smile will appear here" width="200" /><br />
+
+  <p id="result"></p>
+
+  <script>
+    const video = document.getElementById('video');
+    const snapBtn = document.getElementById('snapBtn');
+    const canvas = document.getElementById('canvas');
+    const photo = document.getElementById('photo');
+    const resultText = document.getElementById('result');
+    const smileCountEl = document.getElementById('smileCount');
+
+    let smileCount = 0;
+
+    // Start camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then((stream) => {
+        video.srcObject = stream;
+      })
+      .catch((err) => {
+        console.error("Camera error:", err);
+      });
+
+    snapBtn.addEventListener('click', () => {
+      const context = canvas.getContext('2d');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0);
+
+      const imageData = canvas.toDataURL('image/jpeg');
+      photo.src = imageData;
+
+      fetch('https://myapp-xn74.onrender.com/detect-smile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: imageData })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            resultText.textContent = data.message;
+            if (data.message.includes('beautiful')) {
+              smileCount++;
+              smileCountEl.textContent = `Smile of the Week: ${smileCount}`;
+            }
+          } else {
+            resultText.textContent = data.message || "No smile detected.";
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          resultText.textContent = "Error checking smile.";
+        });
+    });
+  </script>
+</body>
+</html>
