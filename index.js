@@ -14,16 +14,20 @@ app.get('/', (req, res) => {
     res.send('API is working!');
 });
 
+// Test route to check if the API is working
+app.get('/test', (req, res) => {
+    res.send('Smile detection API is working!');
+});
+
 // Endpoint for detecting smile
 app.post('/detect-smile', async (req, res) => {
     try {
         const imageUrl = req.body.imageUrl;
 
-        // Assuming you're using some external API or logic to detect smiles
-        // Replace 'YOUR_SMILE_DETECTION_API_URL' with the actual API endpoint you're using
+        // Make sure to replace with your actual API URL for smile detection
         const response = await axios.post('YOUR_SMILE_DETECTION_API_URL', {
             imageUrl,
-            headers: { 'Authorization': `Bearer ${API_SECRET}` }
+            headers: { 'Authorization': `Bearer ${API_SECRET}` } // Use your API_SECRET here
         });
 
         if (response.data.smileDetected) {
