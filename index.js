@@ -9,7 +9,7 @@ const API_SECRET = process.env.API_SECRET || 'your-api-secret';
 app.use(express.json());
 app.use(cors());  // Allow cross-origin requests
 
-// Root route for testing (This is working already, so leave it intact)
+// Root route for testing
 app.get('/', (req, res) => {
     res.send('API is working!');
 });
