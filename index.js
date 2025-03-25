@@ -9,7 +9,7 @@ const port = process.env.PORT || 3000;
 const API_KEY = process.env.API_KEY || 'your-api-key';
 const API_SECRET = process.env.API_SECRET || 'your-api-secret';
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); // In case image is large
 app.use(cors());
 
 // Root route
@@ -25,17 +25,20 @@ app.get('/test', (req, res) => {
 // Smile detection endpoint
 app.post('/detect-smile', async (req, res) => {
     try {
-        const imageUrl = req.body.image;
+        const base64Data = req.body.image;
 
-        if (!imageUrl) {
-            return res.status(400).json({ success: false, message: 'No image URL provided' });
+        if (!base64Data || !base64Data.startsWith('data:image')) {
+            return res.status(400).json({ success: false, message: 'No valid base64 image provided' });
         }
+
+        // Remove data:image/jpeg;base64, from the front
+        const imageBase64 = base64Data.split(',')[1];
 
         const response = await axios.post('https://api-us.faceplusplus.com/facepp/v3/detect', null, {
             params: {
                 api_key: API_KEY,
                 api_secret: API_SECRET,
-                image_url: imageUrl,
+                image_base64: imageBase64,
                 return_attributes: 'smile'
             }
         });
