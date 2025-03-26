@@ -8,9 +8,9 @@ const port = process.env.PORT || 3000;
 app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 
-// Root test route
+// ✅ TEMP: Fake "Get All" for Adalo to pass collection creation
 app.get('/', (req, res) => {
-  res.send('Smile detection API is working!');
+  res.json([{ id: 1, message: 'Fake smile entry' }]);
 });
 
 // POST endpoint for smile detection
