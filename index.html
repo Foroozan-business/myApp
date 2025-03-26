@@ -1,90 +1,58 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Smile Detector 😄</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 20px;
-    }
-    #canvas {
-      margin-top: 10px;
-      border: 1px solid #ccc;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-top: 10px;
-    }
-    #result {
-      margin-top: 15px;
-      font-size: 18px;
-      font-weight: bold;
-    }
-  </style>
-</head>
+<head><title>Smile Capture</title></head>
 <body>
-  <h2>Smile Booth</h2>
-
-  <!-- Live Camera -->
-  <video id="video" width="320" height="240" autoplay></video><br>
-
-  <!-- Button to capture -->
-  <button id="snapBtn">Take My Photo</button><br>
-
-  <!-- Show captured photo -->
-  <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
-
-  <!-- Result message -->
-  <p id="result">Your smile result will appear here.</p>
+  <h2>Smile for 10 seconds! 😊</h2>
+  <video id="video" width="320" height="240" autoplay></video>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+  <p id="result">Waiting for your smile...</p>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
-    const resultText = document.getElementById('result');
-    const snapBtn = document.getElementById('snapBtn');
+    const result = document.getElementById('result');
 
-    // Ask for camera permission
     navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        video.srcObject = stream;
-      })
-      .catch(err => {
-        console.error("Camera error:", err);
-        resultText.textContent = "Camera access failed.";
-      });
+      .then(stream => video.srcObject = stream)
+      .catch(err => result.textContent = "Camera access denied 😢");
 
-    // When "Take My Photo" is clicked
-    snapBtn.addEventListener("click", () => {
+    function captureFrameAndDetectSmile() {
       const ctx = canvas.getContext('2d');
-
-      // Draw current video frame to canvas
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const image = canvas.toDataURL('image/jpeg');
 
-      // Show the canvas with the captured photo
-      canvas.style.display = 'block';
-
-      const base64Image = canvas.toDataURL('image/jpeg');
-
-      // Show loading message
-      resultText.textContent = "Checking for your smile... 😊";
-
-      // Send image to backend API
       fetch('https://myapp-xn74.onrender.com/detect-smile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64Image })
+        body: JSON.stringify({ image })
       })
       .then(res => res.json())
       .then(data => {
-        resultText.textContent = data.message || "Couldn't analyze image.";
+        console.log("API Response:", data);
+        result.textContent = data.message || "Still checking...";
+
+        if (data.message && data.message.includes('beautiful')) {
+          location.href = 'done.html';
+        }
       })
       .catch(err => {
-        console.error("Fetch error:", err);
-        resultText.textContent = "Error connecting to server.";
+        console.error(err);
+        result.textContent = "Smile detection failed.";
       });
-    });
+    }
+
+    // Repeat every 3 seconds, for 10 seconds max
+    let attempts = 0;
+    const interval = setInterval(() => {
+      if (attempts >= 3) {
+        clearInterval(interval);
+        result.textContent = "😕 Couldn't detect your smile. Try again or draw one!";
+        return;
+      }
+
+      captureFrameAndDetectSmile();
+      attempts++;
+    }, 3000);
   </script>
 </body>
 </html>
