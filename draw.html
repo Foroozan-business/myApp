@@ -11,67 +11,53 @@
       min-height: 100vh;
       font-family: sans-serif;
       background-color: #f9f9f9;
+      margin: 0;
     }
-
     h3 {
       font-size: 24px;
-      margin-bottom: 10px;
     }
-
     canvas {
       border: 2px solid #333;
       background-color: #eeeeee;
-      margin-bottom: 12px;
+      margin: 20px 0;
     }
-
     #tools {
       display: flex;
       gap: 10px;
+      margin-bottom: 10px;
     }
-
     button {
       font-size: 18px;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
+      padding: 10px 16px;
+      border-radius: 5px;
       background-color: #4CAF50;
       color: white;
+      border: none;
       cursor: pointer;
     }
-
-    button:hover {
-      background-color: #45a049;
-    }
-
     #message {
-      margin-top: 15px;
-      font-size: 20px;
-      color: green;
       display: none;
+      color: green;
+      font-size: 20px;
     }
   </style>
 </head>
 <body>
   <h3>Draw your smile below!</h3>
   <canvas id="draw" width="320" height="200"></canvas>
-
   <div id="tools">
     <button onclick="setTool('pen')">🖊️ Pen</button>
     <button onclick="setTool('eraser')">🧽 Eraser</button>
     <button onclick="checkSmileDrawing()">Next</button>
   </div>
-
   <div id="message">🎉 Well done!</div>
 
   <script>
     const canvas = document.getElementById('draw');
     const ctx = canvas.getContext('2d');
-    const message = document.getElementById('message');
-
     let drawing = false;
     let tool = 'pen';
 
-    // Fill canvas with background color initially
     ctx.fillStyle = '#eeeeee';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -84,10 +70,9 @@
 
     function draw(e) {
       if (!drawing) return;
-      ctx.lineWidth = tool === 'eraser' ? 30 : 3; // ✏️ vs 🧽
+      ctx.lineWidth = tool === 'eraser' ? 30 : 3;
       ctx.lineCap = 'round';
       ctx.strokeStyle = tool === 'eraser' ? '#eeeeee' : 'black';
-
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
       ctx.beginPath();
@@ -101,20 +86,13 @@
     function checkSmileDrawing() {
       const imageData = ctx.getImageData(0, 120, canvas.width, 80).data;
       let drawnPixels = 0;
-
       for (let i = 0; i < imageData.length; i += 4) {
         if (imageData[i + 3] > 0 && imageData[i] !== 238) drawnPixels++;
       }
-
       if (drawnPixels < 300) {
         alert("Draw a smile!");
       } else {
-        let count = localStorage.getItem('smileCount') || 0;
-        localStorage.setItem('smileCount', parseInt(count) + 1);
-        message.style.display = 'block';
-        setTimeout(() => {
-          location.href = 'index.html';
-        }, 2000);
+        location.href = 'reason.html';
       }
     }
   </script>
