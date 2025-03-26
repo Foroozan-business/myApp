@@ -12,10 +12,12 @@
       min-height: 100vh;
       background-color: #f9f9f9;
       text-align: center;
+      margin: 0;
     }
 
     h3 {
-      font-size: 22px;
+      font-size: 24px;
+      margin-bottom: 10px;
     }
 
     textarea {
@@ -23,13 +25,18 @@
       width: 80%;
       max-width: 400px;
       height: 100px;
-      margin-top: 10px;
+      margin-bottom: 10px;
     }
 
     button {
       font-size: 18px;
-      margin-top: 10px;
       padding: 8px 16px;
+      margin-top: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
 
     #doneMessage {
@@ -44,7 +51,6 @@
   <h3>Write a sentence starting with "I am happy because..."</h3>
   <textarea id="input"></textarea><br>
   <button onclick="checkInput()">Next</button>
-
   <div id="doneMessage">🎉 Well done!</div>
 
   <script>
@@ -57,7 +63,6 @@
 
       let count = localStorage.getItem('smileCount') || 0;
       localStorage.setItem('smileCount', parseInt(count) + 1);
-
       document.getElementById('doneMessage').style.display = 'block';
 
       setTimeout(() => {
