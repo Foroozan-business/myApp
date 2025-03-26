@@ -9,13 +9,18 @@
       right: 10px;
       font-size: 18px;
     }
+    video {
+      display: block;
+      max-width: 100%;
+      margin: 0 auto;
+    }
   </style>
 </head>
 <body>
   <a class="top-right-exit" href="exit.html">❌ Exit</a>
 
   <h2>Smile and hold it for 10 seconds! 😁</h2>
-  <video id="video" width="320" height="240" autoplay></video>
+  <video id="video" width="320" height="240" autoplay playsinline></video>
   <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
   <p id="result">Waiting for smile...</p>
 
@@ -30,9 +35,15 @@
     const resultText = document.getElementById('result');
     let smileTimer = 0;
 
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-      video.srcObject = stream;
-    });
+    // ✅ Use front-facing camera for mobile (but works on desktop too)
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(error => {
+        resultText.textContent = "Unable to access camera: " + error.message;
+        console.error("Camera error:", error);
+      });
 
     function checkSmile() {
       const ctx = canvas.getContext('2d');
@@ -58,7 +69,7 @@
 
             setTimeout(() => {
               window.location.href = 'index.html';
-            }, 5000); // ⏳ Redirect after 5 seconds
+            }, 5000);
           }
         } else {
           smileTimer = 0;
