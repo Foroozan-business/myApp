@@ -1,6 +1,45 @@
 <!DOCTYPE html>
 <html>
-<head><title>Smile Booth</title></head>
+<head>
+  <title>Smile Booth</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #fefefe;
+      text-align: center;
+    }
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 20px;
+    }
+
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
 <body>
   <h2>Hi Smilie! Welcome to Smile Booth 😊</h2>
   <p>Smile of this week: <span id="count">0</span></p>
@@ -9,21 +48,16 @@
   <button onclick="location.href='exit.html'">Exit</button>
 
   <script>
+    const now = new Date();
+    const lastReset = localStorage.getItem('lastReset');
+
+    if (!lastReset || new Date(lastReset).getDay() !== now.getDay()) {
+      localStorage.setItem('smileCount', 0);
+      localStorage.setItem('lastReset', now.toISOString());
+    }
+
     const count = localStorage.getItem('smileCount') || 0;
     document.getElementById('count').textContent = count;
   </script>
-  <script>
-  const now = new Date();
-  const lastReset = localStorage.getItem('lastReset');
-
-  if (!lastReset || new Date(lastReset).getDay() !== now.getDay()) {
-    localStorage.setItem('smileCount', 0);
-    localStorage.setItem('lastReset', now.toISOString());
-  }
-
-  const count = localStorage.getItem('smileCount') || 0;
-  document.getElementById('count').textContent = count;
-</script>
-
 </body>
 </html>
