@@ -4,36 +4,49 @@
   <title>Draw a Smile</title>
   <style>
     canvas { border: 1px solid #000; }
+    #tools { margin-top: 10px; }
   </style>
 </head>
 <body>
   <h3>Draw your smile below!</h3>
   <canvas id="draw" width="320" height="200"></canvas><br>
-  <button onclick="checkSmileDrawing()">Next</button>
+
+  <div id="tools">
+    <button id="toggleTool">🖊️ Pen Mode</button>
+    <button onclick="checkSmileDrawing()">Next</button>
+  </div>
 
   <script>
     const canvas = document.getElementById('draw');
     const ctx = canvas.getContext('2d');
+    const toggleBtn = document.getElementById('toggleTool');
+
     let drawing = false;
+    let erasing = false;
 
     canvas.addEventListener('mousedown', () => drawing = true);
     canvas.addEventListener('mouseup', () => {
       drawing = false;
-      ctx.beginPath(); // prevent lines from joining across separate strokes
+      ctx.beginPath();
     });
     canvas.addEventListener('mousemove', draw);
 
     function draw(e) {
       if (!drawing) return;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
       ctx.lineCap = 'round';
-      ctx.strokeStyle = 'black';
+      ctx.strokeStyle = erasing ? 'white' : 'black';
 
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
       ctx.beginPath();
       ctx.moveTo(e.offsetX, e.offsetY);
     }
+
+    toggleBtn.addEventListener('click', () => {
+      erasing = !erasing;
+      toggleBtn.textContent = erasing ? '🧽 Eraser Mode' : '🖊️ Pen Mode';
+    });
 
     function checkSmileDrawing() {
       const imageData = ctx.getImageData(0, 120, canvas.width, 80).data;
