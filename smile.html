@@ -55,9 +55,13 @@
           if (smileTimer >= 10) {
             let count = localStorage.getItem('smileCount') || 0;
             localStorage.setItem('smileCount', parseInt(count) + 1);
-            resultText.textContent = data.message;
-            successOptions.classList.remove("hidden");
+            resultText.textContent = "🎉 Such a beautiful smile! 😄";
             clearInterval(intervalId); // stop checking
+
+            // Auto-redirect to home after 2 seconds
+            setTimeout(() => {
+              window.location.href = 'index.html';
+            }, 5000);
           }
         } else {
           smileTimer = 0;
