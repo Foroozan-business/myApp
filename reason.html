@@ -1,12 +1,44 @@
-<script>
-  function saveAndNext() {
-    const text = document.getElementById('input').value.trim();
-    if (!text.toLowerCase().startsWith("i am happy because")) {
-      alert("Please start your sentence with 'I am happy because...'");
-      return;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>I am happy because...</title>
+  <style>
+    #doneMessage {
+      display: none;
+      margin-top: 10px;
+      color: green;
+      font-weight: bold;
     }
-    let count = localStorage.getItem('smileCount') || 0;
-    localStorage.setItem('smileCount', parseInt(count) + 1);
-    location.href = 'done.html';
-  }
-</script>
+  </style>
+</head>
+<body>
+  <h3>Write a sentence starting with "I am happy because..."</h3>
+  <textarea id="input" rows="4" cols="40"></textarea><br>
+  <button onclick="saveAndShowDone()">OK</button>
+
+  <div id="doneMessage">✅ Done!</div>
+
+  <div id="navButtons" style="display:none; margin-top: 10px;">
+    <button onclick="location.href='index.html'">🏠 Go to Home</button>
+    <button onclick="location.href='exit.html'">❌ Exit</button>
+  </div>
+
+  <script>
+    function saveAndShowDone() {
+      const input = document.getElementById('input').value.trim();
+      const lower = input.toLowerCase();
+
+      if (!lower.startsWith("i am happy because")) {
+        alert("Please start your sentence with 'I am happy because...'");
+        return;
+      }
+
+      let count = localStorage.getItem('smileCount') || 0;
+      localStorage.setItem('smileCount', parseInt(count) + 1);
+
+      document.getElementById('doneMessage').style.display = 'block';
+      document.getElementById('navButtons').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
