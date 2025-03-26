@@ -12,5 +12,18 @@
     const count = localStorage.getItem('smileCount') || 0;
     document.getElementById('count').textContent = count;
   </script>
+  <script>
+  const now = new Date();
+  const lastReset = localStorage.getItem('lastReset');
+
+  if (!lastReset || new Date(lastReset).getDay() !== now.getDay()) {
+    localStorage.setItem('smileCount', 0);
+    localStorage.setItem('lastReset', now.toISOString());
+  }
+
+  const count = localStorage.getItem('smileCount') || 0;
+  document.getElementById('count').textContent = count;
+</script>
+
 </body>
 </html>
