@@ -2,20 +2,41 @@
 <html>
 <head>
   <title>Smile Detector 😄</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #canvas {
+      margin-top: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    #result {
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <h2>Smile Booth</h2>
 
-  <!-- Camera Preview -->
+  <!-- Live Camera -->
   <video id="video" width="320" height="240" autoplay></video><br>
 
-  <!-- Capture Button -->
-  <button id="snapBtn">Take My Photo</button><br><br>
+  <!-- Button to capture -->
+  <button id="snapBtn">Take My Photo</button><br>
 
-  <!-- Canvas to draw photo -->
-  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+  <!-- Show captured photo -->
+  <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 
-  <!-- Result Message -->
+  <!-- Result message -->
   <p id="result">Your smile result will appear here.</p>
 
   <script>
@@ -24,7 +45,7 @@
     const resultText = document.getElementById('result');
     const snapBtn = document.getElementById('snapBtn');
 
-    // Access the camera
+    // Ask for camera permission
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
         video.srcObject = stream;
@@ -34,14 +55,22 @@
         resultText.textContent = "Camera access failed.";
       });
 
-    snapBtn.addEventListener("click", function takePhoto() {
+    // When "Take My Photo" is clicked
+    snapBtn.addEventListener("click", () => {
       const ctx = canvas.getContext('2d');
+
+      // Draw current video frame to canvas
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Show the canvas with the captured photo
+      canvas.style.display = 'block';
+
       const base64Image = canvas.toDataURL('image/jpeg');
 
+      // Show loading message
       resultText.textContent = "Checking for your smile... 😊";
 
-      // Send photo to backend
+      // Send image to backend API
       fetch('https://myapp-xn74.onrender.com/detect-smile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,12 +78,11 @@
       })
       .then(res => res.json())
       .then(data => {
-        console.log("API response:", data);
         resultText.textContent = data.message || "Couldn't analyze image.";
       })
       .catch(err => {
-        console.error("Error:", err);
-        resultText.textContent = "Failed to send photo to server.";
+        console.error("Fetch error:", err);
+        resultText.textContent = "Error connecting to server.";
       });
     });
   </script>
