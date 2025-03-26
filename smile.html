@@ -2,17 +2,58 @@
 <html>
 <head>
   <title>Smile Detector</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+
+    h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    video {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      border: 2px solid #333;
+      border-radius: 10px;
+    }
+
+    canvas {
+      display: none;
+    }
+
+    #result {
+      margin-top: 15px;
+      font-size: 18px;
+    }
+
+    #successOptions {
+      margin-top: 20px;
+    }
+
+    #successOptions button {
+      font-size: 18px;
+      padding: 8px 16px;
+      margin: 0 8px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
     .top-right-exit {
       position: absolute;
       top: 10px;
       right: 10px;
       font-size: 18px;
-    }
-    video {
-      display: block;
-      max-width: 100%;
-      margin: 0 auto;
     }
   </style>
 </head>
@@ -21,7 +62,7 @@
 
   <h2>Smile and hold it for 10 seconds! 😁</h2>
   <video id="video" width="320" height="240" autoplay playsinline></video>
-  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+  <canvas id="canvas" width="320" height="240"></canvas>
   <p id="result">Waiting for smile...</p>
 
   <div id="successOptions">
@@ -35,14 +76,15 @@
     const resultText = document.getElementById('result');
     let smileTimer = 0;
 
-    // ✅ Use front-facing camera for mobile (but works on desktop too)
+    // ✅ Use front camera, and playsinline for iOS support
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } })
       .then(stream => {
         video.srcObject = stream;
+        video.play();
       })
-      .catch(error => {
-        resultText.textContent = "Unable to access camera: " + error.message;
-        console.error("Camera error:", error);
+      .catch(err => {
+        resultText.textContent = "Camera not accessible: " + err.message;
+        console.error("Camera error:", err);
       });
 
     function checkSmile() {
