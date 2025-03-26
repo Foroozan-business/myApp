@@ -9,7 +9,6 @@
       right: 10px;
       font-size: 18px;
     }
-    .hidden { display: none; }
   </style>
 </head>
 <body>
@@ -20,7 +19,7 @@
   <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
   <p id="result">Waiting for smile...</p>
 
-  <div id="successOptions" class="hidden">
+  <div id="successOptions">
     <button onclick="window.location.href='index.html'">🏠 Go to Home</button>
     <button onclick="window.location.href='exit.html'">❌ Exit</button>
   </div>
@@ -29,7 +28,6 @@
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const resultText = document.getElementById('result');
-    const successOptions = document.getElementById('successOptions');
     let smileTimer = 0;
 
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
@@ -56,12 +54,11 @@
             let count = localStorage.getItem('smileCount') || 0;
             localStorage.setItem('smileCount', parseInt(count) + 1);
             resultText.textContent = "🎉 Such a beautiful smile! 😄";
-            clearInterval(intervalId); // stop checking
+            clearInterval(intervalId);
 
-            // Auto-redirect to home after 2 seconds
             setTimeout(() => {
               window.location.href = 'index.html';
-            }, 5000);
+            }, 5000); // ⏳ Redirect after 5 seconds
           }
         } else {
           smileTimer = 0;
