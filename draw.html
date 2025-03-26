@@ -1,30 +1,54 @@
-<script>
-  const canvas = document.getElementById('draw');
-  const ctx = canvas.getContext('2d');
-  let drawing = false;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Draw a Smile</title>
+  <style>
+    canvas { border: 1px solid #000; }
+  </style>
+</head>
+<body>
+  <h3>Draw your smile below!</h3>
+  <canvas id="draw" width="320" height="200"></canvas><br>
+  <button onclick="checkSmileDrawing()">Next</button>
 
-  canvas.onmousedown = () => drawing = true;
-  canvas.onmouseup = () => drawing = false;
-  canvas.onmousemove = e => {
-    if (!drawing) return;
-    ctx.lineTo(e.offsetX, e.offsetY);
-    ctx.stroke();
-  };
+  <script>
+    const canvas = document.getElementById('draw');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
 
-  function checkSmileDrawing() {
-    const imageData = ctx.getImageData(0, 100, 320, 100).data;
-    let drawnPixels = 0;
-    for (let i = 0; i < imageData.length; i += 4) {
-      if (imageData[i + 3] > 0) drawnPixels++; // alpha > 0
+    canvas.addEventListener('mousedown', () => drawing = true);
+    canvas.addEventListener('mouseup', () => {
+      drawing = false;
+      ctx.beginPath(); // prevent lines from joining across separate strokes
+    });
+    canvas.addEventListener('mousemove', draw);
+
+    function draw(e) {
+      if (!drawing) return;
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = 'black';
+
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
     }
 
-    if (drawnPixels < 300) {
-      alert("Draw a smile!");
-    } else {
-      location.href = 'reason.html';
-    }
-  }
-</script>
+    function checkSmileDrawing() {
+      const imageData = ctx.getImageData(0, 120, canvas.width, 80).data;
+      let drawnPixels = 0;
 
-<!-- Update button: -->
-<button onclick="checkSmileDrawing()">Next</button>
+      for (let i = 0; i < imageData.length; i += 4) {
+        if (imageData[i + 3] > 0) drawnPixels++;
+      }
+
+      if (drawnPixels < 300) {
+        alert("Draw a smile!");
+      } else {
+        location.href = 'reason.html';
+      }
+    }
+  </script>
+</body>
+</html>
