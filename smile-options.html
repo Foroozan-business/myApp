@@ -1,14 +1,41 @@
 <!DOCTYPE html>
 <html>
-<head><title>Smile Options</title></head>
+<head>
+  <title>Smile Options</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: sans-serif;
+      background-color: #fefefe;
+      text-align: center;
+      margin: 0;
+    }
+    h3 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
 <body>
   <h3>Ready to capture your smile?</h3>
-
-  <!-- Yes button -->
   <button onclick="location.href='smile.html'">Yes, let's go! 😊</button>
-
-  <!-- Not really button (FIXED) -->
   <button onclick="location.href='draw.html'">Not really 😐</button>
 </body>
 </html>
-
