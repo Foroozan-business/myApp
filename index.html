@@ -1,58 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head><title>Smile Capture</title></head>
+<head><title>Smile Booth</title></head>
 <body>
-  <h2>Smile for 10 seconds! 😊</h2>
-  <video id="video" width="320" height="240" autoplay></video>
-  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-  <p id="result">Waiting for your smile...</p>
+  <h2>Hi Smilie! Welcome to Smile Booth 😊</h2>
+  <p>Smile of this week: <span id="count">0</span></p>
+
+  <button onclick="location.href='smile-options.html'">Take me to my Smile Booth</button>
+  <button onclick="location.href='exit.html'">Exit</button>
 
   <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const result = document.getElementById('result');
-
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => video.srcObject = stream)
-      .catch(err => result.textContent = "Camera access denied 😢");
-
-    function captureFrameAndDetectSmile() {
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const image = canvas.toDataURL('image/jpeg');
-
-      fetch('https://myapp-xn74.onrender.com/detect-smile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image })
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log("API Response:", data);
-        result.textContent = data.message || "Still checking...";
-
-        if (data.message && data.message.includes('beautiful')) {
-          location.href = 'done.html';
-        }
-      })
-      .catch(err => {
-        console.error(err);
-        result.textContent = "Smile detection failed.";
-      });
-    }
-
-    // Repeat every 3 seconds, for 10 seconds max
-    let attempts = 0;
-    const interval = setInterval(() => {
-      if (attempts >= 3) {
-        clearInterval(interval);
-        result.textContent = "😕 Couldn't detect your smile. Try again or draw one!";
-        return;
-      }
-
-      captureFrameAndDetectSmile();
-      attempts++;
-    }, 3000);
+    // Load saved smile count
+    const count = localStorage.getItem('smileCount') || 0;
+    document.getElementById('count').textContent = count;
   </script>
 </body>
 </html>
