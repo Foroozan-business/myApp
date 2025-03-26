@@ -1,17 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head><title>I am happy because...</title></head>
-<body>
-  <h3>Write a sentence starting with "I am happy because..."</h3>
-  <textarea id="input" rows="4" cols="40"></textarea><br>
-  <button onclick="saveAndNext()">OK</button>
-
-  <script>
-    function saveAndNext() {
-      let count = localStorage.getItem('smileCount') || 0;
-      localStorage.setItem('smileCount', parseInt(count) + 1);
-      location.href = 'done.html';
+<script>
+  function saveAndNext() {
+    const text = document.getElementById('input').value.trim();
+    if (!text.toLowerCase().startsWith("i am happy because")) {
+      alert("Please start your sentence with 'I am happy because...'");
+      return;
     }
-  </script>
-</body>
-</html>
+    let count = localStorage.getItem('smileCount') || 0;
+    localStorage.setItem('smileCount', parseInt(count) + 1);
+    location.href = 'done.html';
+  }
+</script>
