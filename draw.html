@@ -1,100 +1,70 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Draw a Smile</title>
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      font-family: sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
-    }
-    h3 {
-      font-size: 24px;
-    }
-    canvas {
-      border: 2px solid #333;
-      background-color: #eeeeee;
-      margin: 20px 0;
-    }
-    #tools {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    button {
-      font-size: 18px;
-      padding: 10px 16px;
-      border-radius: 5px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    #message {
-      display: none;
-      color: green;
-      font-size: 20px;
-    }
-  </style>
-</head>
-<body>
-  <h3>Draw your smile below!</h3>
-  <canvas id="draw" width="320" height="200"></canvas>
-  <div id="tools">
-    <button onclick="setTool('pen')">🖊️ Pen</button>
-    <button onclick="setTool('eraser')">🧽 Eraser</button>
-    <button onclick="checkSmileDrawing()">Next</button>
-  </div>
-  <div id="message">🎉 Well done!</div>
+<script>
+  const canvas = document.getElementById('draw');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let tool = 'pen';
 
-  <script>
-    const canvas = document.getElementById('draw');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
-    let tool = 'pen';
+  ctx.fillStyle = '#eeeeee';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    ctx.fillStyle = '#eeeeee';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Mouse support
+  canvas.addEventListener('mousedown', () => drawing = true);
+  canvas.addEventListener('mouseup', () => {
+    drawing = false;
+    ctx.beginPath();
+  });
+  canvas.addEventListener('mousemove', drawMouse);
 
-    canvas.addEventListener('mousedown', () => drawing = true);
-    canvas.addEventListener('mouseup', () => {
-      drawing = false;
-      ctx.beginPath();
-    });
-    canvas.addEventListener('mousemove', draw);
+  function drawMouse(e) {
+    if (!drawing) return;
+    drawAt(e.offsetX, e.offsetY);
+  }
 
-    function draw(e) {
-      if (!drawing) return;
-      ctx.lineWidth = tool === 'eraser' ? 30 : 3;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = tool === 'eraser' ? '#eeeeee' : 'black';
-      ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(e.offsetX, e.offsetY);
+  // Touch support
+  canvas.addEventListener('touchstart', (e) => {
+    drawing = true;
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    drawAt(touch.clientX - rect.left, touch.clientY - rect.top);
+  });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (!drawing) return;
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    drawAt(touch.clientX - rect.left, touch.clientY - rect.top);
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', () => {
+    drawing = false;
+    ctx.beginPath();
+  });
+
+  function drawAt(x, y) {
+    ctx.lineWidth = tool === 'eraser' ? 30 : 3;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = tool === 'eraser' ? '#eeeeee' : 'black';
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
+
+  function setTool(selected) {
+    tool = selected;
+  }
+
+  function checkSmileDrawing() {
+    const imageData = ctx.getImageData(0, 120, canvas.width, 80).data;
+    let drawnPixels = 0;
+    for (let i = 0; i < imageData.length; i += 4) {
+      if (imageData[i + 3] > 0 && imageData[i] !== 238) drawnPixels++;
     }
-
-    function setTool(selected) {
-      tool = selected;
+    if (drawnPixels < 300) {
+      alert("Draw a smile!");
+    } else {
+      location.href = 'reason.html';
     }
-
-    function checkSmileDrawing() {
-      const imageData = ctx.getImageData(0, 120, canvas.width, 80).data;
-      let drawnPixels = 0;
-      for (let i = 0; i < imageData.length; i += 4) {
-        if (imageData[i + 3] > 0 && imageData[i] !== 238) drawnPixels++;
-      }
-      if (drawnPixels < 300) {
-        alert("Draw a smile!");
-      } else {
-        location.href = 'reason.html';
-      }
-    }
-  </script>
-</body>
-</html>
+  }
+</script>
