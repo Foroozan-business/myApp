@@ -51,7 +51,7 @@
 
     function draw(e) {
       if (!drawing) return;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = erasing ? 15 : 3; // 🧽 Eraser is thicker
       ctx.lineCap = 'round';
       ctx.strokeStyle = erasing ? '#eeeeee' : 'black';
 
@@ -77,16 +77,11 @@
       if (drawnPixels < 300) {
         alert("Draw a smile!");
       } else {
-        // ✅ Increase smile count
         let count = localStorage.getItem('smileCount') || 0;
         localStorage.setItem('smileCount', parseInt(count) + 1);
-
-        // ✅ Show message
         message.style.display = 'block';
-
-        // ⏳ Redirect after delay
         setTimeout(() => {
-          window.location.href = 'index.html';
+          location.href = 'index.html';
         }, 2000);
       }
     }
