@@ -8,47 +8,37 @@ const port = process.env.PORT || 3000;
 app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 
+// Root test route
 app.get('/', (req, res) => {
   res.send('Smile detection API is working!');
 });
 
+// POST endpoint for smile detection
 app.post('/detect-smile', async (req, res) => {
   console.log("📸 /detect-smile was called!");
 
-  const image = req.body.image;
-
-  if (!image) {
-    return res.status(400).json({ success: false, message: 'No image provided' });
-  }
-
-  // Decide whether to use base64 or image_url
-  const isBase64 = image.startsWith('data:image');
-  const payload = {
-    api_key: process.env.API_KEY || 'your-api-key',
-    api_secret: process.env.API_SECRET || 'your-api-secret',
-    return_attributes: 'smile'
-  };
-
-  if (isBase64) {
-    console.log("📸 Using base64 image");
-    payload.image_base64 = image.split(',')[1]; // strip the data:image/jpeg;base64,...
-  } else if (image.startsWith('http')) {
-    console.log("🌐 Using image URL");
-    payload.image_url = image;
-  } else {
-    return res.status(400).json({ success: false, message: 'Invalid image format' });
-  }
-
   try {
-    const response = await axios.post(
-      'https://api-us.faceplusplus.com/facepp/v3/detect',
-      new URLSearchParams(payload).toString(),
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      }
-    );
+    const base64Data = req.body.image;
+
+    if (!base64Data || !base64Data.startsWith('data:image')) {
+      return res.status(400).json({ success: false, message: 'No valid base64 image provided' });
+    }
+
+    const imageBase64 = base64Data.split(',')[1]; // remove data:image/jpeg;base64,...
+
+    const response = await axios({
+      method: 'post',
+      url: 'https://api-us.faceplusplus.com/facepp/v3/detect',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: new URLSearchParams({
+        api_key: process.env.API_KEY || 'your-api-key',
+        api_secret: process.env.API_SECRET || 'your-api-secret',
+        image_base64: imageBase64,
+        return_attributes: 'smiling' // ✅ CORRECTED HERE
+      }).toString()
+    });
 
     const smileValue = response.data.faces?.[0]?.attributes?.smile?.value;
 
@@ -74,3 +64,6 @@ app.post('/detect-smile', async (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 Server is running on port ${port}`);
 });
+
+
+
