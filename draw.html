@@ -3,8 +3,13 @@
 <head>
   <title>Draw a Smile</title>
   <style>
-    canvas { border: 1px solid #000; }
-    #tools { margin-top: 10px; }
+    canvas {
+      border: 1px solid #000;
+      background-color: #eeeeee; /* light background so erasing shows */
+    }
+    #tools {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -24,6 +29,10 @@
     let drawing = false;
     let erasing = false;
 
+    // Fill canvas with background color on load
+    ctx.fillStyle = '#eeeeee';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     canvas.addEventListener('mousedown', () => drawing = true);
     canvas.addEventListener('mouseup', () => {
       drawing = false;
@@ -35,7 +44,7 @@
       if (!drawing) return;
       ctx.lineWidth = 3;
       ctx.lineCap = 'round';
-      ctx.strokeStyle = erasing ? 'white' : 'black';
+      ctx.strokeStyle = erasing ? '#eeeeee' : 'black'; // erases with bg color
 
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
@@ -53,7 +62,7 @@
       let drawnPixels = 0;
 
       for (let i = 0; i < imageData.length; i += 4) {
-        if (imageData[i + 3] > 0) drawnPixels++;
+        if (imageData[i + 3] > 0 && imageData[i] !== 238) drawnPixels++; // ignore bg color
       }
 
       if (drawnPixels < 300) {
