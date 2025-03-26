@@ -1,23 +1,45 @@
 <!DOCTYPE html>
 <html>
-<head><title>Draw a Smile</title></head>
+<head><title>Smile Detector</title></head>
 <body>
-  <h3>Draw your smile below!</h3>
-  <canvas id="draw" width="320" height="200" style="border:1px solid #000;"></canvas>
-  <br>
-  <button onclick="location.href='reason.html'">Next</button>
-  <script>
-    const canvas = document.getElementById('draw');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
+  <h2>Smile and hold for a moment 😄</h2>
+  <video id="video" width="320" height="240" autoplay></video><br>
+  <button onclick="takePhoto()">Take My Photo</button><br><br>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+  <p id="result">Your smile result will appear here.</p>
 
-    canvas.onmousedown = () => drawing = true;
-    canvas.onmouseup = () => drawing = false;
-    canvas.onmousemove = e => {
-      if (!drawing) return;
-      ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.stroke();
-    };
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const resultText = document.getElementById('result');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => { video.srcObject = stream; })
+      .catch(err => { resultText.textContent = "Camera error!"; });
+
+    function takePhoto() {
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const base64Image = canvas.toDataURL('image/jpeg');
+      resultText.textContent = "Checking...";
+
+      fetch('https://myapp-xn74.onrender.com/detect-smile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Image })
+      })
+      .then(res => res.json())
+      .then(data => {
+        resultText.textContent = data.message || "Something went wrong!";
+        if (data.success) {
+          let count = localStorage.getItem('smileCount') || 0;
+          localStorage.setItem('smileCount', parseInt(count) + 1);
+        }
+      })
+      .catch(err => {
+        resultText.textContent = "Error sending image.";
+      });
+    }
   </script>
 </body>
 </html>
