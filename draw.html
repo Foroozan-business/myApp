@@ -1,23 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head><title>Draw a Smile</title></head>
-<body>
-  <h3>Draw your smile below!</h3>
-  <canvas id="draw" width="320" height="200" style="border:1px solid #000;"></canvas><br>
-  <button onclick="location.href='reason.html'">Next</button>
+<script>
+  const canvas = document.getElementById('draw');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
 
-  <script>
-    const canvas = document.getElementById('draw');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
+  canvas.onmousedown = () => drawing = true;
+  canvas.onmouseup = () => drawing = false;
+  canvas.onmousemove = e => {
+    if (!drawing) return;
+    ctx.lineTo(e.offsetX, e.offsetY);
+    ctx.stroke();
+  };
 
-    canvas.onmousedown = () => drawing = true;
-    canvas.onmouseup = () => drawing = false;
-    canvas.onmousemove = e => {
-      if (!drawing) return;
-      ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.stroke();
-    };
-  </script>
-</body>
-</html>
+  function checkSmileDrawing() {
+    const imageData = ctx.getImageData(0, 100, 320, 100).data;
+    let drawnPixels = 0;
+    for (let i = 0; i < imageData.length; i += 4) {
+      if (imageData[i + 3] > 0) drawnPixels++; // alpha > 0
+    }
+
+    if (drawnPixels < 300) {
+      alert("Draw a smile!");
+    } else {
+      location.href = 'reason.html';
+    }
+  }
+</script>
+
+<!-- Update button: -->
+<button onclick="checkSmileDrawing()">Next</button>
