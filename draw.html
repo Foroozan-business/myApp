@@ -5,9 +5,15 @@
   <style>
     canvas {
       border: 1px solid #000;
-      background-color: #eeeeee; /* light background so erasing shows */
+      background-color: #eeeeee;
     }
     #tools {
+      margin-top: 10px;
+    }
+    #message {
+      display: none;
+      color: green;
+      font-weight: bold;
       margin-top: 10px;
     }
   </style>
@@ -21,15 +27,18 @@
     <button onclick="checkSmileDrawing()">Next</button>
   </div>
 
+  <div id="message">🎉 Well done!</div>
+
   <script>
     const canvas = document.getElementById('draw');
     const ctx = canvas.getContext('2d');
     const toggleBtn = document.getElementById('toggleTool');
+    const message = document.getElementById('message');
 
     let drawing = false;
     let erasing = false;
 
-    // Fill canvas with background color on load
+    // Fill canvas background on load
     ctx.fillStyle = '#eeeeee';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -44,7 +53,7 @@
       if (!drawing) return;
       ctx.lineWidth = 3;
       ctx.lineCap = 'round';
-      ctx.strokeStyle = erasing ? '#eeeeee' : 'black'; // erases with bg color
+      ctx.strokeStyle = erasing ? '#eeeeee' : 'black';
 
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
@@ -62,13 +71,23 @@
       let drawnPixels = 0;
 
       for (let i = 0; i < imageData.length; i += 4) {
-        if (imageData[i + 3] > 0 && imageData[i] !== 238) drawnPixels++; // ignore bg color
+        if (imageData[i + 3] > 0 && imageData[i] !== 238) drawnPixels++;
       }
 
       if (drawnPixels < 300) {
         alert("Draw a smile!");
       } else {
-        location.href = 'reason.html';
+        // ✅ Increase smile count
+        let count = localStorage.getItem('smileCount') || 0;
+        localStorage.setItem('smileCount', parseInt(count) + 1);
+
+        // ✅ Show message
+        message.style.display = 'block';
+
+        // ⏳ Redirect after delay
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 2000);
       }
     }
   </script>
