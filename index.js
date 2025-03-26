@@ -18,13 +18,11 @@ app.post('/detect-smile', async (req, res) => {
   console.log("📸 /detect-smile was called!");
 
   try {
-    const base64Data = req.body.image;
+    const imageUrl = req.body.image;
 
-    if (!base64Data || !base64Data.startsWith('data:image')) {
-      return res.status(400).json({ success: false, message: 'No valid base64 image provided' });
+    if (!imageUrl || !imageUrl.startsWith('http')) {
+      return res.status(400).json({ success: false, message: 'No valid image URL provided' });
     }
-
-    const imageBase64 = base64Data.split(',')[1]; // remove data:image/jpeg;base64,...
 
     const response = await axios({
       method: 'post',
@@ -35,8 +33,8 @@ app.post('/detect-smile', async (req, res) => {
       data: new URLSearchParams({
         api_key: process.env.API_KEY || 'your-api-key',
         api_secret: process.env.API_SECRET || 'your-api-secret',
-        image_base64: imageBase64,
-        return_attributes: 'smiling' // ✅ CORRECTED HERE
+        image_url: imageUrl,
+        return_attributes: 'smile'
       }).toString()
     });
 
