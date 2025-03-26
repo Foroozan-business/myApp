@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head><title>Smile Capture</title></head>
+<body>
+  <h2>Ready to capture your smile?</h2>
+  <video id="video" width="320" height="240" autoplay></video>
+  <button onclick="takePhoto()">📸 Yes, let's go!</button>
+  <button onclick="location.href='draw.html'">😐 Not really</button>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+  <p id="result"></p>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const result = document.getElementById('result');
+
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => video.srcObject = stream);
+
+    function takePhoto() {
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const image = canvas.toDataURL('image/jpeg');
+
+      fetch('https://myapp-xn74.onrender.com/detect-smile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image })
+      })
+      .then(res => res.json())
+      .then(data => {
+        result.textContent = data.message;
+
+        if (data.message.includes("beautiful")) {
+          // Increase smile counter (mock logic)
+          location.href = "done.html";
+        }
+      })
+      .catch(err => {
+        result.textContent = "Error checking your smile 😢";
+      });
+    }
+  </script>
+</body>
+</html>
