@@ -14,6 +14,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/detect-smile', async (req, res) => {
+  console.log("📸 /detect-smile was called!");
   try {
     const base64Data = req.body.image;
 
