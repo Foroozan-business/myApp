@@ -1,27 +1,45 @@
 <!DOCTYPE html>
 <html>
-<head><title>Smile Detector</title></head>
+<head>
+  <title>Smile Detector</title>
+  <style>
+    .top-right-exit {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 18px;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
 <body>
-  <h2>Smile and hold for a moment 😄</h2>
-  <video id="video" width="320" height="240" autoplay></video><br>
-  <button onclick="takePhoto()">Take My Photo</button><br><br>
+  <a class="top-right-exit" href="exit.html">❌ Exit</a>
+
+  <h2>Smile and hold it for 10 seconds! 😁</h2>
+  <video id="video" width="320" height="240" autoplay></video>
   <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
-  <p id="result">Your smile result will appear here.</p>
+  <p id="result">Waiting for smile...</p>
+
+  <div id="successOptions" class="hidden">
+    <button onclick="window.location.href='index.html'">🏠 Go to Home</button>
+    <button onclick="window.location.href='exit.html'">❌ Exit</button>
+  </div>
 
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const resultText = document.getElementById('result');
+    const successOptions = document.getElementById('successOptions');
+    let smileTimer = 0;
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => { video.srcObject = stream; })
-      .catch(err => { resultText.textContent = "Camera error!"; });
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      video.srcObject = stream;
+    });
 
-    function takePhoto() {
+    function checkSmile() {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const base64Image = canvas.toDataURL('image/jpeg');
-      resultText.textContent = "Checking...";
 
       fetch('https://myapp-xn74.onrender.com/detect-smile', {
         method: 'POST',
@@ -30,16 +48,25 @@
       })
       .then(res => res.json())
       .then(data => {
-        resultText.textContent = data.message || "Something went wrong!";
-        if (data.success) {
-          let count = localStorage.getItem('smileCount') || 0;
-          localStorage.setItem('smileCount', parseInt(count) + 1);
+        if (data.message.includes("beautiful smile")) {
+          smileTimer += 1;
+          resultText.textContent = `Smiling... ${smileTimer}s`;
+
+          if (smileTimer >= 10) {
+            let count = localStorage.getItem('smileCount') || 0;
+            localStorage.setItem('smileCount', parseInt(count) + 1);
+            resultText.textContent = data.message;
+            successOptions.classList.remove("hidden");
+            clearInterval(intervalId); // stop checking
+          }
+        } else {
+          smileTimer = 0;
+          resultText.textContent = "Keep smiling to start the countdown!";
         }
-      })
-      .catch(err => {
-        resultText.textContent = "Error sending image.";
       });
     }
+
+    const intervalId = setInterval(checkSmile, 1000);
   </script>
 </body>
 </html>
