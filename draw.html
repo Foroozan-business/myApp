@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
-<head><title>Draw Your Smile</title></head>
+<head><title>Draw a Smile</title></head>
 <body>
-  <h2>Draw a Smile instead 🎨</h2>
-  <canvas id="draw" width="320" height="240" style="border:1px solid"></canvas>
-  <button onclick="location.href='done.html'">Next</button>
+  <h3>Draw your smile below!</h3>
+  <canvas id="draw" width="320" height="200" style="border:1px solid #000;"></canvas><br>
+  <button onclick="location.href='reason.html'">Next</button>
 
   <script>
     const canvas = document.getElementById('draw');
     const ctx = canvas.getContext('2d');
     let drawing = false;
 
-    canvas.addEventListener('mousedown', () => drawing = true);
-    canvas.addEventListener('mouseup', () => drawing = false);
-    canvas.addEventListener('mousemove', e => {
+    canvas.onmousedown = () => drawing = true;
+    canvas.onmouseup = () => drawing = false;
+    canvas.onmousemove = e => {
       if (!drawing) return;
-      ctx.fillStyle = "black";
-      ctx.fillRect(e.offsetX, e.offsetY, 2, 2);
-    });
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+    };
   </script>
 </body>
 </html>
