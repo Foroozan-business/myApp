@@ -3,27 +3,61 @@
 <head>
   <title>Draw a Smile</title>
   <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+    }
+
+    h3 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
     canvas {
-      border: 1px solid #000;
+      border: 2px solid #333;
       background-color: #eeeeee;
+      margin-bottom: 12px;
     }
+
     #tools {
-      margin-top: 10px;
+      display: flex;
+      gap: 10px;
     }
+
+    button {
+      font-size: 18px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
     #message {
-      display: none;
+      margin-top: 15px;
+      font-size: 20px;
       color: green;
-      font-weight: bold;
-      margin-top: 10px;
+      display: none;
     }
   </style>
 </head>
 <body>
   <h3>Draw your smile below!</h3>
-  <canvas id="draw" width="320" height="200"></canvas><br>
+  <canvas id="draw" width="320" height="200"></canvas>
 
   <div id="tools">
-    <button id="toggleTool">🖊️ Pen Mode</button>
+    <button onclick="setTool('pen')">🖊️ Pen</button>
+    <button onclick="setTool('eraser')">🧽 Eraser</button>
     <button onclick="checkSmileDrawing()">Next</button>
   </div>
 
@@ -32,13 +66,12 @@
   <script>
     const canvas = document.getElementById('draw');
     const ctx = canvas.getContext('2d');
-    const toggleBtn = document.getElementById('toggleTool');
     const message = document.getElementById('message');
 
     let drawing = false;
-    let erasing = false;
+    let tool = 'pen';
 
-    // Fill canvas background on load
+    // Fill canvas with background color initially
     ctx.fillStyle = '#eeeeee';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -51,9 +84,9 @@
 
     function draw(e) {
       if (!drawing) return;
-      ctx.lineWidth = erasing ? 15 : 3; // 🧽 Eraser is thicker
+      ctx.lineWidth = tool === 'eraser' ? 30 : 3; // ✏️ vs 🧽
       ctx.lineCap = 'round';
-      ctx.strokeStyle = erasing ? '#eeeeee' : 'black';
+      ctx.strokeStyle = tool === 'eraser' ? '#eeeeee' : 'black';
 
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
@@ -61,10 +94,9 @@
       ctx.moveTo(e.offsetX, e.offsetY);
     }
 
-    toggleBtn.addEventListener('click', () => {
-      erasing = !erasing;
-      toggleBtn.textContent = erasing ? '🧽 Eraser Mode' : '🖊️ Pen Mode';
-    });
+    function setTool(selected) {
+      tool = selected;
+    }
 
     function checkSmileDrawing() {
       const imageData = ctx.getImageData(0, 120, canvas.width, 80).data;
