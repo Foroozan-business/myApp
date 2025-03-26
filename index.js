@@ -36,7 +36,7 @@ app.post('/detect-smile', async (req, res) => {
         api_key: process.env.API_KEY || 'your-api-key',
         api_secret: process.env.API_SECRET || 'your-api-secret',
         image_base64: imageBase64,
-        return_attributes: 'smile'
+        return_attributes: 'smiling' // ✅ CORRECTED HERE
       }).toString()
     });
 
