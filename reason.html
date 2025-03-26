@@ -3,32 +3,54 @@
 <head>
   <title>I am happy because...</title>
   <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background-color: #f9f9f9;
+      text-align: center;
+    }
+
+    h3 {
+      font-size: 22px;
+    }
+
+    textarea {
+      font-size: 18px;
+      width: 80%;
+      max-width: 400px;
+      height: 100px;
+      margin-top: 10px;
+    }
+
+    button {
+      font-size: 18px;
+      margin-top: 10px;
+      padding: 8px 16px;
+    }
+
     #doneMessage {
       display: none;
-      margin-top: 10px;
+      font-size: 20px;
+      margin-top: 20px;
       color: green;
-      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <h3>Write a sentence starting with "I am happy because..."</h3>
-  <textarea id="input" rows="4" cols="40"></textarea><br>
-  <button onclick="saveAndShowDone()">OK</button>
+  <textarea id="input"></textarea><br>
+  <button onclick="checkInput()">Next</button>
 
-  <div id="doneMessage">✅ Done!</div>
-
-  <div id="navButtons" style="display:none; margin-top: 10px;">
-    <button onclick="location.href='index.html'">🏠 Go to Home</button>
-    <button onclick="location.href='exit.html'">❌ Exit</button>
-  </div>
+  <div id="doneMessage">🎉 Well done!</div>
 
   <script>
-    function saveAndShowDone() {
+    function checkInput() {
       const input = document.getElementById('input').value.trim();
-      const lower = input.toLowerCase();
-
-      if (!lower.startsWith("i am happy because")) {
+      if (!input.toLowerCase().startsWith('i am happy because')) {
         alert("Please start your sentence with 'I am happy because...'");
         return;
       }
@@ -37,7 +59,10 @@
       localStorage.setItem('smileCount', parseInt(count) + 1);
 
       document.getElementById('doneMessage').style.display = 'block';
-      document.getElementById('navButtons').style.display = 'block';
+
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 2000);
     }
   </script>
 </body>
