@@ -1,37 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Success! 🎉</title>
+  <title>Smile Added! 🎉</title>
   <style>
     body {
       margin: 0;
       font-family: sans-serif;
+      background-color: #e7fff3;
       height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      background-color: #fff;
       text-align: center;
     }
-    h2 {
-      font-size: 1.8em;
-      margin-bottom: 10px;
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
     }
-    p {
-      font-size: 1.2em;
-      margin: 5px 0;
-    }
-    button {
+
+    .buttons {
       margin-top: 20px;
-      padding: 12px 25px;
+    }
+
+    .button {
+      padding: 12px 20px;
+      margin: 10px;
       font-size: 1em;
-      border: none;
-      border-radius: 6px;
-      background-color: #007bff;
+      background-color: #4CAF50;
       color: white;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
     }
+
     .exit-button {
       position: absolute;
       top: 10px;
@@ -45,24 +48,11 @@
 <body>
   <a href="exit.html" class="exit-button">&times;</a>
 
-  <h2>🎉 Your smile has been added to weekly smile count!</h2>
-  <p id="message">You're amazing!</p>
+  <h1>🎉 Your smile has been added to the weekly smile count!</h1>
+  <p>Keep smiling and spreading joy 😄</p>
 
-  <button onclick="location.href='index.html'">🏠 Go Home</button>
-
-  <script>
-    const messages = [
-      "You're amazing!",
-      "Thanks for sharing your joy! 😊",
-      "You just made the world brighter!",
-      "You're a reason someone smiles today 😍",
-      "Smiles like yours make magic happen!"
-    ];
-    document.getElementById("message").textContent =
-      messages[Math.floor(Math.random() * messages.length)];
-
-    let count = localStorage.getItem("weeklySmileCount") || 0;
-    localStorage.setItem("weeklySmileCount", parseInt(count) + 1);
-  </script>
+  <div class="buttons">
+    <button class="button" onclick="location.href='index.html'">Go to Home 🏠</button>
+  </div>
 </body>
 </html>
