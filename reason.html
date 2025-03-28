@@ -1,73 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>I am happy because...</title>
+  <title>I Am Happy Because...</title>
   <style>
     body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      background-color: #f9f9f9;
+      font-family: Arial, sans-serif;
+      padding: 20px;
       text-align: center;
-      margin: 0;
     }
-
-    h3 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    textarea {
-      font-size: 18px;
+    input[type="text"] {
       width: 80%;
-      max-width: 400px;
-      height: 100px;
-      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 18px;
+      margin-top: 20px;
     }
-
     button {
       font-size: 18px;
-      padding: 8px 16px;
-      margin-top: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+      padding: 10px 20px;
+      margin: 15px;
     }
-
-    #doneMessage {
-      display: none;
+    p {
       font-size: 20px;
-      margin-top: 20px;
-      color: green;
+    }
+    @media (max-width: 768px) {
+      input[type="text"] { font-size: 20px; }
+      button { font-size: 20px; }
+      p { font-size: 22px; }
     }
   </style>
 </head>
 <body>
-  <h3>Write a sentence starting with "I am happy because..."</h3>
-  <textarea id="input"></textarea><br>
-  <button onclick="checkInput()">Next</button>
-  <div id="doneMessage">🎉 Well done!</div>
+  <h2>Write one sentence that starts with:</h2>
+  <p><strong>"I am happy because..."</strong></p>
+  <input type="text" id="happyInput" placeholder="I am happy because..." />
+  <div>
+    <button onclick="submitReason()">OK</button>
+    <button onclick="location.href='index.html'" style="position:absolute; top:10px; right:10px;">&#10006;</button>
+  </div>
 
   <script>
-    function checkInput() {
-      const input = document.getElementById('input').value.trim();
-      if (!input.toLowerCase().startsWith('i am happy because')) {
-        alert("Please start your sentence with 'I am happy because...'");
-        return;
+    function submitReason() {
+      const input = document.getElementById('happyInput').value.trim();
+      if (input.toLowerCase().startsWith("i am happy because")) {
+        // Redirect to done screen
+        window.location.href = 'done.html';
+      } else {
+        alert("Please start your sentence with: I am happy because...");
       }
-
-      let count = localStorage.getItem('smileCount') || 0;
-      localStorage.setItem('smileCount', parseInt(count) + 1);
-      document.getElementById('doneMessage').style.display = 'block';
-
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 2000);
     }
   </script>
 </body>
