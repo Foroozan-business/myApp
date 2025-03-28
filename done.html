@@ -1,40 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smile Counted!</title>
+  <title>Smile Added!</title>
   <style>
     body {
       font-family: sans-serif;
+      background-color: #f5fff7;
       margin: 0;
-      background-color: #f7fff3;
-      height: 100vh;
+      padding: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 20px;
+      height: 100vh;
     }
 
-    h2 {
-      font-size: 1.5em;
+    h1 {
+      font-size: 2em;
+      margin: 20px;
+    }
+
+    p {
+      font-size: 1.3em;
       margin-bottom: 20px;
     }
 
-    .emoji {
+    .celebration {
       font-size: 3em;
-      margin-bottom: 15px;
-    }
-
-    button {
-      margin: 10px;
-      padding: 12px 25px;
-      font-size: 1em;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      background-color: #4CAF50;
-      color: white;
+      margin-bottom: 10px;
     }
 
     .exit-button {
@@ -45,13 +39,25 @@
       color: red;
       text-decoration: none;
     }
+
+    .home-button {
+      padding: 15px 25px;
+      font-size: 1.1em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <a href="exit.html" class="exit-button">&times;</a>
 
-  <div class="emoji">🎉😄✨</div>
-  <h2>Your smile has been added to the weekly smile count!</h2>
-  <button onclick="location.href='index.html'">Back to Home</button>
+  <div class="celebration">🎉🎉🎉</div>
+  <h1>Your smile has been added to the weekly smile count! 😄</h1>
+  <p>You're spreading happiness one smile at a time.</p>
+
+  <button class="home-button" onclick="location.href='index.html'">Go to Home Page 🏠</button>
 </body>
 </html>
