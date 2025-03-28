@@ -17,7 +17,6 @@
     "That’s the spirit! Keep shining!"
   ];
 
-  // Add canvas to body (invisible)
   canvas.style.display = "none";
   document.body.appendChild(canvas);
 
@@ -30,10 +29,10 @@
       console.error("Camera error:", err);
     });
 
-  function showThankYouFlow(compliment) {
+  function showSuccessFlow(compliment) {
     countdown.textContent = "";
     const message = document.getElementById('message');
-    message.innerHTML = `🎉 ${compliment}`;
+    message.innerHTML = `🎉 ${compliment}<br><strong>Well done!</strong>`;
 
     const thankYouBtn = document.createElement("button");
     thankYouBtn.textContent = "Thank You";
@@ -47,7 +46,7 @@
     thankYouBtn.style.cursor = "pointer";
 
     thankYouBtn.onclick = () => {
-      message.textContent = "Your smile has been added to your Smile Booth. 😊";
+      message.innerHTML = "✅ Your smile has been added to your Smile Booth. 😊";
       thankYouBtn.remove();
     };
 
@@ -78,7 +77,7 @@
           localStorage.setItem("lastSmileMessage", compliment);
           let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
           localStorage.setItem("weeklySmileCount", count + 1);
-          showThankYouFlow(compliment);
+          showSuccessFlow(compliment);
         }
       } else {
         countdown.textContent = "Smile lost! Restarting...";
