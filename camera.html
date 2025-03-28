@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smile Detection Camera</title>
+  <title>Smile Camera</title>
   <style>
     body {
       margin: 0;
       font-family: sans-serif;
-      background: #fdfdfd;
+      background: #f8faff;
       height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       text-align: center;
     }
 
     h2 {
       font-size: 2em;
-      margin-bottom: 5px;
+      margin-bottom: 10px;
     }
 
     video {
@@ -25,14 +25,17 @@
       height: 240px;
       background: #000;
       border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     }
 
     #message {
-      font-size: 1.2em;
-      margin: 15px 0;
+      margin-top: 15px;
+      font-size: 1.3em;
     }
 
-    .hidden { display: none; }
+    canvas {
+      display: none;
+    }
 
     .exit-button {
       position: absolute;
@@ -59,20 +62,15 @@
 
   <h2>Smile in <span id="countdown">3</span>...</h2>
   <video id="video" autoplay muted></video>
-  <p id="message">Get ready to show that lovely smile! 😄</p>
-
-  <canvas id="canvas" width="320" height="240" class="hidden"></canvas>
+  <canvas id="canvas" width="320" height="240"></canvas>
+  <p id="message">Get ready for your smile check 😊</p>
 
   <script>
-    const countdown = document.getElementById('countdown');
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const message = document.getElementById('message');
-
-    let count = 3;
-    let smileTime = 0;
-    let detectionInterval;
+    const countdownEl = document.getElementById("countdown");
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const message = document.getElementById("message");
 
     const compliments = [
       "You're glowing today! ✨",
@@ -82,59 +80,62 @@
       "Smiling suits you so well 😊"
     ];
 
+    let smileStreak = 0;
+
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
       video.srcObject = stream;
     });
 
-    function startSmileDetection() {
-      detectionInterval = setInterval(() => {
+    function detectSmile() {
+      const interval = setInterval(() => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const image = canvas.toDataURL('image/jpeg');
+        const base64Image = canvas.toDataURL('image/jpeg');
 
         fetch('https://myapp-xn74.onrender.com/detect-smile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image })
+          body: JSON.stringify({ image: base64Image })
         })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success && data.message.includes("beautiful")) {
-            smileTime++;
-            message.textContent = `😄 Smiling... ${smileTime}s`;
+          .then(res => res.json())
+          .then(data => {
+            console.log(data);
+            if (data.success && data.message.includes("beautiful")) {
+              smileStreak++;
+              message.textContent = `Smiling... ${smileStreak}s`;
 
-            if (smileTime >= 10) {
-              clearInterval(detectionInterval);
-              const compliment = compliments[Math.floor(Math.random() * compliments.length)];
-              message.innerHTML = `🎉 ${compliment}`;
-
-              setTimeout(() => {
-                let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-                localStorage.setItem("weeklySmileCount", count + 1);
-                window.location.href = "done.html";
-              }, 3000);
+              if (smileStreak >= 10) {
+                clearInterval(interval);
+                const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+                message.innerHTML = `🎉 ${compliment}`;
+                setTimeout(() => {
+                  let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+                  localStorage.setItem("weeklySmileCount", count + 1);
+                  window.location.href = "done.html";
+                }, 3000);
+              }
+            } else {
+              smileStreak = 0;
+              message.textContent = "Try for a real smile 😐";
             }
-          } else {
-            smileTime = 0;
-            message.textContent = "Try for a real smile 😐";
-          }
-        })
-        .catch(err => {
-          console.error("Smile detection error:", err);
-          message.textContent = "Error processing smile.";
-          clearInterval(detectionInterval);
-        });
+          })
+          .catch(err => {
+            console.error("Smile check error:", err);
+            message.textContent = "Error checking your smile.";
+            clearInterval(interval);
+          });
       }, 1000);
     }
 
-    // 3...2...1 countdown
-    const countdownTimer = setInterval(() => {
+    // Start countdown then detection
+    let count = 3;
+    const countdownInterval = setInterval(() => {
       count--;
       if (count === 0) {
-        clearInterval(countdownTimer);
-        document.querySelector("h2").textContent = "Smile now! 😁";
-        startSmileDetection();
+        document.querySelector("h2").textContent = "Smile now! 😄";
+        clearInterval(countdownInterval);
+        detectSmile();
       } else {
-        countdown.textContent = count;
+        countdownEl.textContent = count;
       }
     }, 1000);
   </script>
