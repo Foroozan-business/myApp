@@ -55,7 +55,6 @@
   <h2>Smile in <span id="countdown">3</span>...</h2>
   <video id="video" autoplay muted></video>
   <p id="message">Get ready to show that lovely smile! 😄</p>
-
   <canvas id="canvas" width="320" height="240" class="hidden"></canvas>
 
   <script>
@@ -64,12 +63,6 @@
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const message = document.getElementById('message');
-    let count = 3;
-    let smiling = false;
-
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-      video.srcObject = stream;
-    });
 
     const compliments = [
       "You're glowing today! ✨",
@@ -79,11 +72,21 @@
       "That’s the spirit! Keep shining!"
     ];
 
+    let count = 3;
+    let smileDuration = 0;
+    let detecting = false;
+
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      video.srcObject = stream;
+    });
+
     function detectSmile() {
+      if (!detecting) return;
+
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const image = canvas.toDataURL('image/jpeg');
 
-      fetch('https://myapp-xn74.onrender.com/',{
+      fetch('https://myapp-xn74.onrender.com/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image })
@@ -91,12 +94,21 @@
       .then(res => res.json())
       .then(data => {
         if (data.success && data.message.includes("beautiful")) {
-          message.innerHTML = `🎉 ${compliments[Math.floor(Math.random() * compliments.length)]}`;
-          let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-          localStorage.setItem("weeklySmileCount", count + 1);
-          setTimeout(() => window.location.href = "done.html", 3000);
+          smileDuration++;
+          message.textContent = `Smiling... ${smileDuration}/10`;
+
+          if (smileDuration >= 10) {
+            const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+            localStorage.setItem("lastSmileMessage", compliment);
+            let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+            localStorage.setItem("weeklySmileCount", count + 1);
+            message.innerHTML = `🎉 ${compliment}`;
+            detecting = false;
+            setTimeout(() => window.location.href = "done.html", 3000);
+          }
         } else {
-          message.textContent = "Try for a real smile 😐";
+          message.textContent = "Smile lost! Restarting...";
+          smileDuration = 0;
         }
       })
       .catch(err => {
@@ -110,7 +122,8 @@
       if (count === 0) {
         document.querySelector("h2").textContent = "Smile now! 😁";
         clearInterval(countdownInterval);
-        detectSmile();
+        detecting = true;
+        setInterval(detectSmile, 1000); // Start checking every second
       } else {
         countdown.textContent = count;
       }
