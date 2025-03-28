@@ -7,12 +7,18 @@
       margin: 0;
       background-color: #fff7e6;
       font-family: Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      height: 100%;
       text-align: center;
+      padding: 20px;
     }
 
     h2 {
@@ -66,10 +72,12 @@
 <body>
   <a href="exit.html" class="exit">❌ Exit</a>
 
-  <h2>Your smile has been added to the weekly smile count!</h2>
-  <div class="emoji">🎉🎉🎉</div>
+  <div class="container">
+    <h2>Your smile has been added to the weekly smile count!</h2>
+    <div class="emoji">🎉🎉🎉</div>
+    <button class="btn" onclick="location.href='index.html'">🏠 Go Home</button>
+  </div>
 
-  <button class="btn" onclick="location.href='index.html'">🏠 Go Home</button>
   <a href="index.html" class="back">🔙 Back</a>
 </body>
 </html>
