@@ -5,7 +5,9 @@
   canvas.width = 320;
   canvas.height = 240;
   const ctx = canvas.getContext('2d');
+
   let smileDuration = 0;
+  let detecting = true;
 
   const compliments = [
     "You're glowing today! ✨",
@@ -14,6 +16,10 @@
     "Smiling suits you so well 😊",
     "That’s the spirit! Keep shining!"
   ];
+
+  // Add canvas to body so it's ready (can be hidden via CSS)
+  canvas.style.display = "none";
+  document.body.appendChild(canvas);
 
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
@@ -25,10 +31,12 @@
     });
 
   function detectSmile() {
+    if (!detecting) return;
+
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const image = canvas.toDataURL('image/jpeg');
 
-    fetch('https://myapp-xn74.onrender.com/', { // ✅ using root instead of /detect-smile
+    fetch('https://myapp-xn74.onrender.com/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image })
@@ -40,6 +48,7 @@
         countdown.textContent = `Smiling... ${smileDuration}/10`;
 
         if (smileDuration >= 10) {
+          detecting = false; // stop further checks
           const compliment = compliments[Math.floor(Math.random() * compliments.length)];
           localStorage.setItem("lastSmileMessage", compliment);
           let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
