@@ -1,43 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smile Booth - Intro</title>
+  <title>Ready to Smile? 😊</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
-      font-size: 1.4rem;
       padding: 2rem;
     }
+    h2 {
+      font-size: 1.6rem;
+      margin-top: 3rem;
+    }
     .btn {
-      padding: 12px 20px;
-      margin: 20px;
+      display: block;
+      margin: 1.5rem auto;
+      padding: 12px 25px;
       font-size: 1.2rem;
       border: none;
       border-radius: 10px;
       cursor: pointer;
+      width: 80%;
+      max-width: 300px;
     }
-    .yes { background-color: #28a745; color: white; }
-    .no { background-color: #dc3545; color: white; }
+    .yes {
+      background-color: #007bff;
+      color: white;
+    }
+    .no {
+      background-color: #ffc107;
+      color: black;
+    }
     .exit {
       position: absolute;
       top: 10px;
-      left: 20px;
+      left: 15px;
       font-size: 1.5rem;
       text-decoration: none;
-      color: #444;
+      color: #dc3545;
+    }
+    .back {
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: #007bff;
     }
   </style>
 </head>
 <body>
 
-  <!-- ❌ Exit -->
-  <a class="exit" href="exit.html">✖</a>
+<a href="exit.html" class="exit">✖</a>
 
-  <h2>Are you ready to capture your beautiful smile?</h2>
+<h2>Are you ready to capture your beautiful smile? 😍</h2>
 
-  <button class="btn yes" onclick="location.href='mirror.html'">😄 Yes, let's go!</button>
-  <button class="btn no" onclick="location.href='draw.html'">😔 Not really</button>
+<button class="btn yes" onclick="location.href='mirror.html'">😄 Yes, let’s go!</button>
+<button class="btn no" onclick="location.href='draw.html'">😢 No</button>
+
+<a href="index.html" class="back">← Back</a>
 
 </body>
 </html>
