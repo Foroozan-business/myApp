@@ -1,142 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Draw Your Smile 🎨</title>
+  <title>Draw a Smile 🎨</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      text-align: center;
+      margin: 0;
+      font-family: sans-serif;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      margin: 0;
+      text-align: center;
     }
-
     canvas {
-      border: 2px solid #555;
-      margin-top: 15px;
-      background: #fff;
+      border: 2px solid #333;
+      background-color: #fff8dc;
     }
-
-    .tools {
-      margin-top: 15px;
+    textarea {
+      margin-top: 20px;
+      padding: 10px;
+      width: 80%;
+      font-size: 16px;
     }
-
-    #message {
-      margin-top: 10px;
-      color: red;
-      font-weight: bold;
-    }
-
-    .nav-buttons {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-    }
-
-    .nav-buttons a {
-      text-decoration: none;
-      font-size: 20px;
-      color: #444;
-    }
-
-    .exit-button {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 20px;
-      color: red;
-      text-decoration: none;
-    }
-
     button {
       margin-top: 20px;
-      padding: 12px 20px;
-      font-size: 18px;
-      border-radius: 8px;
-      border: none;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
+      padding: 10px 20px;
     }
-
-    button:hover {
-      background-color: #45a049;
+    .exit-button {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 2em;
+      color: red;
+      text-decoration: none;
     }
-
-    h2 {
-      font-size: 26px;
+    .back-button {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      font-size: 2em;
+      color: black;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
+  <a href="exit.html" class="exit-button">&times;</a>
+  <a href="mirror.html" class="back-button">&larr;</a>
 
-  <a class="nav-buttons" href="mirror.html">&larr;</a>
-  <a class="exit-button" href="exit.html">&times;</a>
+  <h2>Draw a smile and share your joy 😄</h2>
+  <canvas id="canvas" width="300" height="200"></canvas><br>
 
-  <h2>No worries, draw instead 😊</h2>
-
-  <canvas id="drawing" width="300" height="300"></canvas>
-
-  <div class="tools">
-    <button onclick="clearCanvas()">Clear</button>
-    <button onclick="validateSmile()">Next</button>
-  </div>
-
-  <p id="message"></p>
+  <textarea id="reason" placeholder="Type your sentence starting with 'I am happy because...'"></textarea><br>
+  <button onclick="submit()">OK</button>
 
   <script>
-    const canvas = document.getElementById('drawing');
+    const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     let painting = false;
 
-    canvas.addEventListener('mousedown', startDraw);
-    canvas.addEventListener('mouseup', stopDraw);
-    canvas.addEventListener('mousemove', draw);
-
-    function startDraw(e) {
-      painting = true;
-      draw(e);
-    }
-
-    function stopDraw() {
-      painting = false;
-      ctx.beginPath();
-    }
+    canvas.addEventListener("mousedown", () => painting = true);
+    canvas.addEventListener("mouseup", () => painting = false);
+    canvas.addEventListener("mousemove", draw);
 
     function draw(e) {
       if (!painting) return;
-
-      const rect = canvas.getBoundingClientRect();
       ctx.lineWidth = 4;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#000';
-
-      ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "#000";
+      ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
       ctx.beginPath();
-      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.moveTo(e.offsetX, e.offsetY);
     }
 
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      document.getElementById('message').textContent = '';
-    }
-
-    function validateSmile() {
-      const imageData = ctx.getImageData(0, canvas.height / 2, canvas.width, canvas.height / 2);
-      const upPixels = ctx.getImageData(0, 0, canvas.width, canvas.height / 2);
-
-      const bottomPixels = imageData.data.reduce((sum, val, i) => i % 4 === 3 && val > 0 ? sum + 1 : sum, 0);
-      const topPixels = upPixels.data.reduce((sum, val, i) => i % 4 === 3 && val > 0 ? sum + 1 : sum, 0);
-
-      if (bottomPixels > topPixels * 1.3) {
-        window.location.href = 'reason.html';
-      } else {
-        document.getElementById('message').textContent = 'Draw a real smile! 🙂';
+    function submit() {
+      const reason = document.getElementById('reason').value.trim();
+      if (!reason.toLowerCase().startsWith("i am happy because")) {
+        alert("Please start with 'I am happy because...'");
+        return;
       }
+
+      const imgData = canvas.toDataURL();
+      const isSmile = detectSmileShape(); // Fake check
+
+      if (!isSmile) {
+        alert("Please draw a smile! 😊");
+        return;
+      }
+
+      window.location.href = "done.html";
+    }
+
+    function detectSmileShape() {
+      // Simulate a check — in real use, do image detection
+      return Math.random() > 0.2; // 80% chance accepted
     }
   </script>
 </body>
