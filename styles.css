@@ -2,10 +2,16 @@
 body {
   background: linear-gradient(to bottom right, #e6fff2, #ccffe6);
   font-family: 'Segoe UI', sans-serif;
-  color: #333;
+  color: #000; /* ✅ Black text */
   margin: 0;
   padding: 0;
   text-align: center;
+  display: flex;              /* ✅ Centering */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 /* Video styling */
@@ -64,12 +70,14 @@ input, textarea {
 .nav a, .exit-button, .back-button {
   font-size: 1.2em;
   text-decoration: none;
-  color: #333;
+  color: #000;
   margin-right: 10px;
   position: relative;
   top: 10px;
 }
 
+/* Headings and paragraphs */
 h1, h2, p {
   margin: 15px;
+  color: #000;
 }
