@@ -1,53 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Draw a Smile 😊</title>
+  <title>Draw a Smile</title>
   <style>
     body {
-      margin: 0;
       font-family: sans-serif;
-      background: #fefefe;
-      height: 100vh;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 0;
+      text-align: center;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      text-align: center;
+      height: 100vh;
     }
 
-    h2 {
-      margin-top: 0;
-      font-size: 1.6em;
+    canvas {
+      border: 2px dashed #999;
+      margin-top: 10px;
+      background: #fff;
     }
 
-    #canvas {
-      border: 2px dashed #555;
-      margin: 15px 0;
-      background-color: #fff;
-      touch-action: none;
+    #controls {
+      margin: 10px;
     }
 
-    .tools {
-      margin-bottom: 10px;
-    }
-
-    textarea {
-      width: 80%;
-      height: 80px;
-      font-size: 1em;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-
-    .button {
+    button {
+      margin: 10px;
       padding: 10px 20px;
-      margin: 5px;
       font-size: 1em;
       border: none;
       border-radius: 6px;
-      background-color: #4CAF50;
-      color: white;
       cursor: pointer;
+    }
+
+    #error {
+      color: red;
+      font-weight: bold;
+      margin-top: 10px;
     }
 
     .exit-button {
@@ -67,83 +58,70 @@
       color: gray;
       text-decoration: none;
     }
-
-    #error {
-      color: red;
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
   </style>
 </head>
 <body>
   <a href="exit.html" class="exit-button">&times;</a>
-  <a href="smile-options.html" class="back-button">&larr;</a>
+  <a href="intro.html" class="back-button">&larr;</a>
 
-  <h2>No worries, draw a smile instead! 😊</h2>
-  <canvas id="canvas" width="280" height="200"></canvas>
+  <h2>No worries, draw a smile instead 😊</h2>
 
-  <div class="tools">
-    <button class="button" onclick="clearCanvas()">Clear</button>
+  <canvas id="canvas" width="300" height="200"></canvas>
+  <div id="controls">
+    <button onclick="toggleEraser()">🧽 Toggle Eraser</button>
+    <button onclick="clearCanvas()">🗑 Clear</button>
+    <button onclick="checkDrawing()">Next ➡️</button>
   </div>
-
-  <textarea id="happyText" placeholder="I am happy because..."></textarea>
 
   <div id="error"></div>
 
-  <button class="button" onclick="validateSmile()">Next ➡️</button>
-
   <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
     let drawing = false;
+    let erasing = false;
     let points = [];
 
-    canvas.addEventListener('pointerdown', (e) => {
+    canvas.addEventListener("mousedown", (e) => {
       drawing = true;
-      points = [];
       ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
     });
 
-    canvas.addEventListener('pointermove', (e) => {
+    canvas.addEventListener("mousemove", (e) => {
       if (!drawing) return;
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      points.push({ x, y });
-      ctx.lineTo(x, y);
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.strokeStyle = erasing ? "#fff" : "#000";
+      ctx.lineWidth = 4;
+      ctx.lineCap = "round";
       ctx.stroke();
+      points.push({ x: e.offsetX, y: e.offsetY });
     });
 
-    canvas.addEventListener('pointerup', () => {
-      drawing = false;
-    });
+    canvas.addEventListener("mouseup", () => drawing = false);
+    canvas.addEventListener("mouseout", () => drawing = false);
 
     function clearCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      points = [];
+      document.getElementById("error").textContent = "";
     }
 
-    function validateSmile() {
-      const text = document.getElementById('happyText').value.trim().toLowerCase();
-      const error = document.getElementById('error');
+    function toggleEraser() {
+      erasing = !erasing;
+    }
 
-      if (!text.startsWith("i am happy because")) {
-        error.textContent = "Please start your sentence with: 'I am happy because...'";
+    function checkDrawing() {
+      const smileLike = points.some(p => p.y > canvas.height / 2 && p.x > 50 && p.x < 250);
+      if (!smileLike) {
+        document.getElementById("error").textContent = "⚠️ Please draw a smile!";
         return;
       }
 
-      // Basic smile shape detection (must arc upward)
-      const smilePoints = points.filter(p => p.y > canvas.height / 2);
-      const avgY = smilePoints.reduce((sum, p) => sum + p.y, 0) / (smilePoints.length || 1);
-      const isSmile = smilePoints.length > 20 && avgY > canvas.height * 0.6;
-
-      if (!isSmile) {
-        error.textContent = "Please draw an actual smile shape 🙂";
-        return;
-      }
-
-      // Success
-      localStorage.setItem("weeklySmileCount", parseInt(localStorage.getItem("weeklySmileCount") || 0) + 1);
-      window.location.href = "done.html";
+      // Save "smile added" and go to next screen
+      let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+      localStorage.setItem("weeklySmileCount", count + 1);
+      window.location.href = "reason.html";
     }
   </script>
 </body>
