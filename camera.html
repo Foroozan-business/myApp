@@ -5,20 +5,67 @@
   <link rel="stylesheet" href="styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    body {
+      background: linear-gradient(to bottom right, #f0fff0, #e0f7fa);
+      font-family: 'Segoe UI', sans-serif;
+      color: #000;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    video {
+      border: 5px solid #4CAF50;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 320px;
+      height: 240px;
+    }
+
+    h2 {
+      font-size: 1.6em;
+      margin-bottom: 10px;
+    }
+
+    #message {
+      font-size: 1.1em;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #000;
+    }
+
     .nav {
       position: absolute;
       top: 10px;
       left: 15px;
     }
+
     .nav a {
       margin-right: 15px;
       text-decoration: none;
       font-size: 1.1em;
       color: #333;
     }
+
     #thankYouBox {
       margin-top: 20px;
       display: none;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -59,12 +106,14 @@
       "That’s the spirit! Keep shining!"
     ];
 
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-      video.srcObject = stream;
-      setInterval(checkSmile, 1000);
-    }).catch(() => {
-      message.textContent = "Camera access failed 😢";
-    });
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+      .then(stream => {
+        video.srcObject = stream;
+        setInterval(checkSmile, 1000);
+      })
+      .catch(() => {
+        message.textContent = "Camera access failed 😢";
+      });
 
     function checkSmile() {
       if (done) return;
@@ -83,7 +132,6 @@
           missedFrames = 0;
           if (smileCount < 10) smileCount++;
           progressDisplay.textContent = smileCount;
-          message.textContent = `Keep smiling! ${10 - smileCount} to go...`;
 
           if (smileCount === 10) {
             showSuccess();
