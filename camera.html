@@ -25,12 +25,12 @@
       height: 240px;
     }
     h2 {
-      font-size: 1.8em;
+      font-size: 1.6em;
       margin-bottom: 10px;
     }
     #message {
-      font-size: 1.2em;
-      margin: 20px 0;
+      font-size: 1.1em;
+      margin: 15px 0;
       font-weight: bold;
       color: #444;
     }
@@ -46,7 +46,7 @@
       color: #333;
     }
     button {
-      margin-top: 10px;
+      margin-top: 12px;
       padding: 10px 20px;
       font-size: 1em;
       border: none;
@@ -54,6 +54,10 @@
       background-color: #4CAF50;
       color: white;
       cursor: pointer;
+    }
+    #thankYouBox {
+      margin-top: 20px;
+      display: none;
     }
   </style>
 </head>
@@ -69,15 +73,20 @@
   <p id="message">We’re watching for your beautiful smile 😁</p>
   <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 
+  <div id="thankYouBox">
+    <p>✅ Well done! Click the button below to add your smile:</p>
+    <button onclick="handleThankYou()">Thank You</button>
+  </div>
+
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const message = document.getElementById('message');
     const countdownDisplay = document.getElementById('countdown');
+    const thankYouBox = document.getElementById('thankYouBox');
 
     let smileSeconds = 10;
-    let smileHolding = false;
     let interval = null;
     let done = false;
 
@@ -89,7 +98,6 @@
       "That’s the spirit! Keep shining!"
     ];
 
-    // Start camera
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
       video.srcObject = stream;
       interval = setInterval(checkSmile, 1000);
@@ -111,7 +119,6 @@
       .then(res => res.json())
       .then(data => {
         if (data.success && data.message.includes("beautiful")) {
-          smileHolding = true;
           smileSeconds--;
           countdownDisplay.textContent = smileSeconds;
           message.textContent = `Keep smiling! Just ${smileSeconds} second${smileSeconds === 1 ? '' : 's'} left...`;
@@ -121,10 +128,9 @@
             clearInterval(interval);
           }
         } else {
-          smileHolding = false;
           smileSeconds = 10;
           countdownDisplay.textContent = smileSeconds;
-          message.textContent = "Oops! Smile lost 😐 Let's start again...";
+          message.textContent = "Oops! Smile lost 😐 Let’s try again...";
         }
       })
       .catch(() => {
@@ -135,18 +141,19 @@
     function showSuccess() {
       done = true;
       const compliment = compliments[Math.floor(Math.random() * compliments.length)];
-      message.innerHTML = `🎉 ${compliment}<br><br><strong>Press below to continue:</strong>`;
+      message.innerHTML = `🎉 ${compliment}`;
+      thankYouBox.style.display = "block";
+    }
 
-      const btn = document.createElement("button");
-      btn.textContent = "Thank You";
-      btn.onclick = () => {
-        let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-        localStorage.setItem("weeklySmileCount", count + 1);
-        message.innerHTML = "✅ Your smile has been added to the weekly smile count. 😊";
-        btn.remove();
-      };
-      message.appendChild(document.createElement("br"));
-      message.appendChild(btn);
+    function handleThankYou() {
+      let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+      localStorage.setItem("weeklySmileCount", count + 1);
+      document.body.innerHTML = `
+        <div style="text-align: center; padding: 30px;">
+          <h1 style="color: green;">✅ Your smile has been added to the weekly smile count. 😊</h1>
+          <p><a href="index.html" style="text-decoration: underline;">Return to Home</a></p>
+        </div>
+      `;
     }
   </script>
 </body>
