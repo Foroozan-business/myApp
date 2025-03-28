@@ -1,21 +1,11 @@
-const express = require('express');
-const axios = require('axios');
-const cors = require('cors');
-
-const app = express();
-const port = process.env.PORT || 3000;
-
-app.use(express.json({ limit: '10mb' }));
-app.use(cors());
-
-// Root test route
+// GET still works for root URL
 app.get('/', (req, res) => {
   res.send('Smile detection API is working!');
 });
 
-// POST endpoint for smile detection
-app.post('/detect-smile', async (req, res) => {
-  console.log("📸 /detect-smile was called!");
+// ✅ New POST on root URL for smile detection
+app.post('/', async (req, res) => {
+  console.log("📸 POST / was called!");
 
   try {
     const base64Data = req.body.image;
@@ -24,19 +14,17 @@ app.post('/detect-smile', async (req, res) => {
       return res.status(400).json({ success: false, message: 'No valid base64 image provided' });
     }
 
-    const imageBase64 = base64Data.split(',')[1]; // remove data:image/jpeg;base64,...
+    const imageBase64 = base64Data.split(',')[1];
 
     const response = await axios({
       method: 'post',
       url: 'https://api-us.faceplusplus.com/facepp/v3/detect',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       data: new URLSearchParams({
         api_key: process.env.API_KEY || 'your-api-key',
         api_secret: process.env.API_SECRET || 'your-api-secret',
         image_base64: imageBase64,
-        return_attributes: 'smiling' // ✅ CORRECTED HERE
+        return_attributes: 'smiling'
       }).toString()
     });
 
@@ -59,8 +47,4 @@ app.post('/detect-smile', async (req, res) => {
       debug: error.response?.data || error.message
     });
   }
-});
-
-app.listen(port, () => {
-  console.log(`🚀 Server is running on port ${port}`);
 });
