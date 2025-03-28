@@ -2,19 +2,9 @@
 <html>
 <head>
   <title>See You Soon!</title>
+  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: sans-serif;
-      background-color: #fff6f6;
-      margin: 0;
-      padding: 0;
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
     h1 {
       font-size: 2em;
       color: #ff4d4d;
@@ -25,12 +15,21 @@
       margin-top: 10px;
       color: #555;
     }
+
+    .wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
   </style>
 </head>
 <body>
-  <div>
+  <div class="wrapper">
     <h1>👋 Can't wait to see your next smile!</h1>
     <p>Come back soon to spread more positivity 😊</p>
+    <p><a href="index.html" style="text-decoration: underline;">Return to Home</a></p>
   </div>
 </body>
 </html>
