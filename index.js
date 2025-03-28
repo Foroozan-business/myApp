@@ -36,12 +36,11 @@ app.post('/detect-smile', async (req, res) => {
         api_key: process.env.API_KEY || 'your-api-key',
         api_secret: process.env.API_SECRET || 'your-api-secret',
         image_base64: imageBase64,
-        return_attributes: 'smile'  // Ensure smile is properly requested here
+        return_attributes: 'smiling' // ✅ CORRECTED HERE
       }).toString()
     });
 
     const smileValue = response.data.faces?.[0]?.attributes?.smile?.value;
-    console.log("Smile value:", smileValue); // Log smile value to help debug
 
     if (smileValue !== undefined) {
       const message = smileValue > 50
