@@ -49,6 +49,14 @@
       border-radius: 8px;
       cursor: pointer;
     }
+
+    #compliment {
+      font-size: 1.2em;
+      font-style: italic;
+      color: #333;
+      margin-top: -10px;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
@@ -57,7 +65,15 @@
   <div class="celebration">🎉🎉🎉</div>
   <h1>Your smile has been added to the weekly smile count! 😄</h1>
   <p>You're spreading happiness one smile at a time.</p>
+  <p id="compliment"></p>
 
   <button class="home-button" onclick="location.href='index.html'">Go to Home Page 🏠</button>
+
+  <script>
+    const compliment = localStorage.getItem("lastSmileMessage");
+    if (compliment) {
+      document.getElementById("compliment").textContent = compliment;
+    }
+  </script>
 </body>
 </html>
