@@ -83,7 +83,7 @@
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       const image = canvas.toDataURL('image/jpeg');
 
-      fetch('https://myapp-xn74.onrender.com/detect-smile', {
+      fetch('https://myapp-xn74.onrender.com/',{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ image })
