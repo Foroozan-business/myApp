@@ -68,7 +68,7 @@
     <a href="index.html">Home</a>
   </div>
 
-  <h2>Smile and keep it! Countdown: <span id="countdown">10</span></h2>
+  <h2>Smile Progress: <span id="progress">0</span> / 10</h2>
   <video id="video" autoplay muted></video>
   <p id="message">We’re watching for your beautiful smile 😁</p>
   <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
@@ -83,12 +83,11 @@
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const message = document.getElementById('message');
-    const countdownDisplay = document.getElementById('countdown');
+    const progressDisplay = document.getElementById('progress');
     const thankYouBox = document.getElementById('thankYouBox');
 
-    let smileSeconds = 10;
+    let smileCount = 0;
     let missedFrames = 0;
-    let interval = null;
     let done = false;
 
     const compliments = [
@@ -101,7 +100,7 @@
 
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
       video.srcObject = stream;
-      interval = setInterval(checkSmile, 1000);
+      setInterval(checkSmile, 1000);
     }).catch(() => {
       message.textContent = "Camera access failed 😢";
     });
@@ -121,19 +120,18 @@
       .then(data => {
         if (data.success && data.message.includes("beautiful")) {
           missedFrames = 0;
-          smileSeconds--;
-          countdownDisplay.textContent = smileSeconds;
-          message.textContent = `Keep smiling! Just ${smileSeconds} second${smileSeconds === 1 ? '' : 's'} left...`;
+          if (smileCount < 10) smileCount++;
+          progressDisplay.textContent = smileCount;
+          message.textContent = `Keep smiling! ${10 - smileCount} to go...`;
 
-          if (smileSeconds <= 0) {
+          if (smileCount === 10) {
             showSuccess();
-            clearInterval(interval);
           }
         } else {
           missedFrames++;
           if (missedFrames >= 3) {
-            smileSeconds = 10;
-            countdownDisplay.textContent = smileSeconds;
+            smileCount = 0;
+            progressDisplay.textContent = smileCount;
             message.textContent = "Smile lost 😐 Let's try again!";
             missedFrames = 0;
           }
