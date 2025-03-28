@@ -4,50 +4,71 @@
   <title>I Am Happy Because...</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
+      font-family: sans-serif;
       text-align: center;
+      padding: 1rem;
     }
-    input[type="text"] {
-      width: 80%;
+    input {
+      width: 90%;
       padding: 10px;
-      font-size: 18px;
-      margin-top: 20px;
+      font-size: 1.1rem;
+      margin: 1rem 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
     button {
-      font-size: 18px;
       padding: 10px 20px;
-      margin: 15px;
+      font-size: 1.1rem;
+      border: none;
+      background-color: #28a745;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
     }
-    p {
-      font-size: 20px;
+    .exit {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      font-size: 1.5rem;
+      text-decoration: none;
+      color: #dc3545;
     }
-    @media (max-width: 768px) {
-      input[type="text"] { font-size: 20px; }
-      button { font-size: 20px; }
-      p { font-size: 22px; }
+    .back {
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: #007bff;
     }
   </style>
 </head>
 <body>
-  <h2>Write one sentence that starts with:</h2>
-  <p><strong>"I am happy because..."</strong></p>
-  <input type="text" id="happyInput" placeholder="I am happy because..." />
-  <div>
-    <button onclick="submitReason()">OK</button>
-    <button onclick="location.href='index.html'" style="position:absolute; top:10px; right:10px;">&#10006;</button>
-  </div>
 
-  <script>
-    function submitReason() {
-      const input = document.getElementById('happyInput').value.trim();
-      if (input.toLowerCase().startsWith("i am happy because")) {
-        // Redirect to done screen
-        window.location.href = 'done.html';
-      } else {
-        alert("Please start your sentence with: I am happy because...");
-      }
+<a href="exit.html" class="exit">✖</a>
+
+<h2>Type your reason 😊</h2>
+<p>Please complete this sentence:</p>
+
+<input type="text" id="happyInput" placeholder="I am happy because...">
+<br>
+<button onclick="submitReason()">Submit</button>
+
+<a href="draw.html" class="back">← Back</a>
+
+<script>
+  function submitReason() {
+    const input = document.getElementById('happyInput').value.trim();
+    if (!input.toLowerCase().startsWith("i am happy because")) {
+      alert("Your sentence must start with 'I am happy because...'");
+      return;
     }
-  </script>
+    alert("Well done!");
+    setTimeout(() => {
+      location.href = "done.html";
+    }, 2000);
+  }
+</script>
+
 </body>
 </html>
