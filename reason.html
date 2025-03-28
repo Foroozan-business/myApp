@@ -43,28 +43,42 @@
       font-weight: bold;
       margin-top: 10px;
     }
+    #thankYouBtn {
+      display: none;
+    }
   </style>
 </head>
 <body>
 
   <h2>Please type your sentence below:</h2>
-  <textarea id="sentence" placeholder="I am happy because..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea><br>
+  <textarea id="sentence"
+            placeholder="I am happy because..."
+            autocomplete="new-password"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"></textarea><br>
 
-  <button onclick="checkSentence()">Thank You</button>
+  <button onclick="checkSentence()">Check</button>
+  <button id="thankYouBtn" onclick="complete()">Thank You</button>
   <div id="error" class="error"></div>
 
   <script>
     function checkSentence() {
       const sentence = document.getElementById("sentence").value.trim();
       const errorElement = document.getElementById("error");
+      const thankYouBtn = document.getElementById("thankYouBtn");
 
-      // Enforce the phrase
       if (!sentence.toLowerCase().startsWith("i am happy because")) {
         errorElement.textContent = "⚠️ Please start with: 'I am happy because...'";
+        thankYouBtn.style.display = "none";
         return;
       }
 
-      // All good, save and show message
+      errorElement.textContent = "";
+      thankYouBtn.style.display = "inline-block";
+    }
+
+    function complete() {
       let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
       localStorage.setItem("weeklySmileCount", count + 1);
 
