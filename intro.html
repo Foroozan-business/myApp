@@ -1,64 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Ready to Smile? 😊</title>
+  <title>Smile Choice</title>
   <style>
     body {
+      margin: 0;
       font-family: sans-serif;
+      background: #fefefe;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      padding: 2rem;
     }
+
     h2 {
-      font-size: 1.6rem;
-      margin-top: 3rem;
+      font-size: 1.8em;
+      margin-bottom: 20px;
     }
-    .btn {
-      display: block;
-      margin: 1.5rem auto;
-      padding: 12px 25px;
-      font-size: 1.2rem;
+
+    button {
+      font-size: 1.1em;
+      padding: 15px 30px;
+      margin: 10px;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      width: 80%;
-      max-width: 300px;
     }
+
     .yes {
-      background-color: #007bff;
+      background-color: #4CAF50;
       color: white;
     }
+
     .no {
-      background-color: #ffc107;
-      color: black;
+      background-color: #f44336;
+      color: white;
     }
-    .exit {
+
+    .exit-button {
       position: absolute;
       top: 10px;
       left: 15px;
-      font-size: 1.5rem;
+      font-size: 2em;
+      color: red;
       text-decoration: none;
-      color: #dc3545;
     }
-    .back {
+
+    .back-button {
       position: absolute;
-      bottom: 10px;
+      bottom: 15px;
       left: 15px;
-      font-size: 1.2rem;
+      font-size: 1.5em;
+      color: gray;
       text-decoration: none;
-      color: #007bff;
     }
   </style>
 </head>
 <body>
+  <a href="exit.html" class="exit-button">&times;</a>
+  <a href="index.html" class="back-button">&larr;</a>
 
-<a href="exit.html" class="exit">✖</a>
-
-<h2>Are you ready to capture your beautiful smile? 😍</h2>
-
-<button class="btn yes" onclick="location.href='mirror.html'">😄 Yes, let’s go!</button>
-<button class="btn no" onclick="location.href='draw.html'">😢 No</button>
-
-<a href="index.html" class="back">← Back</a>
-
+  <h2>Are you ready to capture your beautiful smile?</h2>
+  <button class="yes" onclick="location.href='camera.html'">Yes, let's go! 😄</button>
+  <button class="no" onclick="location.href='draw.html'">No 😔</button>
 </body>
 </html>
