@@ -7,16 +7,28 @@
   const ctx = canvas.getContext('2d');
   let smileDuration = 0;
 
+  const compliments = [
+    "You're glowing today! ✨",
+    "That smile could light up a room! 🌟",
+    "You look amazing when you smile 😍",
+    "Smiling suits you so well 😊",
+    "That’s the spirit! Keep shining!"
+  ];
+
   navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
       video.srcObject = stream;
+    })
+    .catch(err => {
+      countdown.textContent = "Cannot access camera 😢";
+      console.error("Camera error:", err);
     });
 
   function detectSmile() {
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     const image = canvas.toDataURL('image/jpeg');
 
-    fetch('https://myapp-xn74.onrender.com/detect-smile', {
+    fetch('https://myapp-xn74.onrender.com/', { // ✅ using root instead of /detect-smile
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ image })
@@ -26,15 +38,17 @@
       if (data.success && data.message.includes("beautiful")) {
         smileDuration++;
         countdown.textContent = `Smiling... ${smileDuration}/10`;
+
+        if (smileDuration >= 10) {
+          const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+          localStorage.setItem("lastSmileMessage", compliment);
+          let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+          localStorage.setItem("weeklySmileCount", count + 1);
+          window.location.href = "done.html";
+        }
       } else {
         countdown.textContent = "Smile lost! Restarting...";
         smileDuration = 0;
-      }
-
-      if (smileDuration >= 10) {
-        let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-        localStorage.setItem("weeklySmileCount", count + 1);
-        window.location.href = "done.html";
       }
     })
     .catch(err => {
