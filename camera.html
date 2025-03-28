@@ -64,9 +64,9 @@
     <a href="index.html">Home</a>
   </div>
 
-  <h2>Smile Countdown: <span id="countdown">10</span></h2>
+  <h2>Smile and keep it! Countdown: <span id="countdown">10</span></h2>
   <video id="video" autoplay muted></video>
-  <p id="message">Please start smiling 😁</p>
+  <p id="message">We’re watching for your beautiful smile 😁</p>
   <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 
   <script>
@@ -74,10 +74,11 @@
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const message = document.getElementById('message');
-    const countdown = document.getElementById('countdown');
+    const countdownDisplay = document.getElementById('countdown');
 
-    let smileTime = 0;
-    let interval;
+    let smileSeconds = 10;
+    let smileHolding = false;
+    let interval = null;
     let done = false;
 
     const compliments = [
@@ -88,14 +89,15 @@
       "That’s the spirit! Keep shining!"
     ];
 
+    // Start camera
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
       video.srcObject = stream;
-      interval = setInterval(detectSmile, 1000);
-    }).catch(err => {
+      interval = setInterval(checkSmile, 1000);
+    }).catch(() => {
       message.textContent = "Camera access failed 😢";
     });
 
-    function detectSmile() {
+    function checkSmile() {
       if (done) return;
 
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -109,26 +111,28 @@
       .then(res => res.json())
       .then(data => {
         if (data.success && data.message.includes("beautiful")) {
-          smileTime++;
-          countdown.textContent = 10 - smileTime;
-          message.textContent = `Keep smiling... (${smileTime}/10)`;
+          smileHolding = true;
+          smileSeconds--;
+          countdownDisplay.textContent = smileSeconds;
+          message.textContent = `Keep smiling! Just ${smileSeconds} second${smileSeconds === 1 ? '' : 's'} left...`;
 
-          if (smileTime >= 10) {
+          if (smileSeconds <= 0) {
+            showSuccess();
             clearInterval(interval);
-            showCompliment();
           }
         } else {
-          smileTime = 0;
-          countdown.textContent = 10;
-          message.textContent = "Smile lost 😐 Try again!";
+          smileHolding = false;
+          smileSeconds = 10;
+          countdownDisplay.textContent = smileSeconds;
+          message.textContent = "Oops! Smile lost 😐 Let's start again...";
         }
       })
-      .catch(err => {
+      .catch(() => {
         message.textContent = "Smile detection failed.";
       });
     }
 
-    function showCompliment() {
+    function showSuccess() {
       done = true;
       const compliment = compliments[Math.floor(Math.random() * compliments.length)];
       message.innerHTML = `🎉 ${compliment}<br><br><strong>Press below to continue:</strong>`;
