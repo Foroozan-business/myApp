@@ -46,9 +46,26 @@
       font-weight: bold;
       margin-top: 10px;
     }
+    .nav {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.2em;
+      color: #333;
+    }
   </style>
 </head>
 <body>
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="intro.html">Go Back</a>
+    <a href="index.html">Home</a>
+  </div>
+
   <h2>Draw your smile 😊</h2>
   <canvas id="canvas" width="300" height="200"></canvas>
   <div id="controls">
@@ -64,42 +81,61 @@
     let drawing = false;
     let points = [];
 
-    // Mouse drawing
+    function drawSmileTemplate() {
+      ctx.beginPath();
+      ctx.strokeStyle = "#eee";
+      ctx.lineWidth = 4;
+      ctx.arc(150, 120, 50, 0, Math.PI, false);
+      ctx.stroke();
+    }
+
+    drawSmileTemplate();
+
+    function getTouchPos(evt) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: evt.touches[0].clientX - rect.left,
+        y: evt.touches[0].clientY - rect.top
+      };
+    }
+
     canvas.addEventListener("mousedown", (e) => {
       drawing = true;
       ctx.beginPath();
       ctx.moveTo(e.offsetX, e.offsetY);
     });
+
     canvas.addEventListener("mousemove", (e) => {
       if (!drawing) return;
       ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
       points.push({ x: e.offsetX, y: e.offsetY });
     });
+
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseout", () => drawing = false);
 
-    // Touch drawing
     canvas.addEventListener("touchstart", (e) => {
       drawing = true;
-      const touch = e.touches[0];
-      const rect = canvas.getBoundingClientRect();
+      const pos = getTouchPos(e);
       ctx.beginPath();
-      ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      ctx.moveTo(pos.x, pos.y);
     });
+
     canvas.addEventListener("touchmove", (e) => {
       if (!drawing) return;
-      const touch = e.touches[0];
-      const rect = canvas.getBoundingClientRect();
-      ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      const pos = getTouchPos(e);
+      ctx.lineTo(pos.x, pos.y);
       ctx.stroke();
       e.preventDefault();
     });
+
     canvas.addEventListener("touchend", () => drawing = false);
 
     function clearCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       points = [];
+      drawSmileTemplate();
       document.getElementById("error").textContent = "";
       document.getElementById("reason").value = "";
     }
