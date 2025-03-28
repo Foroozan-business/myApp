@@ -2,40 +2,19 @@
 <html>
 <head>
   <title>Smile Options</title>
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: sans-serif;
-      background-color: #fefefe;
-      text-align: center;
-      margin: 0;
-    }
-    h3 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-    button {
-      font-size: 18px;
-      padding: 10px 20px;
-      margin: 10px;
-      border-radius: 6px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h3>Ready to capture your smile?</h3>
-  <button onclick="location.href='smile.html'">Yes, let's go! 😊</button>
-  <button onclick="location.href='draw.html'"> Let's draw instead!😊</button>
+  <button class="exit-button" onclick="window.location.href='exit.html'">✖</button>
+
+  <div class="centered-content">
+    <h2>Are you ready to capture your beautiful smile?</h2>
+    <div class="button-group">
+      <button onclick="window.location.href='mirror.html'">Yes 😄</button>
+      <button onclick="window.location.href='draw.html'">No 😐</button>
+    </div>
+  </div>
+
+  <button class="back-button" onclick="window.history.back()">← Back</button>
 </body>
 </html>
