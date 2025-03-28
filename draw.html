@@ -1,123 +1,168 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Draw a Smile</title>
+  <title>Draw Your Smile 😊</title>
   <style>
     body {
-      font-family: sans-serif;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff7f0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h2 {
       text-align: center;
+      font-size: 24px;
     }
+
     canvas {
-      border: 2px solid #ccc;
+      border: 2px solid #555;
+      background-color: white;
+      touch-action: none;
+    }
+
+    .toolbar {
       margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      justify-content: center;
     }
+
     #message {
+      font-size: 18px;
+      color: green;
       margin-top: 15px;
-      font-size: 1.2em;
-      font-weight: bold;
     }
-    .nav-btn {
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 80%;
+      max-width: 300px;
+      margin: 10px 0;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .exit, .back {
       position: absolute;
       top: 10px;
       font-size: 18px;
-      padding: 5px 12px;
-      background: #eee;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
     }
-    #exitBtn { left: 10px; }
-    #backBtn { right: 10px; }
+
+    .exit {
+      left: 15px;
+    }
+
+    .back {
+      right: 15px;
+    }
   </style>
 </head>
 <body>
-  <button id="exitBtn" class="nav-btn" onclick="exitApp()">❌</button>
-  <button id="backBtn" class="nav-btn" onclick="goBack()">🔙</button>
+  <a href="exit.html" class="exit">❌ Exit</a>
+  <a href="mirror.html" class="back">🔙 Back</a>
 
-  <h2>No worries, draw instead! 🎨</h2>
+  <h2>No worries, draw instead!</h2>
 
-  <canvas id="canvas" width="300" height="200"></canvas><br>
+  <canvas id="canvas" width="300" height="200"></canvas>
 
-  <button onclick="clearCanvas()">🧽 Erase</button>
-  <button onclick="checkDrawing()">Next ➡️</button><br><br>
-
-  <div id="textInput" style="display:none;">
-    <input type="text" id="reasonInput" placeholder='Type: "I am happy because..."' size="40"><br><br>
-    <button onclick="validateText()">OK ✅</button>
+  <div class="toolbar">
+    <button onclick="clearCanvas()" class="btn">🧼 Erase</button>
+    <button onclick="validateSmile()" class="btn">➡️ Next</button>
   </div>
 
-  <div id="message"></div>
+  <div id="textPrompt" class="hidden">
+    <p style="margin-top: 15px;">Tell us why you're happy:</p>
+    <input id="happyText" type="text" placeholder="I am happy because..." autocomplete="off">
+    <button onclick="validateText()" class="btn">✅ OK</button>
+  </div>
+
+  <p id="message"></p>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     let drawing = false;
-    let points = [];
+    let paths = [];
 
-    canvas.addEventListener("mousedown", () => drawing = true);
-    canvas.addEventListener("mouseup", () => drawing = false);
+    canvas.addEventListener("mousedown", start);
     canvas.addEventListener("mousemove", draw);
+    canvas.addEventListener("mouseup", end);
+    canvas.addEventListener("mouseout", end);
+
+    function start(e) {
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+      paths.push([]);
+    }
 
     function draw(e) {
       if (!drawing) return;
-      const x = e.offsetX;
-      const y = e.offsetY;
-      ctx.fillStyle = "black";
-      ctx.beginPath();
-      ctx.arc(x, y, 2, 0, Math.PI * 2);
-      ctx.fill();
-      points.push({ x, y });
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+      paths[paths.length - 1].push([e.offsetX, e.offsetY]);
+    }
+
+    function end() {
+      drawing = false;
     }
 
     function clearCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      points = [];
+      paths = [];
+      document.getElementById("message").textContent = "";
+      document.getElementById("textPrompt").classList.add("hidden");
     }
 
-    function checkDrawing() {
-      if (points.length < 20) {
-        showMessage("Please draw something first.");
+    function validateSmile() {
+      // Require some drawing
+      if (paths.length === 0) {
+        document.getElementById("message").textContent = "Please draw a smile!";
         return;
       }
 
-      const isSmileyShape = points.some(p => p.y > 100) && points.some(p => p.y < 80);
-      if (!isSmileyShape) {
-        showMessage("Draw a smile! 🙂");
+      // Simple check: at least one line curved down
+      let hasSmile = paths.some(path => {
+        let ys = path.map(p => p[1]);
+        return ys.length > 3 && ys[0] > ys[Math.floor(ys.length / 2)] && ys[ys.length - 1] > ys[Math.floor(ys.length / 2)];
+      });
+
+      if (!hasSmile) {
+        document.getElementById("message").textContent = "Draw a real smile! 😊";
         return;
       }
 
-      // Passed drawing validation
-      document.getElementById("textInput").style.display = "block";
-      showMessage("Now tell us why you're happy!");
+      // Show text prompt
+      document.getElementById("textPrompt").classList.remove("hidden");
+      document.getElementById("happyText").value = "";
+      document.getElementById("message").textContent = "";
     }
 
     function validateText() {
-      const text = document.getElementById("reasonInput").value.trim();
-      if (!text.startsWith("I am happy because")) {
-        showMessage("Start with: I am happy because...");
+      const input = document.getElementById("happyText").value.trim();
+      if (!input.toLowerCase().startsWith("i am happy because")) {
+        document.getElementById("message").textContent = "Please start with: I am happy because...";
         return;
       }
 
-      showMessage("✅ Well done!");
+      document.getElementById("message").textContent = "✅ Well done!";
       setTimeout(() => {
-        showMessage("🎉 Your smile has been added to the weekly smile count!");
-        setTimeout(() => {
-          window.location.href = "index.html";
-        }, 3000);
-      }, 2000);
-    }
-
-    function showMessage(msg) {
-      document.getElementById("message").textContent = msg;
-    }
-
-    function goBack() {
-      window.history.back();
-    }
-
-    function exitApp() {
-      alert("Can't wait to see your next smile!");
-      window.location.href = "index.html";
+        window.location.href = "done.html";
+      }, 2500);
     }
   </script>
 </body>
