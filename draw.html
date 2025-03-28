@@ -8,12 +8,12 @@
       background-color: #f0f8ff;
       margin: 0;
       padding: 0;
-      height: 100vh;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
     }
 
     canvas {
@@ -22,13 +22,13 @@
       margin-bottom: 15px;
     }
 
-    input[type="text"] {
-      width: 80%;
+    input {
       padding: 10px;
+      width: 80%;
       font-size: 1em;
-      margin-bottom: 10px;
+      border: 1px solid #ccc;
       border-radius: 6px;
-      border: 1px solid #aaa;
+      margin-bottom: 10px;
     }
 
     button {
@@ -36,10 +36,9 @@
       font-size: 1em;
       border: none;
       border-radius: 6px;
-      margin: 5px;
-      cursor: pointer;
-      background: #4CAF50;
+      background-color: #4CAF50;
       color: white;
+      cursor: pointer;
     }
 
     #error {
@@ -71,27 +70,29 @@
   <a href="exit.html" class="exit-button">&times;</a>
   <a href="intro.html" class="back-button">&larr;</a>
 
-  <h2>No worries, draw a smile instead 😊</h2>
+  <h2>No worries, draw a smile and share your happiness 😊</h2>
 
   <canvas id="canvas" width="300" height="200"></canvas>
-  <input type="text" id="reason" placeholder="I am happy because..." />
-  <button onclick="clearCanvas()">🗑 Clear</button>
-  <button onclick="checkDrawing()">Next ➡️</button>
+
+  <input type="text" id="reasonInput" placeholder="Type here... (e.g., I am happy because...)" />
+
+  <button onclick="submitSmile()">Next ➡️</button>
 
   <div id="error"></div>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
+    const reasonInput = document.getElementById("reasonInput");
+    const errorDiv = document.getElementById("error");
+
     let drawing = false;
     let points = [];
 
-    // Draw with mouse
     canvas.addEventListener("mousedown", (e) => {
       drawing = true;
       ctx.beginPath();
       ctx.moveTo(e.offsetX, e.offsetY);
-      points = [{ x: e.offsetX, y: e.offsetY }];
     });
 
     canvas.addEventListener("mousemove", (e) => {
@@ -107,31 +108,25 @@
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseout", () => drawing = false);
 
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      points = [];
-      document.getElementById("error").textContent = "";
-      document.getElementById("reason").value = "";
+    function isSmileShape(points) {
+      // Check if there's a curved line toward the bottom of canvas
+      return points.some(p => p.y > canvas.height * 0.6 && p.x > 60 && p.x < 240);
     }
 
-    function checkDrawing() {
-      const errorBox = document.getElementById("error");
-      const reason = document.getElementById("reason").value.trim().toLowerCase();
+    function submitSmile() {
+      const reason = reasonInput.value.trim();
 
-      const hasSmileShape = points.some(p => p.y > canvas.height / 2 && p.x > 60 && p.x < 240);
-      const validText = reason.startsWith("i am happy because");
-
-      if (!hasSmileShape) {
-        errorBox.textContent = "⚠️ Please draw a smile (a curve upwards)!";
+      if (!isSmileShape(points)) {
+        errorDiv.textContent = "⚠️ Please draw a real smile!";
         return;
       }
 
-      if (!validText) {
-        errorBox.textContent = "⚠️ Please start your sentence with 'I am happy because...'";
+      if (!reason.toLowerCase().startsWith("i am happy because")) {
+        errorDiv.textContent = '⚠️ Please start your sentence with "I am happy because..."';
         return;
       }
 
-      // ✅ Valid - update count and go
+      // Passed validations
       let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
       localStorage.setItem("weeklySmileCount", count + 1);
       window.location.href = "done.html";
