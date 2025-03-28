@@ -1,100 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smile Camera</title>
+  <title>Smile Booth 😊</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    #smileCount, #peopleToday {
+      font-size: 1.4rem;
+      margin: 0.5rem 0;
+    }
+    .btn {
+      padding: 10px 20px;
       font-size: 1.2rem;
+      margin-top: 2rem;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
     }
-    #video {
-      border-radius: 12px;
-      margin: 10px 0;
-    }
-    #countdown {
-      font-size: 2rem;
-      margin: 10px;
-      color: #007bff;
-    }
-    #result {
-      margin-top: 20px;
-      font-weight: bold;
+    .exit {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      font-size: 1.5rem;
+      text-decoration: none;
+      color: #dc3545;
     }
   </style>
 </head>
 <body>
-  <h2>📸 Mirror Mode</h2>
 
-  <video id="video" width="320" height="240" autoplay></video>
-  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+<a href="exit.html" class="exit">✖</a>
 
-  <p id="countdown">Smile in 3... 2... 1...</p>
-  <p id="result">Smile detection starting...</p>
+<h1>Hi Smilie! Welcome to Smile Booth 😄</h1>
 
-  <script>
-    const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const countdownText = document.getElementById('countdown');
-    const resultText = document.getElementById('result');
+<p id="smileCount">Smile of this week: <span id="weeklyCount">0</span></p>
+<p id="peopleToday">450 people smiled in Smile Booth today.</p>
 
-    // Access camera
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        video.srcObject = stream;
-        startCountdown();
-      })
-      .catch(err => {
-        console.error("Camera error:", err);
-        resultText.textContent = "Failed to access camera.";
-      });
+<button class="btn" onclick="location.href='intro.html'">✅ Take me to my Smile Booth</button>
 
-    function startCountdown() {
-      let count = 3;
-      countdownText.textContent = `Smile in ${count}...`;
+<script>
+  // Load saved smile count (from localStorage)
+  const weeklyCount = localStorage.getItem('smileCount') || 0;
+  const totalPeople = 450 + parseInt(weeklyCount);
+  document.getElementById('weeklyCount').textContent = weeklyCount;
+  document.getElementById('peopleToday').textContent = `${totalPeople} people smiled in Smile Booth today.`;
+</script>
 
-      const interval = setInterval(() => {
-        count--;
-        if (count === 0) {
-          clearInterval(interval);
-          countdownText.textContent = "📸 Taking photo...";
-          takePhotoAndCheckSmile();
-        } else {
-          countdownText.textContent = `Smile in ${count}...`;
-        }
-      }, 1000);
-    }
-
-    function takePhotoAndCheckSmile() {
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const base64Image = canvas.toDataURL('image/jpeg');
-
-      resultText.textContent = "Analyzing your smile... 😄";
-
-      fetch('https://myapp-xn74.onrender.com/detect-smile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64Image })
-      })
-      .then(res => res.json())
-      .then(data => {
-        resultText.textContent = data.message || "Couldn't analyze smile.";
-        // ➕ Save to local count
-        if (data.success) {
-          let count = parseInt(localStorage.getItem('smileCount')) || 0;
-          localStorage.setItem('smileCount', count + 1);
-          // Optional: Redirect to a new "Success" screen
-          setTimeout(() => {
-            window.location.href = 'done.html';
-          }, 2500);
-        }
-      })
-      .catch(err => {
-        console.error("API Error:", err);
-        resultText.textContent = "Error sending photo.";
-      });
-    }
-  </script>
 </body>
 </html>
