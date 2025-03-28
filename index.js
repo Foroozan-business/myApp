@@ -33,10 +33,10 @@ app.post('/detect-smile', async (req, res) => {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       data: new URLSearchParams({
-        api_key: process.env.API_KEY || 'your-api-key',
-        api_secret: process.env.API_SECRET || 'your-api-secret',
+        api_key: process.env.API_KEY || 'your-api-key',         // <-- Replace if not using env
+        api_secret: process.env.API_SECRET || 'your-api-secret', // <-- Replace if not using env
         image_base64: imageBase64,
-        return_attributes: 'smile' // ✅ Corrected this line only
+        return_attributes: 'smile'
       }).toString()
     });
 
@@ -45,7 +45,7 @@ app.post('/detect-smile', async (req, res) => {
     if (smileValue !== undefined) {
       const message = smileValue > 50
         ? 'Such a beautiful smile! 😄'
-        : 'Try for a real smile 😊';
+        : 'Try for a real smile 😐';
       res.json({ success: true, message });
     } else {
       res.json({ success: false, message: 'No smile detected' });
