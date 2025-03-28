@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smile Booth 😄</title>
   <style>
     body {
@@ -34,6 +36,11 @@
       background-color: #4CAF50;
       color: white;
       cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
     }
 
     .exit-button {
@@ -48,7 +55,7 @@
 </head>
 <body>
   <!-- Exit Button -->
-  <a href="exit.html" class="exit-button">&times;</a>
+  <a href="exit.html" class="exit-button" aria-label="Exit Smile Booth">&times;</a>
 
   <!-- Welcome Messages -->
   <h1>Hi Smilie! Welcome to Smile Booth 😊</h1>
@@ -60,10 +67,11 @@
 
   <!-- JavaScript for Smile Count -->
   <script>
-    let smileCount = localStorage.getItem("weeklySmileCount") || 0;
-    document.getElementById("weekly-count").innerHTML = `Smile of this week: <strong>${smileCount}</strong>`;
+    const smileCount = parseInt(localStorage.getItem("weeklySmileCount") || "0", 10);
+    document.getElementById("weekly-count").innerHTML =
+      `Smile of this week: <strong>${smileCount}</strong>`;
 
-    let global = 523 + parseInt(smileCount);
+    const global = 523 + smileCount;
     document.getElementById("global-count").innerHTML =
       `So far, <strong>${global}</strong> people have smiled in Smile Booth today! 😄`;
   </script>
