@@ -1,59 +1,63 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smile Booth 😊</title>
+  <title>Smile Booth 😄</title>
   <style>
     body {
+      margin: 0;
       font-family: sans-serif;
+      background-color: #fefefe;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      padding: 2rem;
     }
     h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
+      font-size: 2em;
+      margin-bottom: 10px;
     }
-    #smileCount, #peopleToday {
-      font-size: 1.4rem;
-      margin: 0.5rem 0;
+    p {
+      font-size: 1.2em;
+      margin: 10px 0;
     }
-    .btn {
-      padding: 10px 20px;
-      font-size: 1.2rem;
-      margin-top: 2rem;
-      background-color: #28a745;
-      color: white;
+    button {
+      margin-top: 20px;
+      padding: 15px 25px;
+      font-size: 1em;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
       cursor: pointer;
     }
-    .exit {
+    .exit-button {
       position: absolute;
       top: 10px;
       left: 15px;
-      font-size: 1.5rem;
+      font-size: 2em;
+      color: red;
       text-decoration: none;
-      color: #dc3545;
     }
   </style>
 </head>
 <body>
+  <a href="exit.html" class="exit-button">&times;</a>
 
-<a href="exit.html" class="exit">✖</a>
+  <h1>Hi Smilie! Welcome to Smile Booth 😊</h1>
+  <p id="weekly-count">Smile of this week: <strong>0</strong></p>
+  <p id="global-count">So far, <strong>523</strong> people have smiled in Smile Booth today! 😄</p>
 
-<h1>Hi Smilie! Welcome to Smile Booth 😄</h1>
+  <button onclick="location.href='mirror.html'">Take me to my Smile Booth ➡️</button>
 
-<p id="smileCount">Smile of this week: <span id="weeklyCount">0</span></p>
-<p id="peopleToday">450 people smiled in Smile Booth today.</p>
+  <script>
+    let smileCount = localStorage.getItem("weeklySmileCount") || 0;
+    document.getElementById("weekly-count").innerHTML = `Smile of this week: <strong>${smileCount}</strong>`;
 
-<button class="btn" onclick="location.href='intro.html'">✅ Take me to my Smile Booth</button>
-
-<script>
-  // Load saved smile count (from localStorage)
-  const weeklyCount = localStorage.getItem('smileCount') || 0;
-  const totalPeople = 450 + parseInt(weeklyCount);
-  document.getElementById('weeklyCount').textContent = weeklyCount;
-  document.getElementById('peopleToday').textContent = `${totalPeople} people smiled in Smile Booth today.`;
-</script>
-
+    let global = 523 + parseInt(smileCount);
+    document.getElementById("global-count").innerHTML =
+      `So far, <strong>${global}</strong> people have smiled in Smile Booth today! 😄`;
+  </script>
 </body>
 </html>
