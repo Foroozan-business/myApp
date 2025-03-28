@@ -36,7 +36,7 @@ app.post('/detect-smile', async (req, res) => {
         api_key: process.env.API_KEY || 'your-api-key',
         api_secret: process.env.API_SECRET || 'your-api-secret',
         image_base64: imageBase64,
-        return_attributes: 'smiling' // ✅ CORRECTED HERE
+        return_attributes: 'smile' // ✅ Fixed here
       }).toString()
     });
 
@@ -45,7 +45,7 @@ app.post('/detect-smile', async (req, res) => {
     if (smileValue !== undefined) {
       const message = smileValue > 50
         ? 'Such a beautiful smile! 😄'
-        : 'Try for a real smile 😊';
+        : 'Try for a real smile 😐';
       res.json({ success: true, message });
     } else {
       res.json({ success: false, message: 'No smile detected' });
@@ -64,6 +64,3 @@ app.post('/detect-smile', async (req, res) => {
 app.listen(port, () => {
   console.log(`🚀 Server is running on port ${port}`);
 });
-
-
-
