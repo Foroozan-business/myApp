@@ -16,11 +16,9 @@ app.get('/', (req, res) => {
 // POST endpoint for smile detection
 app.post('/detect-smile', async (req, res) => {
   console.log("📸 /detect-smile was called!");
-  
+
   try {
     const base64Data = req.body.image;
-
-    console.log("Received image:", base64Data); // Log the received image
 
     if (!base64Data || !base64Data.startsWith('data:image')) {
       return res.status(400).json({ success: false, message: 'No valid base64 image provided' });
@@ -38,12 +36,12 @@ app.post('/detect-smile', async (req, res) => {
         api_key: process.env.API_KEY || 'your-api-key',
         api_secret: process.env.API_SECRET || 'your-api-secret',
         image_base64: imageBase64,
-        return_attributes: 'smile'
+        return_attributes: 'smile'  // Ensure smile is properly requested here
       }).toString()
     });
 
     const smileValue = response.data.faces?.[0]?.attributes?.smile?.value;
-    console.log("Smile value:", smileValue); // Log smile value
+    console.log("Smile value:", smileValue); // Log smile value to help debug
 
     if (smileValue !== undefined) {
       const message = smileValue > 50
