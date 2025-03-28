@@ -1,81 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smile Detector</title>
+  <title>Smile Mirror 😄</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      padding: 20px;
+      height: 100vh;
+      margin: 0;
+      font-family: sans-serif;
     }
     video {
       width: 320px;
       height: 240px;
+      border: 2px solid #333;
+      border-radius: 10px;
     }
-    canvas {
-      display: none;
+    #countdown {
+      font-size: 2em;
+      margin-top: 10px;
+      color: #444;
     }
-    #result {
-      font-size: 20px;
-      margin-top: 15px;
+    .exit-button {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 2em;
+      color: red;
+      text-decoration: none;
     }
-    button {
-      font-size: 18px;
-      padding: 10px 20px;
-      margin-top: 20px;
-    }
-    @media (max-width: 768px) {
-      #result { font-size: 24px; }
-      button { font-size: 20px; }
+    .back-button {
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      font-size: 2em;
+      color: black;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <h2>Ready to capture your smile? 📸</h2>
-  <video id="video" autoplay></video><br>
-  <button id="snapBtn">Yes, let's go!</button>
-  <button onclick="location.href='draw.html'">Not really 😐</button>
-  <button onclick="location.href='index.html'" style="position:absolute; top:10px; right:10px;">&#10006;</button>
+  <a href="exit.html" class="exit-button">&times;</a>
+  <a href="mirror.html" class="back-button">&larr;</a>
 
-  <canvas id="canvas" width="320" height="240"></canvas>
-  <p id="result"></p>
+  <h2>Smile in 3...2...1... 📸</h2>
+  <video id="video" autoplay></video>
+  <div id="countdown">Keep Smiling!</div>
 
   <script>
     const video = document.getElementById('video');
-    const canvas = document.getElementById('canvas');
-    const snapBtn = document.getElementById('snapBtn');
-    const resultText = document.getElementById('result');
+    const countdown = document.getElementById('countdown');
+    let smileDuration = 0;
+    let smiling = false;
 
     navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => { video.srcObject = stream; })
-      .catch(err => { resultText.textContent = "Camera access failed."; });
-
-    snapBtn.onclick = () => {
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const base64Image = canvas.toDataURL('image/jpeg');
-
-      resultText.textContent = "Analyzing your smile... 😊";
-
-      fetch('https://myapp-xn74.onrender.com/detect-smile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64Image })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          // If smile detected, go to celebration page
-          window.location.href = 'done.html';
-        } else {
-          resultText.textContent = data.message || "Couldn't detect a smile.";
-        }
-      })
-      .catch(err => {
-        console.error("Error:", err);
-        resultText.textContent = "Something went wrong.";
+      .then(stream => {
+        video.srcObject = stream;
       });
-    };
+
+    // Simulate smile detection
+    function checkSmile() {
+      // Simulate smile detection — replace this with real detection
+      smiling = Math.random() > 0.3;
+
+      if (smiling) {
+        smileDuration++;
+        countdown.textContent = `Smiling... ${smileDuration}/10`;
+      } else {
+        countdown.textContent = "Smile lost! Restarting...";
+        smileDuration = 0;
+      }
+
+      if (smileDuration >= 10) {
+        window.location.href = "done.html";
+      }
+    }
+
+    setInterval(checkSmile, 1000);
   </script>
 </body>
 </html>
