@@ -1,106 +1,113 @@
+<!-- mirror.html -->
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Mirror Mode</title>
+  <title>Smile Mirror</title>
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      padding: 1rem;
-    }
-    video {
-      width: 90%;
-      max-width: 350px;
-      margin: 1rem 0;
-      border-radius: 10px;
-    }
-    #countdown {
-      font-size: 1.5rem;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
-    #result {
-      font-size: 1.3rem;
-      margin-top: 1rem;
-    }
-    canvas {
-      display: none;
-    }
-    .exit {
-      position: absolute;
-      top: 10px;
-      left: 15px;
-      font-size: 1.5rem;
-      text-decoration: none;
-      color: #dc3545;
-    }
-    .back {
-      position: absolute;
-      bottom: 10px;
-      left: 15px;
-      font-size: 1.2rem;
-      text-decoration: none;
-      color: #007bff;
-    }
+    body { text-align: center; font-family: sans-serif; }
+    video { border: 2px solid #ddd; border-radius: 10px; margin: 10px 0; }
+    #countdown, #status, #compliment, #finalMessage { font-size: 1.4em; margin: 10px; }
+    #okBtn { display: none; padding: 10px 20px; font-size: 16px; margin-top: 15px; }
   </style>
 </head>
 <body>
+  <h2>Smile in...</h2>
+  <div id="countdown">3</div>
+  <video id="video" width="320" height="240" autoplay muted></video>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
+  <div id="status"></div>
+  <div id="compliment"></div>
+  <div id="finalMessage" style="font-weight: bold;"></div>
+  <button id="okBtn" onclick="goToDone()">OK</button>
 
-<a href="exit.html" class="exit">✖</a>
+  <script>
+    const video = document.getElementById('video');
+    const countdown = document.getElementById('countdown');
+    const status = document.getElementById('status');
+    const complimentDiv = document.getElementById('compliment');
+    const finalMessage = document.getElementById('finalMessage');
+    const okBtn = document.getElementById('okBtn');
+    const compliments = [
+      "That smile could light up a room! 💡",
+      "You look amazing when you smile! 😊",
+      "Keep spreading that joy!",
+      "That smile just made someone's day! 🌟",
+      "You're glowing with positivity! ✨"
+    ];
 
-<h2>🪞 Mirror Mode</h2>
-<p id="countdown">Smile in 3...2...1...</p>
-<video id="video" autoplay></video>
-<canvas id="canvas" width="320" height="240"></canvas>
-<p id="result">Hold your smile 😄</p>
+    let countdownTime = 3;
 
-<a href="intro.html" class="back">← Back</a>
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => { video.srcObject = stream; startCountdown(); })
+      .catch(err => { status.textContent = "Camera not working."; });
 
-<script>
-  const video = document.getElementById('video');
-  const canvas = document.getElementById('canvas');
-  const result = document.getElementById('result');
-  const countdownText = document.getElementById('countdown');
-
-  navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-    video.srcObject = stream;
-  });
-
-  let counter = 10;
-  const countdown = setInterval(() => {
-    counter--;
-    countdownText.textContent = `Hold your smile... ${counter}s`;
-    if (counter === 0) {
-      clearInterval(countdown);
-      captureSmile();
+    function startCountdown() {
+      const interval = setInterval(() => {
+        countdown.textContent = countdownTime;
+        countdownTime--;
+        if (countdownTime < 0) {
+          clearInterval(interval);
+          countdown.style.display = 'none';
+          status.textContent = "Hold that smile for 10 seconds! 😄";
+          holdSmile();
+        }
+      }, 1000);
     }
-  }, 1000);
 
-  function captureSmile() {
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const imageData = canvas.toDataURL('image/jpeg');
+    function holdSmile() {
+      let smileDuration = 0;
+      const smileInterval = setInterval(() => {
+        captureAndCheckSmile().then(isSmiling => {
+          if (isSmiling) {
+            smileDuration++;
+            status.textContent = `Great! Keep smiling... (${smileDuration}/10s)`;
+            if (smileDuration >= 10) {
+              clearInterval(smileInterval);
+              showCompliment();
+            }
+          } else {
+            smileDuration = 0;
+            status.textContent = "Keep trying! 😊";
+          }
+        });
+      }, 1000);
+    }
 
-    result.textContent = "Analyzing your smile...";
+    function captureAndCheckSmile() {
+      return new Promise(resolve => {
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const base64Image = canvas.toDataURL('image/jpeg');
 
-    fetch('https://myapp-xn74.onrender.com/detect-smile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image: imageData })
-    })
-    .then(res => res.json())
-    .then(data => {
-      result.textContent = data.message || "No smile detected.";
-      setTimeout(() => {
-        location.href = "done.html";
-      }, 3000);
-    })
-    .catch(err => {
-      console.error(err);
-      result.textContent = "Error analyzing your smile.";
-    });
-  }
-</script>
+        fetch('https://myapp-xn74.onrender.com/detect-smile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64Image })
+        })
+        .then(res => res.json())
+        .then(data => {
+          resolve(data.message && data.message.includes('beautiful'));
+        })
+        .catch(err => {
+          console.error("Error checking smile:", err);
+          resolve(false);
+        });
+      });
+    }
 
+    function showCompliment() {
+      status.style.display = 'none';
+      const random = compliments[Math.floor(Math.random() * compliments.length)];
+      complimentDiv.textContent = random;
+      okBtn.style.display = 'inline-block';
+    }
+
+    function goToDone() {
+      complimentDiv.style.display = 'none';
+      okBtn.style.display = 'none';
+      finalMessage.textContent = "🎉 Your smile has been added to the weekly smile count!";
+      setTimeout(() => { window.location.href = "index.html"; }, 3000);
+    }
+  </script>
 </body>
 </html>
