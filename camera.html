@@ -15,7 +15,9 @@
       justify-content: center;
       align-items: center;
       text-align: center;
+      position: relative;
     }
+
     video {
       border: 5px solid #4CAF50;
       border-radius: 10px;
@@ -23,19 +25,51 @@
       width: 320px;
       height: 240px;
     }
+
     h2 {
       font-size: 1.8em;
       margin-bottom: 10px;
     }
+
     #message {
       font-size: 1.2em;
       margin: 20px 0;
       font-weight: bold;
       color: #444;
     }
+
+    #startCamera {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    .nav {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+    }
+
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #333;
+    }
   </style>
 </head>
 <body>
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="intro.html">Go Back</a>
+    <a href="index.html">Home</a>
+  </div>
+
   <h2>Smile in <span id="countdown">3</span>...</h2>
   <video id="video" autoplay muted></video>
   <p id="message">Get ready to show that lovely smile! 😄</p>
@@ -49,7 +83,10 @@
     const ctx = canvas.getContext('2d');
     const message = document.getElementById('message');
     const startButton = document.getElementById("startCamera");
+
     let count = 3;
+    let countdownInterval;
+    let smileCaptured = false;
 
     const compliments = [
       "You're glowing today! ✨",
@@ -64,7 +101,7 @@
         video.srcObject = stream;
         startButton.style.display = "none";
 
-        const countdownInterval = setInterval(() => {
+        countdownInterval = setInterval(() => {
           count--;
           if (count === 0) {
             document.querySelector("h2").textContent = "Smile now! 😁";
@@ -91,13 +128,19 @@
       })
       .then(res => res.json())
       .then(data => {
+        if (smileCaptured) return; // stop if already successful
+
         if (data.success && data.message.includes("beautiful")) {
+          smileCaptured = true;
           const compliment = compliments[Math.floor(Math.random() * compliments.length)];
           message.innerHTML = `🎉 ${compliment}<br><strong>Well done!</strong>`;
+
           const btn = document.createElement("button");
           btn.textContent = "Thank You";
           btn.style = "margin-top:15px;padding:10px 20px;font-size:1em;border:none;border-radius:8px;background-color:#4CAF50;color:white;cursor:pointer";
           btn.onclick = () => {
+            let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+            localStorage.setItem("weeklySmileCount", count + 1);
             message.innerHTML = "✅ Your smile has been added to the weekly smile count. 😊";
             btn.remove();
           };
@@ -105,7 +148,13 @@
           message.appendChild(btn);
         } else {
           message.textContent = "Try for a real smile 😐";
+          // re-try smile detection every second
+          setTimeout(detectSmile, 1000);
         }
+      })
+      .catch(err => {
+        console.error("Smile detection error:", err);
+        message.textContent = "Error detecting smile.";
       });
     }
   </script>
