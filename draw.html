@@ -1,140 +1,103 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Draw a Smile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Draw Your Smile 🎨</title>
   <style>
     body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
       font-family: sans-serif;
-      background-color: #f9f9f9;
-      margin: 0;
       text-align: center;
+      padding: 1rem;
     }
-
-    h3 {
-      font-size: 26px;
-      margin-bottom: 15px;
-    }
-
     canvas {
-      border: 2px solid #333;
-      background-color: #eeeeee;
-      margin: 16px 0;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      touch-action: none;
+      margin-bottom: 1rem;
     }
-
-    #tools {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-    }
-
     button {
-      font-size: 20px;
-      padding: 12px 20px;
-      border-radius: 8px;
-      background-color: #4CAF50;
-      color: white;
+      margin: 0.5rem;
+      padding: 10px 20px;
+      font-size: 1rem;
       border: none;
+      border-radius: 6px;
       cursor: pointer;
     }
-
-    #message {
-      font-size: 20px;
-      color: green;
-      margin-top: 15px;
-      display: none;
+    .next {
+      background-color: #28a745;
+      color: white;
+    }
+    .clear {
+      background-color: #ffc107;
+    }
+    .exit {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      font-size: 1.5rem;
+      text-decoration: none;
+      color: #dc3545;
+    }
+    .back {
+      position: absolute;
+      bottom: 10px;
+      left: 15px;
+      font-size: 1.2rem;
+      text-decoration: none;
+      color: #007bff;
     }
   </style>
 </head>
 <body>
-  <h3>Draw your smile below!</h3>
-  <canvas id="draw" width="320" height="200"></canvas>
 
-  <div id="tools">
-    <button onclick="setTool('pen')">🖊️ Pen</button>
-    <button onclick="setTool('eraser')">🧽 Eraser</button>
-    <button onclick="checkSmileDrawing()">Next</button>
-  </div>
+<a href="exit.html" class="exit">✖</a>
 
-  <div id="message">🎉 Well done!</div>
+<h2>No worries, draw instead 🎨</h2>
 
-  <script>
-    const canvas = document.getElementById('draw');
-    const ctx = canvas.getContext('2d');
-    let drawing = false;
-    let tool = 'pen';
+<canvas id="drawCanvas" width="320" height="240"></canvas><br>
 
-    ctx.fillStyle = '#eeeeee';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+<button class="clear" onclick="clearCanvas()">🧼 Clear</button>
+<button class="next" onclick="goToText()">Next ➡️</button>
 
-    // Desktop mouse events
-    canvas.addEventListener('mousedown', () => drawing = true);
-    canvas.addEventListener('mouseup', () => {
-      drawing = false;
-      ctx.beginPath();
-    });
-    canvas.addEventListener('mousemove', (e) => {
-      if (!drawing) return;
-      drawAt(e.offsetX, e.offsetY);
-    });
+<a href="intro.html" class="back">← Back</a>
 
-    // Mobile touch events
-    canvas.addEventListener('touchstart', (e) => {
-      drawing = true;
-      const touch = e.touches[0];
-      const rect = canvas.getBoundingClientRect();
-      drawAt(touch.clientX - rect.left, touch.clientY - rect.top);
-    });
+<script>
+  const canvas = document.getElementById('drawCanvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
 
-    canvas.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      if (!drawing) return;
-      const touch = e.touches[0];
-      const rect = canvas.getBoundingClientRect();
-      drawAt(touch.clientX - rect.left, touch.clientY - rect.top);
-    }, { passive: false });
+  canvas.addEventListener('mousedown', () => drawing = true);
+  canvas.addEventListener('mouseup', () => drawing = false);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('touchstart', e => {
+    drawing = true;
+    draw(e.touches[0]);
+  });
+  canvas.addEventListener('touchend', () => drawing = false);
+  canvas.addEventListener('touchmove', e => draw(e.touches[0]));
 
-    canvas.addEventListener('touchend', () => {
-      drawing = false;
-      ctx.beginPath();
-    });
+  function draw(e) {
+    if (!drawing) return;
+    const rect = canvas.getBoundingClientRect();
+    ctx.fillStyle = "#000";
+    ctx.beginPath();
+    ctx.arc(e.clientX - rect.left, e.clientY - rect.top, 3, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
-    function drawAt(x, y) {
-      ctx.lineWidth = tool === 'eraser' ? 30 : 4;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = tool === 'eraser' ? '#eeeeee' : 'black';
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x, y);
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  function goToText() {
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    const drawn = pixels.some(p => p !== 0);
+    if (!drawn) {
+      alert("Draw a smile first! 😊");
+    } else {
+      location.href = "reason.html";
     }
+  }
+</script>
 
-    function setTool(selected) {
-      tool = selected;
-    }
-
-    function checkSmileDrawing() {
-      const imageData = ctx.getImageData(0, 120, canvas.width, 80).data;
-      let drawnPixels = 0;
-      for (let i = 0; i < imageData.length; i += 4) {
-        if (imageData[i + 3] > 0 && imageData[i] !== 238) drawnPixels++;
-      }
-
-      if (drawnPixels < 300) {
-        alert("Draw a smile!");
-      } else {
-        document.getElementById('message').style.display = 'block';
-        setTimeout(() => {
-          location.href = 'reason.html';
-        }, 1500);
-      }
-    }
-  </script>
 </body>
 </html>
