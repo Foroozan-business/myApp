@@ -50,8 +50,6 @@
   <h2>Smile in <span id="countdown">3</span>...</h2>
   <video id="video" autoplay muted></video>
   <p id="message">Get ready to show that lovely smile! 😄</p>
-  <div id="hand" style="font-size: 2em; margin-top: 10px;"></div>
-
   <canvas id="canvas" width="320" height="240" class="hidden"></canvas>
 
   <script>
@@ -60,18 +58,10 @@
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const message = document.getElementById('message');
-    const hand = document.getElementById('hand');
-
-    const compliments = [
-      "You're glowing today! ✨",
-      "That smile could light up a room! 🌟",
-      "You look amazing when you smile 😍",
-      "Smiling suits you so well 😊",
-      "That’s the spirit! Keep shining!"
-    ];
 
     let count = 3;
     let smilingSeconds = 0;
+    let timerStarted = false;
 
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
       video.srcObject = stream;
@@ -89,36 +79,33 @@
         })
         .then(res => res.json())
         .then(data => {
-          console.log(data);
           if (data.success && data.message.includes("beautiful")) {
             smilingSeconds++;
-            hand.textContent = `🖐 ${smilingSeconds}`;
             message.textContent = `Smiling... ${smilingSeconds}s`;
 
-            if (smilingSeconds >= 10) {
+            if (smilingSeconds >= 3) {
               clearInterval(interval);
-              hand.textContent = "👏";
-              message.innerHTML = `🎉 ${compliments[Math.floor(Math.random() * compliments.length)]}`;
+              message.textContent = "🎉 Your smile has been added!";
+              let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+              localStorage.setItem("weeklySmileCount", count + 1);
               setTimeout(() => {
-                let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-                localStorage.setItem("weeklySmileCount", count + 1);
                 window.location.href = "done.html";
-              }, 3000);
+              }, 2000);
             }
           } else {
             smilingSeconds = 0;
-            hand.textContent = "";
             message.textContent = "Try for a real smile 😐";
           }
         })
         .catch(err => {
-          console.error("Smile detection error:", err);
+          console.error("Error checking smile:", err);
           message.textContent = "Error detecting smile.";
           clearInterval(interval);
         });
       }, 1000);
     }
 
+    // 3...2...1 countdown
     const countdownInterval = setInterval(() => {
       count--;
       if (count === 0) {
