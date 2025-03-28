@@ -1,47 +1,45 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Draw a Smile</title>
+  <title>I am Happy Because</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: sans-serif;
-      background-color: #f0f8ff;
-      margin: 0;
-      padding: 0;
       text-align: center;
+      background-color: #f0f8ff;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      padding: 20px;
     }
-    canvas {
-      border: 2px dashed #999;
-      background: #fff;
-      touch-action: none;
+    h2 {
+      font-size: 1.6em;
+      margin-bottom: 20px;
     }
-    #controls {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 1em;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    #reason {
-      margin-top: 10px;
+    textarea {
       padding: 10px;
       font-size: 1em;
-      width: 280px;
+      width: 90%;
+      max-width: 400px;
+      height: 100px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      resize: none;
     }
-    #error {
+    button {
+      margin-top: 15px;
+      padding: 10px 25px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+    .error {
       color: red;
       font-weight: bold;
       margin-top: 10px;
@@ -49,12 +47,12 @@
     .nav {
       position: absolute;
       top: 10px;
-      left: 10px;
+      left: 15px;
     }
     .nav a {
       margin-right: 15px;
       text-decoration: none;
-      font-size: 1.2em;
+      font-size: 1.1em;
       color: #333;
     }
   </style>
@@ -66,104 +64,52 @@
     <a href="index.html">Home</a>
   </div>
 
-  <h2>Draw your smile 😊</h2>
-  <canvas id="canvas" width="300" height="200"></canvas>
-  <div id="controls">
-    <button onclick="clearCanvas()">🗑 Clear</button>
-    <input id="reason" type="text" placeholder='Type: I am happy because...' autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-    <button onclick="validateSmile()">Check</button>
-    <div id="error"></div>
-  </div>
+  <h2>Please type your sentence below:</h2>
+  <textarea id="sentence"
+            placeholder="I am happy because..."
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+            onkeydown="blockSuggestions(event)"></textarea><br>
+
+  <button onclick="checkSentence()">Check</button>
+  <button id="thankYouBtn" onclick="complete()" style="display:none">Thank You</button>
+  <div id="error" class="error"></div>
 
   <script>
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    let drawing = false;
-    let points = [];
-
-    function drawSmileTemplate() {
-      ctx.beginPath();
-      ctx.strokeStyle = "#eee";
-      ctx.lineWidth = 4;
-      ctx.arc(150, 120, 50, 0, Math.PI, false);
-      ctx.stroke();
+    function blockSuggestions(e) {
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        e.preventDefault();
+      }
     }
 
-    drawSmileTemplate();
-
-    function getTouchPos(evt) {
-      const rect = canvas.getBoundingClientRect();
-      return {
-        x: evt.touches[0].clientX - rect.left,
-        y: evt.touches[0].clientY - rect.top
-      };
-    }
-
-    canvas.addEventListener("mousedown", (e) => {
-      drawing = true;
-      ctx.beginPath();
-      ctx.moveTo(e.offsetX, e.offsetY);
-    });
-
-    canvas.addEventListener("mousemove", (e) => {
-      if (!drawing) return;
-      ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.stroke();
-      points.push({ x: e.offsetX, y: e.offsetY });
-    });
-
-    canvas.addEventListener("mouseup", () => drawing = false);
-    canvas.addEventListener("mouseout", () => drawing = false);
-
-    canvas.addEventListener("touchstart", (e) => {
-      drawing = true;
-      const pos = getTouchPos(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    });
-
-    canvas.addEventListener("touchmove", (e) => {
-      if (!drawing) return;
-      const pos = getTouchPos(e);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.stroke();
-      e.preventDefault();
-    });
-
-    canvas.addEventListener("touchend", () => drawing = false);
-
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      points = [];
-      drawSmileTemplate();
-      document.getElementById("error").textContent = "";
-      document.getElementById("reason").value = "";
-    }
-
-    function validateSmile() {
-      const reasonInput = document.getElementById("reason").value.trim();
-      const smileShape = points.filter(p => p.y > 100 && p.x > 50 && p.x < 250);
+    function checkSentence() {
+      const sentence = document.getElementById("sentence").value.trim();
       const errorElement = document.getElementById("error");
+      const thankYouBtn = document.getElementById("thankYouBtn");
 
-      if (smileShape.length < 10) {
-        errorElement.textContent = "⚠️ Please draw a proper smile!";
-        return;
-      }
-      if (!reasonInput.toLowerCase().startsWith("i am happy because")) {
-        errorElement.textContent = "⚠️ Please start with: I am happy because...";
+      if (!sentence.toLowerCase().startsWith("i am happy because")) {
+        errorElement.textContent = "⚠️ Please start with: 'I am happy because...'";
+        thankYouBtn.style.display = "none";
         return;
       }
 
-      errorElement.innerHTML = `🎉 Well done!<br>`;
-      const btn = document.createElement("button");
-      btn.textContent = "Thank You";
-      btn.onclick = () => {
-        let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-        localStorage.setItem("weeklySmileCount", count + 1);
-        errorElement.innerHTML = "✅ Your smile has been added to the weekly smile count. 😊";
-        btn.remove();
-      };
-      errorElement.appendChild(btn);
+      errorElement.textContent = "🎉 Well done! Click below to continue.";
+      thankYouBtn.style.display = "inline-block";
+    }
+
+    function complete() {
+      let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+      localStorage.setItem("weeklySmileCount", count + 1);
+
+      document.body.innerHTML = `
+        <div style="text-align: center;">
+          <h1 style="color: green; font-size: 1.8em;">
+            ✅ Your smile has been added to the weekly smile count. 😊
+          </h1>
+        </div>
+      `;
     }
   </script>
 </body>
