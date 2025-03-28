@@ -87,6 +87,7 @@
     const thankYouBox = document.getElementById('thankYouBox');
 
     let smileSeconds = 10;
+    let missedFrames = 0;
     let interval = null;
     let done = false;
 
@@ -119,6 +120,7 @@
       .then(res => res.json())
       .then(data => {
         if (data.success && data.message.includes("beautiful")) {
+          missedFrames = 0;
           smileSeconds--;
           countdownDisplay.textContent = smileSeconds;
           message.textContent = `Keep smiling! Just ${smileSeconds} second${smileSeconds === 1 ? '' : 's'} left...`;
@@ -128,9 +130,13 @@
             clearInterval(interval);
           }
         } else {
-          smileSeconds = 10;
-          countdownDisplay.textContent = smileSeconds;
-          message.textContent = "Oops! Smile lost 😐 Let’s try again...";
+          missedFrames++;
+          if (missedFrames >= 3) {
+            smileSeconds = 10;
+            countdownDisplay.textContent = smileSeconds;
+            message.textContent = "Smile lost 😐 Let's try again!";
+            missedFrames = 0;
+          }
         }
       })
       .catch(() => {
