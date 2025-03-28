@@ -4,59 +4,72 @@
   <title>Smile Added! 🎉</title>
   <style>
     body {
-      font-family: sans-serif;
+      margin: 0;
+      background-color: #fff7e6;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       text-align: center;
-      padding: 2rem;
     }
+
     h2 {
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
+      font-size: 26px;
+      margin-bottom: 15px;
     }
-    p {
-      font-size: 1.3rem;
-      margin-bottom: 2rem;
+
+    .emoji {
+      font-size: 60px;
+      animation: bounce 1s infinite;
     }
-    button {
-      padding: 12px 20px;
-      font-size: 1.1rem;
-      margin: 0.5rem;
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
+    }
+
+    .btn {
+      margin-top: 30px;
+      font-size: 18px;
+      padding: 10px 25px;
+      background-color: #ffcd4d;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
     }
-    .home {
-      background-color: #007bff;
-      color: white;
+
+    .btn:hover {
+      background-color: #ffb700;
     }
+
     .exit {
-      background-color: #dc3545;
-      color: white;
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      font-size: 20px;
+      text-decoration: none;
+      color: #000;
     }
-    .emoji {
-      font-size: 2.5rem;
-      margin: 1rem;
+
+    .back {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      font-size: 18px;
+      text-decoration: none;
+      color: #555;
     }
   </style>
 </head>
 <body>
+  <a href="exit.html" class="exit">❌ Exit</a>
 
-<div class="emoji">🎉🎈😄</div>
-<h2>Your smile has been added to the weekly smile count!</h2>
-<p>Keep spreading happiness, you're doing amazing 💖</p>
+  <h2>Your smile has been added to the weekly smile count!</h2>
+  <div class="emoji">🎉🎉🎉</div>
 
-<button class="home" onclick="location.href='index.html'">Go to Home 🏠</button>
-<button class="exit" onclick="location.href='exit.html'">Exit ✖</button>
-
-<!-- Optional Confetti -->
-<canvas id="confetti" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;"></canvas>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-<script>
-  confetti({
-    particleCount: 150,
-    spread: 80,
-    origin: { y: 0.6 }
-  });
-</script>
-
+  <button class="btn" onclick="location.href='index.html'">🏠 Go Home</button>
+  <a href="index.html" class="back">🔙 Back</a>
 </body>
 </html>
