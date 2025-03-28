@@ -1,103 +1,124 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Draw Your Smile 🎨</title>
+  <title>Draw a Smile</title>
   <style>
     body {
       font-family: sans-serif;
       text-align: center;
-      padding: 1rem;
     }
     canvas {
       border: 2px solid #ccc;
-      border-radius: 10px;
-      touch-action: none;
-      margin-bottom: 1rem;
+      margin-top: 10px;
     }
-    button {
-      margin: 0.5rem;
-      padding: 10px 20px;
-      font-size: 1rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+    #message {
+      margin-top: 15px;
+      font-size: 1.2em;
+      font-weight: bold;
     }
-    .next {
-      background-color: #28a745;
-      color: white;
-    }
-    .clear {
-      background-color: #ffc107;
-    }
-    .exit {
+    .nav-btn {
       position: absolute;
       top: 10px;
-      left: 15px;
-      font-size: 1.5rem;
-      text-decoration: none;
-      color: #dc3545;
+      font-size: 18px;
+      padding: 5px 12px;
+      background: #eee;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
     }
-    .back {
-      position: absolute;
-      bottom: 10px;
-      left: 15px;
-      font-size: 1.2rem;
-      text-decoration: none;
-      color: #007bff;
-    }
+    #exitBtn { left: 10px; }
+    #backBtn { right: 10px; }
   </style>
 </head>
 <body>
+  <button id="exitBtn" class="nav-btn" onclick="exitApp()">❌</button>
+  <button id="backBtn" class="nav-btn" onclick="goBack()">🔙</button>
 
-<a href="exit.html" class="exit">✖</a>
+  <h2>No worries, draw instead! 🎨</h2>
 
-<h2>No worries, draw instead 🎨</h2>
+  <canvas id="canvas" width="300" height="200"></canvas><br>
 
-<canvas id="drawCanvas" width="320" height="240"></canvas><br>
+  <button onclick="clearCanvas()">🧽 Erase</button>
+  <button onclick="checkDrawing()">Next ➡️</button><br><br>
 
-<button class="clear" onclick="clearCanvas()">🧼 Clear</button>
-<button class="next" onclick="goToText()">Next ➡️</button>
+  <div id="textInput" style="display:none;">
+    <input type="text" id="reasonInput" placeholder='Type: "I am happy because..."' size="40"><br><br>
+    <button onclick="validateText()">OK ✅</button>
+  </div>
 
-<a href="intro.html" class="back">← Back</a>
+  <div id="message"></div>
 
-<script>
-  const canvas = document.getElementById('drawCanvas');
-  const ctx = canvas.getContext('2d');
-  let drawing = false;
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+    let points = [];
 
-  canvas.addEventListener('mousedown', () => drawing = true);
-  canvas.addEventListener('mouseup', () => drawing = false);
-  canvas.addEventListener('mousemove', draw);
-  canvas.addEventListener('touchstart', e => {
-    drawing = true;
-    draw(e.touches[0]);
-  });
-  canvas.addEventListener('touchend', () => drawing = false);
-  canvas.addEventListener('touchmove', e => draw(e.touches[0]));
+    canvas.addEventListener("mousedown", () => drawing = true);
+    canvas.addEventListener("mouseup", () => drawing = false);
+    canvas.addEventListener("mousemove", draw);
 
-  function draw(e) {
-    if (!drawing) return;
-    const rect = canvas.getBoundingClientRect();
-    ctx.fillStyle = "#000";
-    ctx.beginPath();
-    ctx.arc(e.clientX - rect.left, e.clientY - rect.top, 3, 0, Math.PI * 2);
-    ctx.fill();
-  }
-
-  function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
-
-  function goToText() {
-    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-    const drawn = pixels.some(p => p !== 0);
-    if (!drawn) {
-      alert("Draw a smile first! 😊");
-    } else {
-      location.href = "reason.html";
+    function draw(e) {
+      if (!drawing) return;
+      const x = e.offsetX;
+      const y = e.offsetY;
+      ctx.fillStyle = "black";
+      ctx.beginPath();
+      ctx.arc(x, y, 2, 0, Math.PI * 2);
+      ctx.fill();
+      points.push({ x, y });
     }
-  }
-</script>
 
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      points = [];
+    }
+
+    function checkDrawing() {
+      if (points.length < 20) {
+        showMessage("Please draw something first.");
+        return;
+      }
+
+      const isSmileyShape = points.some(p => p.y > 100) && points.some(p => p.y < 80);
+      if (!isSmileyShape) {
+        showMessage("Draw a smile! 🙂");
+        return;
+      }
+
+      // Passed drawing validation
+      document.getElementById("textInput").style.display = "block";
+      showMessage("Now tell us why you're happy!");
+    }
+
+    function validateText() {
+      const text = document.getElementById("reasonInput").value.trim();
+      if (!text.startsWith("I am happy because")) {
+        showMessage("Start with: I am happy because...");
+        return;
+      }
+
+      showMessage("✅ Well done!");
+      setTimeout(() => {
+        showMessage("🎉 Your smile has been added to the weekly smile count!");
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 3000);
+      }, 2000);
+    }
+
+    function showMessage(msg) {
+      document.getElementById("message").textContent = msg;
+    }
+
+    function goBack() {
+      window.history.back();
+    }
+
+    function exitApp() {
+      alert("Can't wait to see your next smile!");
+      window.location.href = "index.html";
+    }
+  </script>
 </body>
 </html>
