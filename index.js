@@ -1,9 +1,22 @@
+// Import required modules
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
+
+// Create Express app
+const app = express();
+const port = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(cors());
+
 // GET still works for root URL
 app.get('/', (req, res) => {
   res.send('Smile detection API is working!');
 });
 
-// ✅ New POST on root URL for smile detection
+// ✅ POST for smile detection
 app.post('/', async (req, res) => {
   console.log("📸 POST / was called!");
 
@@ -47,4 +60,9 @@ app.post('/', async (req, res) => {
       debug: error.response?.data || error.message
     });
   }
+});
+
+// Start server
+app.listen(port, () => {
+  console.log(`🚀 Server is running on port ${port}`);
 });
