@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-
 <html>
 <head>
   <title>I am Happy Because</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: sans-serif;
@@ -16,7 +16,7 @@
       padding: 20px;
     }
     h2 {
-      font-size: 1.5em;
+      font-size: 1.6em;
       margin-bottom: 20px;
     }
     textarea {
@@ -57,13 +57,20 @@
             autocomplete="new-password"
             autocorrect="off"
             autocapitalize="off"
-            spellcheck="false"></textarea><br>
+            spellcheck="false"
+            onkeydown="preventArrowUpDown(event)"></textarea><br>
 
   <button onclick="checkSentence()">Check</button>
   <button id="thankYouBtn" onclick="complete()">Thank You</button>
   <div id="error" class="error"></div>
 
   <script>
+    function preventArrowUpDown(e) {
+      if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        e.preventDefault(); // blocks navigating old inputs
+      }
+    }
+
     function checkSentence() {
       const sentence = document.getElementById("sentence").value.trim();
       const errorElement = document.getElementById("error");
@@ -75,7 +82,7 @@
         return;
       }
 
-      errorElement.textContent = "";
+      errorElement.textContent = "🎉 Well done!";
       thankYouBtn.style.display = "inline-block";
     }
 
@@ -85,7 +92,7 @@
 
       document.body.innerHTML = `
         <div style="text-align: center;">
-          <h1 style="color: green; font-size: 1.8em;">✅ Your smile has been added to the weekly smile count.</h1>
+          <h1 style="color: green; font-size: 1.8em;">✅ Your smile has been added to the weekly smile count. 😊</h1>
         </div>
       `;
     }
