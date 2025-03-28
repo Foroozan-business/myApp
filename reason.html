@@ -44,30 +44,43 @@
       font-weight: bold;
       margin-top: 10px;
     }
-    #thankYouBtn {
-      display: none;
+    .nav {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+    }
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #333;
     }
   </style>
 </head>
 <body>
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="intro.html">Go Back</a>
+    <a href="index.html">Home</a>
+  </div>
 
   <h2>Please type your sentence below:</h2>
   <textarea id="sentence"
             placeholder="I am happy because..."
-            autocomplete="new-password"
+            autocomplete="off"
             autocorrect="off"
             autocapitalize="off"
             spellcheck="false"
-            onkeydown="preventArrowUpDown(event)"></textarea><br>
+            onkeydown="blockSuggestions(event)"></textarea><br>
 
   <button onclick="checkSentence()">Check</button>
-  <button id="thankYouBtn" onclick="complete()">Thank You</button>
+  <button id="thankYouBtn" onclick="complete()" style="display:none">Thank You</button>
   <div id="error" class="error"></div>
 
   <script>
-    function preventArrowUpDown(e) {
+    function blockSuggestions(e) {
       if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-        e.preventDefault(); // blocks navigating old inputs
+        e.preventDefault();
       }
     }
 
@@ -82,7 +95,7 @@
         return;
       }
 
-      errorElement.textContent = "🎉 Well done!";
+      errorElement.textContent = "🎉 Well done! Click below to continue.";
       thankYouBtn.style.display = "inline-block";
     }
 
@@ -92,11 +105,12 @@
 
       document.body.innerHTML = `
         <div style="text-align: center;">
-          <h1 style="color: green; font-size: 1.8em;">✅ Your smile has been added to the weekly smile count. 😊</h1>
+          <h1 style="color: green; font-size: 1.8em;">
+            ✅ Your smile has been added to the weekly smile count. 😊
+          </h1>
         </div>
       `;
     }
   </script>
-
 </body>
 </html>
