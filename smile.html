@@ -17,7 +17,7 @@
     "That’s the spirit! Keep shining!"
   ];
 
-  // Add canvas to body so it's ready (can be hidden via CSS)
+  // Add canvas to body (invisible)
   canvas.style.display = "none";
   document.body.appendChild(canvas);
 
@@ -29,6 +29,31 @@
       countdown.textContent = "Cannot access camera 😢";
       console.error("Camera error:", err);
     });
+
+  function showThankYouFlow(compliment) {
+    countdown.textContent = "";
+    const message = document.getElementById('message');
+    message.innerHTML = `🎉 ${compliment}`;
+
+    const thankYouBtn = document.createElement("button");
+    thankYouBtn.textContent = "Thank You";
+    thankYouBtn.style.marginTop = "20px";
+    thankYouBtn.style.padding = "10px 20px";
+    thankYouBtn.style.fontSize = "1em";
+    thankYouBtn.style.backgroundColor = "#4CAF50";
+    thankYouBtn.style.color = "white";
+    thankYouBtn.style.border = "none";
+    thankYouBtn.style.borderRadius = "8px";
+    thankYouBtn.style.cursor = "pointer";
+
+    thankYouBtn.onclick = () => {
+      message.textContent = "Your smile has been added to your Smile Booth. 😊";
+      thankYouBtn.remove();
+    };
+
+    message.appendChild(document.createElement("br"));
+    message.appendChild(thankYouBtn);
+  }
 
   function detectSmile() {
     if (!detecting) return;
@@ -48,12 +73,12 @@
         countdown.textContent = `Smiling... ${smileDuration}/10`;
 
         if (smileDuration >= 10) {
-          detecting = false; // stop further checks
+          detecting = false;
           const compliment = compliments[Math.floor(Math.random() * compliments.length)];
           localStorage.setItem("lastSmileMessage", compliment);
           let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
           localStorage.setItem("weeklySmileCount", count + 1);
-          window.location.href = "done.html";
+          showThankYouFlow(compliment);
         }
       } else {
         countdown.textContent = "Smile lost! Restarting...";
