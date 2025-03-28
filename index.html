@@ -1,60 +1,100 @@
-<!-- ✅ HOME PAGE (index.html) -->
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smile Booth</title>
+  <title>Smile Camera</title>
   <style>
-    #confetti {
-      animation: pop 0.5s ease-out forwards;
-      font-size: 2rem;
-      text-align: center;
-      margin-top: 20px;
-    }
-    @keyframes pop {
-      0% { transform: scale(0); }
-      100% { transform: scale(1); }
-    }
     body {
-      font-size: 1.2rem;
+      font-family: sans-serif;
       text-align: center;
+      font-size: 1.2rem;
+    }
+    #video {
+      border-radius: 12px;
+      margin: 10px 0;
+    }
+    #countdown {
+      font-size: 2rem;
+      margin: 10px;
+      color: #007bff;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h2>Smile Booth</h2>
+  <h2>📸 Mirror Mode</h2>
 
-  <!-- 🌍 Global Smile Count -->
-  <p id="globalSmile"></p>
+  <video id="video" width="320" height="240" autoplay></video>
+  <canvas id="canvas" width="320" height="240" style="display:none;"></canvas>
 
-  <!-- 📅 Smile Streak -->
-  <p id="streakDisplay"></p>
-
-  <!-- 🎉 Confetti -->
-  <div id="confetti">🎉🎉🎉</div>
+  <p id="countdown">Smile in 3... 2... 1...</p>
+  <p id="result">Smile detection starting...</p>
 
   <script>
-    // 🌍 Global Smile Count (fake + local)
-    const localSmiles = parseInt(localStorage.getItem('smileCount')) || 0;
-    const estimatedGlobal = 523 + localSmiles;
-    document.getElementById('globalSmile').textContent = `So far, ${estimatedGlobal} people have smiled in Smile Booth! 😄`;
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const countdownText = document.getElementById('countdown');
+    const resultText = document.getElementById('result');
 
-    // 📅 Smile Streak Tracker
-    const today = new Date().toDateString();
-    const lastSmile = localStorage.getItem('lastSmileDate');
-    let streak = parseInt(localStorage.getItem('smileStreak')) || 0;
+    // Access camera
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+        startCountdown();
+      })
+      .catch(err => {
+        console.error("Camera error:", err);
+        resultText.textContent = "Failed to access camera.";
+      });
 
-    const yesterday = new Date(Date.now() - 86400000).toDateString();
+    function startCountdown() {
+      let count = 3;
+      countdownText.textContent = `Smile in ${count}...`;
 
-    if (lastSmile === yesterday) {
-      streak += 1;
-    } else if (lastSmile !== today) {
-      streak = 1; // reset if not consecutive
+      const interval = setInterval(() => {
+        count--;
+        if (count === 0) {
+          clearInterval(interval);
+          countdownText.textContent = "📸 Taking photo...";
+          takePhotoAndCheckSmile();
+        } else {
+          countdownText.textContent = `Smile in ${count}...`;
+        }
+      }, 1000);
     }
 
-    localStorage.setItem('lastSmileDate', today);
-    localStorage.setItem('smileStreak', streak);
+    function takePhotoAndCheckSmile() {
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const base64Image = canvas.toDataURL('image/jpeg');
 
-    document.getElementById('streakDisplay').textContent = `🔥 Smile streak: ${streak} day(s) in a row!`;
+      resultText.textContent = "Analyzing your smile... 😄";
+
+      fetch('https://myapp-xn74.onrender.com/detect-smile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64Image })
+      })
+      .then(res => res.json())
+      .then(data => {
+        resultText.textContent = data.message || "Couldn't analyze smile.";
+        // ➕ Save to local count
+        if (data.success) {
+          let count = parseInt(localStorage.getItem('smileCount')) || 0;
+          localStorage.setItem('smileCount', count + 1);
+          // Optional: Redirect to a new "Success" screen
+          setTimeout(() => {
+            window.location.href = 'done.html';
+          }, 2500);
+        }
+      })
+      .catch(err => {
+        console.error("API Error:", err);
+        resultText.textContent = "Error sending photo.";
+      });
+    }
   </script>
 </body>
 </html>
