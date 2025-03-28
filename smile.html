@@ -8,6 +8,7 @@
 
   let smileDuration = 0;
   let detecting = true;
+  let missedFrames = 0;
 
   const compliments = [
     "You're glowing today! ✨",
@@ -34,8 +35,12 @@
     const message = document.getElementById('message');
     message.innerHTML = `🎉 ${compliment}<br><strong>Well done!</strong>`;
 
+    const existingBtn = document.getElementById("thankYouBtn");
+    if (existingBtn) return; // prevent multiple buttons
+
     const thankYouBtn = document.createElement("button");
     thankYouBtn.textContent = "Thank You";
+    thankYouBtn.id = "thankYouBtn";
     thankYouBtn.style.marginTop = "20px";
     thankYouBtn.style.padding = "10px 20px";
     thankYouBtn.style.fontSize = "1em";
@@ -46,8 +51,7 @@
     thankYouBtn.style.cursor = "pointer";
 
     thankYouBtn.onclick = () => {
-      message.innerHTML = "✅ Your smile has been added to your Smile Booth. 😊";
-      thankYouBtn.remove();
+      message.innerHTML = "✅ Your smile has been added to your Smile Booth. 😊<br><br><a href='index.html'>Return to Home</a>";
     };
 
     message.appendChild(document.createElement("br"));
@@ -68,10 +72,11 @@
     .then(res => res.json())
     .then(data => {
       if (data.success && data.message.includes("beautiful")) {
-        smileDuration++;
+        missedFrames = 0;
+        if (smileDuration < 10) smileDuration++;
         countdown.textContent = `Smiling... ${smileDuration}/10`;
 
-        if (smileDuration >= 10) {
+        if (smileDuration === 10) {
           detecting = false;
           const compliment = compliments[Math.floor(Math.random() * compliments.length)];
           localStorage.setItem("lastSmileMessage", compliment);
@@ -80,8 +85,12 @@
           showSuccessFlow(compliment);
         }
       } else {
-        countdown.textContent = "Smile lost! Restarting...";
-        smileDuration = 0;
+        missedFrames++;
+        if (missedFrames >= 3) {
+          smileDuration = 0;
+          countdown.textContent = "Smile lost! Restarting...";
+          missedFrames = 0;
+        }
       }
     })
     .catch(err => {
