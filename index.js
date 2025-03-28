@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
   res.send('Smile detection API is working!');
 });
 
-// POST endpoint for smile detection
+// Smile detection POST endpoint
 app.post('/detect-smile', async (req, res) => {
   console.log("📸 /detect-smile was called!");
 
@@ -21,10 +21,13 @@ app.post('/detect-smile', async (req, res) => {
     const base64Data = req.body.image;
 
     if (!base64Data || !base64Data.startsWith('data:image')) {
-      return res.status(400).json({ success: false, message: 'No valid base64 image provided' });
+      return res.status(400).json({
+        success: false,
+        message: 'No valid base64 image provided'
+      });
     }
 
-    const imageBase64 = base64Data.split(',')[1]; // remove data:image/jpeg;base64,...
+    const imageBase64 = base64Data.split(',')[1]; // remove 'data:image/jpeg;base64,...'
 
     const response = await axios({
       method: 'post',
@@ -36,7 +39,7 @@ app.post('/detect-smile', async (req, res) => {
         api_key: process.env.API_KEY || 'your-api-key',
         api_secret: process.env.API_SECRET || 'your-api-secret',
         image_base64: imageBase64,
-        return_attributes: 'smile' // ✅ Fixed here
+        return_attributes: 'smile'
       }).toString()
     });
 
@@ -46,6 +49,8 @@ app.post('/detect-smile', async (req, res) => {
       const message = smileValue > 50
         ? 'Such a beautiful smile! 😄'
         : 'Try for a real smile 😐';
+
+      console.log("😊 Smile value detected:", smileValue);
       res.json({ success: true, message });
     } else {
       res.json({ success: false, message: 'No smile detected' });
@@ -61,6 +66,7 @@ app.post('/detect-smile', async (req, res) => {
   }
 });
 
+// Start server
 app.listen(port, () => {
   console.log(`🚀 Server is running on port ${port}`);
 });
