@@ -150,11 +150,18 @@
 
     function validateSmile() {
       const reasonInput = document.getElementById("reason").value.trim();
-      const smileShape = points.filter(p => p.y > 100 && p.x > 50 && p.x < 250);
       const errorElement = document.getElementById("error");
 
-      if (smileShape.length < 10) {
-        errorElement.textContent = "⚠️ Please draw a proper smile!";
+      // More accurate smile region check
+      const smileZone = points.filter(p =>
+        p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220
+      );
+
+      const leftSide = points.some(p => p.x < 120 && p.y > 100);
+      const rightSide = points.some(p => p.x > 180 && p.y > 100);
+
+      if (smileZone.length < 15 || !leftSide || !rightSide) {
+        errorElement.textContent = "⚠️ That doesn't look like a smile. Try to follow the gray arc.";
         return;
       }
 
