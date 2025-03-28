@@ -14,14 +14,17 @@
       align-items: center;
       text-align: center;
     }
+
     h1 {
       font-size: 2em;
       margin-bottom: 10px;
     }
+
     p {
       font-size: 1.2em;
       margin: 10px 0;
     }
+
     button {
       margin-top: 20px;
       padding: 15px 25px;
@@ -32,6 +35,7 @@
       color: white;
       cursor: pointer;
     }
+
     .exit-button {
       position: absolute;
       top: 10px;
@@ -43,14 +47,18 @@
   </style>
 </head>
 <body>
+  <!-- Exit Button -->
   <a href="exit.html" class="exit-button">&times;</a>
 
+  <!-- Welcome Messages -->
   <h1>Hi Smilie! Welcome to Smile Booth 😊</h1>
   <p id="weekly-count">Smile of this week: <strong>0</strong></p>
   <p id="global-count">So far, <strong>523</strong> people have smiled in Smile Booth today! 😄</p>
 
- <button onclick="location.href='intro.html'">Take me to my Smile Booth ➡️</button>
+  <!-- Button to Go to Intro -->
+  <button onclick="location.href='intro.html'">Take me to my Smile Booth ➡️</button>
 
+  <!-- JavaScript for Smile Count -->
   <script>
     let smileCount = localStorage.getItem("weeklySmileCount") || 0;
     document.getElementById("weekly-count").innerHTML = `Smile of this week: <strong>${smileCount}</strong>`;
