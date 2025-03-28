@@ -3,22 +3,37 @@
 <head>
   <title>I am Happy Because</title>
   <style>
-    /* Some styles for the page */
     body {
       font-family: sans-serif;
       text-align: center;
       background-color: #f0f8ff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 20px;
     }
     h2 {
       font-size: 1.5em;
-      margin-top: 20px;
+      margin-bottom: 20px;
     }
-    input, button {
-      margin: 10px;
-      padding: 10px 20px;
+    textarea {
+      padding: 10px;
+      font-size: 1em;
+      width: 90%;
+      max-width: 400px;
+      height: 100px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      resize: none;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 25px;
       font-size: 1em;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       background-color: #4CAF50;
       color: white;
       cursor: pointer;
@@ -26,14 +41,16 @@
     .error {
       color: red;
       font-weight: bold;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h2>Please type your sentence below:</h2>
-  <textarea id="sentence" placeholder="I am happy because..." rows="4" cols="50"></textarea><br>
 
-  <button onclick="checkSentence()">Next ➡️</button>
+  <h2>Please type your sentence below:</h2>
+  <textarea id="sentence" placeholder="I am happy because..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea><br>
+
+  <button onclick="checkSentence()">Thank You</button>
   <div id="error" class="error"></div>
 
   <script>
@@ -41,17 +58,23 @@
       const sentence = document.getElementById("sentence").value.trim();
       const errorElement = document.getElementById("error");
 
-      // Check if the sentence starts with "I am happy because"
-      if (!sentence.startsWith("I am happy because")) {
-        errorElement.textContent = "⚠️ Please start your sentence with 'I am happy because...'";
+      // Enforce the phrase
+      if (!sentence.toLowerCase().startsWith("i am happy because")) {
+        errorElement.textContent = "⚠️ Please start with: 'I am happy because...'";
         return;
       }
 
-      // If validation passed, go to the next page
+      // All good, save and show message
       let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
       localStorage.setItem("weeklySmileCount", count + 1);
-      window.location.href = "done.html"; // or another page as needed
+
+      document.body.innerHTML = `
+        <div style="text-align: center;">
+          <h1 style="color: green; font-size: 1.8em;">✅ Your smile has been added to the weekly smile count.</h1>
+        </div>
+      `;
     }
   </script>
+
 </body>
 </html>
