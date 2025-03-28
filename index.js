@@ -8,12 +8,12 @@ const port = process.env.PORT || 3000;
 app.use(express.json({ limit: '10mb' }));
 app.use(cors());
 
-// Root test route
+// ✅ Root test route
 app.get('/', (req, res) => {
   res.send('Smile detection API is working!');
 });
 
-// POST endpoint for smile detection
+// ✅ Smile Detection Endpoint
 app.post('/detect-smile', async (req, res) => {
   console.log("📸 /detect-smile was called!");
 
@@ -24,7 +24,7 @@ app.post('/detect-smile', async (req, res) => {
       return res.status(400).json({ success: false, message: 'No valid base64 image provided' });
     }
 
-    const imageBase64 = base64Data.split(',')[1]; // remove data:image/jpeg;base64,...
+    const imageBase64 = base64Data.split(',')[1];
 
     const response = await axios({
       method: 'post',
@@ -33,8 +33,8 @@ app.post('/detect-smile', async (req, res) => {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       data: new URLSearchParams({
-        api_key: process.env.API_KEY || 'your-api-key',         // <-- Replace if not using env
-        api_secret: process.env.API_SECRET || 'your-api-secret', // <-- Replace if not using env
+        api_key: process.env.API_KEY || 'your-api-key',
+        api_secret: process.env.API_SECRET || 'your-api-secret',
         image_base64: imageBase64,
         return_attributes: 'smile'
       }).toString()
@@ -46,7 +46,7 @@ app.post('/detect-smile', async (req, res) => {
       const message = smileValue > 50
         ? 'Such a beautiful smile! 😄'
         : 'Try for a real smile 😐';
-      res.json({ success: true, message });
+      res.json({ success: true, smile: smileValue, message });
     } else {
       res.json({ success: false, message: 'No smile detected' });
     }
@@ -61,6 +61,7 @@ app.post('/detect-smile', async (req, res) => {
   }
 });
 
+// ✅ Start the server
 app.listen(port, () => {
   console.log(`🚀 Server is running on port ${port}`);
 });
