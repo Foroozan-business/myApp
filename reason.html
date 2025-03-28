@@ -1,38 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Your Reason to Smile 😊</title>
+  <title>Your Smile Reason</title>
   <style>
     body {
       font-family: sans-serif;
-      background-color: #e6f7ff;
+      background-color: #f0f8ff;
       margin: 0;
-      height: 100vh;
+      padding: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
+      height: 100vh;
     }
 
-    h2 {
-      font-size: 1.8em;
-      margin-bottom: 20px;
-    }
-
-    textarea {
+    input {
       width: 80%;
-      height: 100px;
-      font-size: 1.1em;
       padding: 10px;
-      border-radius: 10px;
+      font-size: 1em;
+      margin: 20px 0;
+      border-radius: 5px;
       border: 1px solid #ccc;
-      resize: none;
     }
 
     button {
-      margin-top: 20px;
-      padding: 12px 24px;
+      padding: 10px 20px;
       font-size: 1em;
       background-color: #4CAF50;
       color: white;
@@ -43,7 +37,6 @@
 
     #error {
       color: red;
-      margin-top: 10px;
       font-weight: bold;
     }
 
@@ -70,26 +63,28 @@
   <a href="exit.html" class="exit-button">&times;</a>
   <a href="draw.html" class="back-button">&larr;</a>
 
-  <h2>Tell us why you're smiling</h2>
-  <textarea id="reasonInput" placeholder="Start with 'I am happy because...'"></textarea>
+  <h2>Why are you happy today? 😊</h2>
+  <p>Please write a reason starting with:</p>
+  <strong>"I am happy because..."</strong>
+
+  <input id="reason" type="text" autocomplete="off" placeholder="Start typing here..." onpaste="return false;" />
+
   <div id="error"></div>
-  <button onclick="submitReason()">OK ✅</button>
+
+  <button onclick="submitReason()">OK</button>
 
   <script>
     function submitReason() {
-      const input = document.getElementById("reasonInput").value.trim();
+      const input = document.getElementById("reason").value.trim();
       const error = document.getElementById("error");
 
       if (!input.toLowerCase().startsWith("i am happy because")) {
-        error.textContent = "⚠️ Please start with 'I am happy because...'";
+        error.textContent = "⚠️ Please start your sentence with: I am happy because...";
         return;
       }
 
-      error.textContent = "Well done! 🎉";
-      
-      setTimeout(() => {
-        document.location.href = "done.html";
-      }, 2000);
+      error.textContent = "";
+      window.location.href = "done.html";
     }
   </script>
 </body>
