@@ -3,18 +3,8 @@
 <head>
   <title>I am Happy Because</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
   <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      background-color: #f0f8ff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      padding: 20px;
-    }
     h2 {
       font-size: 1.6em;
       margin-bottom: 20px;
@@ -28,16 +18,6 @@
       border: 2px solid #ccc;
       border-radius: 8px;
       resize: none;
-    }
-    button {
-      margin-top: 15px;
-      padding: 10px 25px;
-      font-size: 1em;
-      border: none;
-      border-radius: 8px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
     }
     .error {
       color: red;
@@ -104,10 +84,11 @@
       localStorage.setItem("weeklySmileCount", count + 1);
 
       document.body.innerHTML = `
-        <div style="text-align: center;">
+        <div style="text-align: center; padding: 30px;">
           <h1 style="color: green; font-size: 1.8em;">
             ✅ Your smile has been added to the weekly smile count. 😊
           </h1>
+          <p><a href="index.html" style="text-decoration: underline;">Return to Home</a></p>
         </div>
       `;
     }
