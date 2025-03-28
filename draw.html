@@ -1,38 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Draw a Smile</title>
+  <title>Draw a Smile + Why You're Happy</title>
   <style>
     body {
       font-family: sans-serif;
       background-color: #f0f8ff;
       margin: 0;
       padding: 0;
-      height: 100vh;
+      text-align: center;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      text-align: center;
+      height: 100vh;
+    }
+
+    h2 {
+      margin-bottom: 10px;
     }
 
     canvas {
       border: 2px dashed #999;
       background: #fff;
-      margin: 15px 0;
+      margin: 10px 0;
     }
 
-    #controls {
-      margin: 10px;
+    textarea {
+      width: 80%;
+      max-width: 400px;
+      height: 100px;
+      font-size: 1em;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
 
     button {
       margin: 10px;
-      padding: 10px 20px;
+      padding: 10px 25px;
       font-size: 1em;
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
     }
 
     #error {
@@ -64,36 +77,34 @@
   <a href="exit.html" class="exit-button">&times;</a>
   <a href="intro.html" class="back-button">&larr;</a>
 
-  <h2>No worries, draw a smile instead 😊</h2>
+  <h2>No worries, draw a smile & tell us why you're happy 😊</h2>
 
-  <canvas id="canvas" width="300" height="200"></canvas>
-
-  <div id="controls">
-    <button onclick="toggleEraser()" id="eraserBtn">✏️ Use Eraser</button>
+  <canvas id="canvas" width="300" height="180"></canvas>
+  <div>
     <button onclick="clearCanvas()">🗑 Clear</button>
-    <button onclick="checkDrawing()">Next ➡️</button>
   </div>
 
+  <textarea id="happyText" placeholder="Start with 'I am happy because...'"></textarea>
+  <br>
+  <button onclick="checkAndSubmit()">OK</button>
   <div id="error"></div>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
+    const points = [];
     let drawing = false;
-    let erasing = false;
-    let points = [];
 
     canvas.addEventListener("mousedown", (e) => {
       drawing = true;
       ctx.beginPath();
       ctx.moveTo(e.offsetX, e.offsetY);
-      points = [{ x: e.offsetX, y: e.offsetY }];
     });
 
     canvas.addEventListener("mousemove", (e) => {
       if (!drawing) return;
       ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.strokeStyle = erasing ? "#fff" : "#000";
+      ctx.strokeStyle = "#000";
       ctx.lineWidth = 4;
       ctx.lineCap = "round";
       ctx.stroke();
@@ -105,33 +116,31 @@
 
     function clearCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      points = [];
+      points.length = 0;
       document.getElementById("error").textContent = "";
     }
 
-    function toggleEraser() {
-      erasing = !erasing;
-      document.getElementById("eraserBtn").textContent = erasing ? "🖊 Back to Pen" : "✏️ Use Eraser";
-    }
+    function checkAndSubmit() {
+      const happyText = document.getElementById("happyText").value.trim();
+      const error = document.getElementById("error");
 
-    function checkDrawing() {
-      if (points.length < 5) {
-        document.getElementById("error").textContent = "⚠️ Please draw a smile!";
+      const hasSmile = points.some(p => p.y > canvas.height / 2 && p.x > 50 && p.x < 250);
+      const startsWithHappy = happyText.toLowerCase().startsWith("i am happy because");
+
+      if (!hasSmile) {
+        error.textContent = "⚠️ Please draw a smile!";
         return;
       }
 
-      const mouthPoints = points.filter(p => p.y > canvas.height * 0.6);
-      const topPoints = points.filter(p => p.y < canvas.height * 0.4);
-
-      if (mouthPoints.length < 10 || topPoints.length > mouthPoints.length / 2) {
-        document.getElementById("error").textContent = "⚠️ That doesn't look like a smile. Try again!";
+      if (!startsWithHappy) {
+        error.textContent = "⚠️ Sentence must start with 'I am happy because...'";
         return;
       }
 
-      // Save smile count and go to reason page
+      // All good, save and go
       let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
       localStorage.setItem("weeklySmileCount", count + 1);
-      window.location.href = "reason.html";
+      window.location.href = "done.html";
     }
   </script>
 </body>
