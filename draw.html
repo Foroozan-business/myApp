@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Draw a Smile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: sans-serif;
@@ -15,19 +16,17 @@
       align-items: center;
       height: 100vh;
     }
-
     canvas {
       border: 2px dashed #999;
       background: #fff;
+      touch-action: none;
     }
-
     #controls {
       margin-top: 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
-
     button {
       margin-top: 10px;
       padding: 10px 20px;
@@ -36,53 +35,26 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
     #reason {
       margin-top: 10px;
       padding: 10px;
       font-size: 1em;
       width: 280px;
     }
-
     #error {
       color: red;
       font-weight: bold;
       margin-top: 10px;
     }
-
-    .exit-button {
-      position: absolute;
-      top: 10px;
-      left: 15px;
-      font-size: 2em;
-      color: red;
-      text-decoration: none;
-    }
-
-    .back-button {
-      position: absolute;
-      bottom: 15px;
-      left: 15px;
-      font-size: 1.5em;
-      color: gray;
-      text-decoration: none;
-    }
   </style>
 </head>
 <body>
-  <a href="exit.html" class="exit-button">&times;</a>
-  <a href="intro.html" class="back-button">&larr;</a>
-
-  <h2>No worries, draw a smile instead 😊</h2>
-
+  <h2>Draw your smile 😊</h2>
   <canvas id="canvas" width="300" height="200"></canvas>
-
   <div id="controls">
     <button onclick="clearCanvas()">🗑 Clear</button>
-
-    <input id="reason" type="text" placeholder='Type: I am happy because...' />
-
-    <button onclick="validateSmile()">Next ➡️</button>
+    <input id="reason" type="text" placeholder='Type: I am happy because...' autocomplete="new-password" />
+    <button onclick="validateSmile()">Check</button>
     <div id="error"></div>
   </div>
 
@@ -92,40 +64,42 @@
     let drawing = false;
     let points = [];
 
-    // Light smile template
-    function drawSmileTemplate() {
-      ctx.beginPath();
-      ctx.strokeStyle = "#eee";
-      ctx.lineWidth = 4;
-      ctx.arc(150, 120, 50, 0, Math.PI, false);
-      ctx.stroke();
-    }
-
-    drawSmileTemplate();
-
+    // Mouse drawing
     canvas.addEventListener("mousedown", (e) => {
       drawing = true;
       ctx.beginPath();
       ctx.moveTo(e.offsetX, e.offsetY);
     });
-
     canvas.addEventListener("mousemove", (e) => {
       if (!drawing) return;
       ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.strokeStyle = "#000";
-      ctx.lineWidth = 4;
-      ctx.lineCap = "round";
       ctx.stroke();
       points.push({ x: e.offsetX, y: e.offsetY });
     });
-
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseout", () => drawing = false);
+
+    // Touch drawing
+    canvas.addEventListener("touchstart", (e) => {
+      drawing = true;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      ctx.beginPath();
+      ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+    });
+    canvas.addEventListener("touchmove", (e) => {
+      if (!drawing) return;
+      const touch = e.touches[0];
+      const rect = canvas.getBoundingClientRect();
+      ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      ctx.stroke();
+      e.preventDefault();
+    });
+    canvas.addEventListener("touchend", () => drawing = false);
 
     function clearCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       points = [];
-      drawSmileTemplate();
       document.getElementById("error").textContent = "";
       document.getElementById("reason").value = "";
     }
@@ -133,21 +107,27 @@
     function validateSmile() {
       const reasonInput = document.getElementById("reason").value.trim();
       const smileShape = points.filter(p => p.y > 100 && p.x > 50 && p.x < 250);
+      const errorElement = document.getElementById("error");
 
       if (smileShape.length < 10) {
-        document.getElementById("error").textContent = "⚠️ Please draw a proper smile!";
+        errorElement.textContent = "⚠️ Please draw a proper smile!";
+        return;
+      }
+      if (!reasonInput.toLowerCase().startsWith("i am happy because")) {
+        errorElement.textContent = "⚠️ Please start with: I am happy because...";
         return;
       }
 
-      if (!reasonInput.startsWith("I am happy because")) {
-        document.getElementById("error").textContent = "⚠️ Please start your sentence with: I am happy because...";
-        return;
-      }
-
-      // Save smile
-      let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-      localStorage.setItem("weeklySmileCount", count + 1);
-      window.location.href = "done.html";
+      errorElement.innerHTML = `🎉 Well done!<br>`;
+      const btn = document.createElement("button");
+      btn.textContent = "Thank You";
+      btn.onclick = () => {
+        let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+        localStorage.setItem("weeklySmileCount", count + 1);
+        errorElement.innerHTML = "✅ Your smile has been added to the weekly smile count. 😊";
+        btn.remove();
+      };
+      errorElement.appendChild(btn);
     }
   </script>
 </body>
