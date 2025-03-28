@@ -6,7 +6,7 @@
     body {
       margin: 0;
       font-family: sans-serif;
-      background: #fff;
+      background: #fdfdfd;
       height: 100vh;
       display: flex;
       flex-direction: column;
@@ -15,16 +15,21 @@
       text-align: center;
     }
 
+    h2 {
+      font-size: 2em;
+      margin-bottom: 5px;
+    }
+
     video {
       width: 320px;
       height: 240px;
       background: #000;
-      margin-bottom: 10px;
+      border-radius: 8px;
     }
 
     #message {
       font-size: 1.2em;
-      margin: 10px 0;
+      margin: 15px 0;
     }
 
     .hidden { display: none; }
@@ -66,12 +71,8 @@
     const message = document.getElementById('message');
 
     let count = 3;
-    let smilingSeconds = 0;
-    let timerStarted = false;
-
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-      video.srcObject = stream;
-    });
+    let smileTime = 0;
+    let detectionInterval;
 
     const compliments = [
       "You're glowing today! ✨",
@@ -81,8 +82,12 @@
       "Smiling suits you so well 😊"
     ];
 
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      video.srcObject = stream;
+    });
+
     function startSmileDetection() {
-      const interval = setInterval(() => {
+      detectionInterval = setInterval(() => {
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const image = canvas.toDataURL('image/jpeg');
 
@@ -93,14 +98,15 @@
         })
         .then(res => res.json())
         .then(data => {
-          console.log(data);
           if (data.success && data.message.includes("beautiful")) {
-            smilingSeconds++;
-            message.textContent = `Smiling... ${smilingSeconds}s`;
+            smileTime++;
+            message.textContent = `😄 Smiling... ${smileTime}s`;
 
-            if (smilingSeconds >= 10) {
-              clearInterval(interval);
-              message.innerHTML = `🎉 ${compliments[Math.floor(Math.random() * compliments.length)]}`;
+            if (smileTime >= 10) {
+              clearInterval(detectionInterval);
+              const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+              message.innerHTML = `🎉 ${compliment}`;
+
               setTimeout(() => {
                 let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
                 localStorage.setItem("weeklySmileCount", count + 1);
@@ -108,24 +114,24 @@
               }, 3000);
             }
           } else {
-            smilingSeconds = 0;
+            smileTime = 0;
             message.textContent = "Try for a real smile 😐";
           }
         })
         .catch(err => {
-          console.error("Error checking smile:", err);
-          message.textContent = "Error detecting smile.";
-          clearInterval(interval);
+          console.error("Smile detection error:", err);
+          message.textContent = "Error processing smile.";
+          clearInterval(detectionInterval);
         });
       }, 1000);
     }
 
-    // 3...2...1 countdown then start detection
-    const countdownInterval = setInterval(() => {
+    // 3...2...1 countdown
+    const countdownTimer = setInterval(() => {
       count--;
       if (count === 0) {
+        clearInterval(countdownTimer);
         document.querySelector("h2").textContent = "Smile now! 😁";
-        clearInterval(countdownInterval);
         startSmileDetection();
       } else {
         countdown.textContent = count;
