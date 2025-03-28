@@ -4,60 +4,34 @@
   <title>Smile Booth</title>
   <style>
     body {
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #fefefe;
       text-align: center;
+      font-family: Arial, sans-serif;
     }
-
     h2 {
-      font-size: 28px;
-      margin-bottom: 10px;
+      font-size: 26px;
     }
-
-    p {
-      font-size: 20px;
+    .count {
+      font-size: 22px;
+      margin: 15px;
     }
-
     button {
-      font-size: 18px;
+      font-size: 20px;
       padding: 10px 20px;
       margin: 10px;
-      border-radius: 6px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
     }
   </style>
 </head>
 <body>
   <h2>Hi Smilie! Welcome to Smile Booth 😊</h2>
-  <p>Smile of this week: <span id="count">0</span></p>
-
-  <button onclick="location.href='smile-options.html'">Take me to my Smile Booth</button>
-  <button onclick="location.href='exit.html'">Exit</button>
+  <div class="count">Smile of this week: <span id="smileCount">0</span></div>
+  
+  <button onclick="location.href='smile.html'">Take me to my Smile Booth</button>
+  <button onclick="history.back()">Back</button>
+  <button onclick="alert('Can’t wait to see your next smile!'); window.close();" style="position:absolute; top:10px; right:10px;">&#10006;</button>
 
   <script>
-    const now = new Date();
-    const lastReset = localStorage.getItem('lastReset');
-
-    if (!lastReset || new Date(lastReset).getDay() !== now.getDay()) {
-      localStorage.setItem('smileCount', 0);
-      localStorage.setItem('lastReset', now.toISOString());
-    }
-
     const count = localStorage.getItem('smileCount') || 0;
-    document.getElementById('count').textContent = count;
+    document.getElementById('smileCount').textContent = count;
   </script>
 </body>
 </html>
