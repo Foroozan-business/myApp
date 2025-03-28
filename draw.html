@@ -8,18 +8,18 @@
       background-color: #f0f8ff;
       margin: 0;
       padding: 0;
-      text-align: center;
+      height: 100vh;
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      flex-direction: column;
+      text-align: center;
     }
 
     canvas {
       border: 2px dashed #999;
-      margin-top: 10px;
       background: #fff;
+      margin: 15px 0;
     }
 
     #controls {
@@ -67,8 +67,9 @@
   <h2>No worries, draw a smile instead 😊</h2>
 
   <canvas id="canvas" width="300" height="200"></canvas>
+
   <div id="controls">
-    <button onclick="toggleEraser()">🧽 Toggle Eraser</button>
+    <button onclick="toggleEraser()" id="eraserBtn">✏️ Use Eraser</button>
     <button onclick="clearCanvas()">🗑 Clear</button>
     <button onclick="checkDrawing()">Next ➡️</button>
   </div>
@@ -86,6 +87,7 @@
       drawing = true;
       ctx.beginPath();
       ctx.moveTo(e.offsetX, e.offsetY);
+      points = [{ x: e.offsetX, y: e.offsetY }];
     });
 
     canvas.addEventListener("mousemove", (e) => {
@@ -109,16 +111,24 @@
 
     function toggleEraser() {
       erasing = !erasing;
+      document.getElementById("eraserBtn").textContent = erasing ? "🖊 Back to Pen" : "✏️ Use Eraser";
     }
 
     function checkDrawing() {
-      const smileLike = points.some(p => p.y > canvas.height / 2 && p.x > 50 && p.x < 250);
-      if (!smileLike) {
+      if (points.length < 5) {
         document.getElementById("error").textContent = "⚠️ Please draw a smile!";
         return;
       }
 
-      // Save "smile added" and go to next screen
+      const mouthPoints = points.filter(p => p.y > canvas.height * 0.6);
+      const topPoints = points.filter(p => p.y < canvas.height * 0.4);
+
+      if (mouthPoints.length < 10 || topPoints.length > mouthPoints.length / 2) {
+        document.getElementById("error").textContent = "⚠️ That doesn't look like a smile. Try again!";
+        return;
+      }
+
+      // Save smile count and go to reason page
       let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
       localStorage.setItem("weeklySmileCount", count + 1);
       window.location.href = "reason.html";
