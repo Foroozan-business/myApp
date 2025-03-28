@@ -1,86 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smile Added 🎉</title>
+  <title>Success! 🎉</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
+      margin: 0;
+      font-family: sans-serif;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      background-color: #fff;
       text-align: center;
-      background-color: #fdf8f0;
     }
-
     h2 {
-      font-size: 30px;
-      color: #333;
+      font-size: 1.8em;
+      margin-bottom: 10px;
     }
-
-    .celebrate {
-      font-size: 36px;
-      margin: 10px 0;
+    p {
+      font-size: 1.2em;
+      margin: 5px 0;
     }
-
     button {
-      padding: 12px 24px;
-      margin: 15px;
-      font-size: 18px;
-      background-color: #4CAF50;
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 1em;
       border: none;
-      border-radius: 10px;
+      border-radius: 6px;
+      background-color: #007bff;
       color: white;
       cursor: pointer;
     }
-
-    button:hover {
-      background-color: #3e8e41;
-    }
-
-    .nav-buttons {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      font-size: 22px;
-    }
-
-    .nav-buttons a {
-      text-decoration: none;
-      color: #444;
-    }
-
     .exit-button {
       position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 26px;
+      top: 10px;
+      left: 15px;
+      font-size: 2em;
       color: red;
       text-decoration: none;
     }
   </style>
 </head>
 <body>
+  <a href="exit.html" class="exit-button">&times;</a>
 
-  <div class="nav-buttons">
-    <a href="index.html">&larr;</a>
-  </div>
-  <a class="exit-button" href="exit.html">&times;</a>
+  <h2>🎉 Your smile has been added to weekly smile count!</h2>
+  <p id="message">You're amazing!</p>
 
-  <div>
-    <div class="celebrate">🎉🎉🎉</div>
-    <h2>Your smile has been added to<br> the weekly smile count!</h2>
-    <div class="celebrate">😄</div>
-    <button onclick="goHome()">Go to Home Page</button>
-  </div>
+  <button onclick="location.href='index.html'">🏠 Go Home</button>
 
   <script>
-    function goHome() {
-      window.location.href = 'index.html';
-    }
-  </script>
+    const messages = [
+      "You're amazing!",
+      "Thanks for sharing your joy! 😊",
+      "You just made the world brighter!",
+      "You're a reason someone smiles today 😍",
+      "Smiles like yours make magic happen!"
+    ];
+    document.getElementById("message").textContent =
+      messages[Math.floor(Math.random() * messages.length)];
 
+    let count = localStorage.getItem("weeklySmileCount") || 0;
+    localStorage.setItem("weeklySmileCount", parseInt(count) + 1);
+  </script>
 </body>
 </html>
