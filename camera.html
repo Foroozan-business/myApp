@@ -75,14 +75,8 @@
     }
 
     @keyframes float {
-      0% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-150px) scale(0.5);
-        opacity: 0;
-      }
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
     }
 
     #celebrationText {
@@ -104,8 +98,8 @@
   </div>
 
   <h2>Smile Progress: <span id="progress">0</span> / 10</h2>
-  <video id="video" autoplay muted></video>
-  <p id="message">We’re watching for your beautiful smile 😁</p>
+  <video id="video" autoplay muted playsinline></video>
+  <p id="message">Loading camera...</p>
   <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 
   <div id="thankYouBox">
@@ -122,10 +116,14 @@
     const message = document.getElementById('message');
     const progressDisplay = document.getElementById('progress');
     const thankYouBox = document.getElementById('thankYouBox');
+    const celebrationText = document.getElementById("celebrationText");
 
     let smileCount = 0;
     let missedFrames = 0;
     let done = false;
+    let countdown = 3;
+    let detectionInterval;
+    let lastIndex = -1;
 
     const compliments = [
       "You're glowing today! ✨",
@@ -140,7 +138,6 @@
       "That smile is your superpower 💫"
     ];
 
-    let lastIndex = -1;
     function getUniqueCompliment() {
       let index;
       do {
@@ -151,9 +148,7 @@
     }
 
     function showConfettiEmojis(count = 20) {
-      const celebrationText = document.getElementById("celebrationText");
       celebrationText.style.display = "block";
-
       for (let i = 0; i < count; i++) {
         const emoji = document.createElement("div");
         emoji.textContent = "🎉";
@@ -163,70 +158,81 @@
         document.body.appendChild(emoji);
         setTimeout(() => emoji.remove(), 2000);
       }
-
-      setTimeout(() => {
-        celebrationText.style.display = "none";
-      }, 2000);
+      setTimeout(() => celebrationText.style.display = "none", 2000);
     }
 
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" }
+    }).then(stream => {
       video.srcObject = stream;
-      setInterval(checkSmile, 1000);
+      message.textContent = "Get ready to smile! 😄";
+
+      const interval = setInterval(() => {
+        message.textContent = `Starting in ${countdown}...`;
+        countdown--;
+        if (countdown < 0) {
+          clearInterval(interval);
+          message.textContent = "Smiling... 😊";
+          startSmileDetection();
+        }
+      }, 1000);
     }).catch(() => {
       message.textContent = "Camera access failed 😢";
     });
 
-    function checkSmile() {
-      if (done) return;
+    function startSmileDetection() {
+      detectionInterval = setInterval(() => {
+        if (done) return;
 
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const image = canvas.toDataURL('image/jpeg');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const image = canvas.toDataURL('image/jpeg');
 
-      fetch('https://myapp-xn74.onrender.com/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.message.includes("beautiful")) {
-          missedFrames = 0;
-          if (smileCount < 10) smileCount++;
-          progressDisplay.textContent = smileCount;
-          message.textContent = `Keep smiling! ${10 - smileCount} to go...`;
-
-          if (smileCount === 10) {
-            showSuccess();
-          }
-        } else {
-          missedFrames++;
-          if (missedFrames >= 3) {
-            smileCount = 0;
-            progressDisplay.textContent = smileCount;
-            message.textContent = "Smile lost 😐 Let's try again!";
+        fetch('https://myapp-xn74.onrender.com/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.message.includes("beautiful")) {
             missedFrames = 0;
-          }
-        }
-      })
-      .catch(() => {
-        message.textContent = "Smile detection failed.";
-      });
-    }
+            if (smileCount < 10) smileCount++;
+            progressDisplay.textContent = smileCount;
+            message.textContent = `Keep smiling! ${10 - smileCount} to go...`;
 
-    function showSuccess() {
-      done = true;
-      const compliment = getUniqueCompliment();
-      message.innerHTML = `🎉 ${compliment}`;
-      thankYouBox.style.display = "block";
-      showConfettiEmojis();
+            if (smileCount === 10) {
+              clearInterval(detectionInterval);
+              done = true;
+              message.innerHTML = `<strong>🎉 Well done!</strong>`;
+              thankYouBox.style.display = "block";
+              showConfettiEmojis();
+            }
+          } else {
+            missedFrames++;
+            if (missedFrames >= 3) {
+              smileCount = 0;
+              progressDisplay.textContent = smileCount;
+              message.textContent = "Smile lost 😐 Let's try again!";
+              missedFrames = 0;
+            }
+          }
+        })
+        .catch(() => {
+          message.textContent = "Smile detection failed.";
+        });
+      }, 1000);
     }
 
     function handleThankYou() {
+      const compliment = getUniqueCompliment();
+      localStorage.setItem("lastSmileMessage", compliment);
       let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
       localStorage.setItem("weeklySmileCount", count + 1);
+
       document.body.innerHTML = `
         <div style="text-align: center; padding: 30px;">
-          <h1 style="color: green;">✅ Your smile has been added to the weekly smile count. 😊</h1>
+          <h1 style="color: green;">🎉✅ Your smile has been added to the weekly smile count. 😊</h1>
+          <p style="font-style: italic;">"${compliment}"</p>
           <p><a href="index.html" style="text-decoration: underline;">Return to Home</a></p>
         </div>
       `;
