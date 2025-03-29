@@ -198,7 +198,7 @@
             missedFrames = 0;
             if (smileCount < 10) smileCount++;
             progressDisplay.textContent = smileCount;
-            message.textContent = `Keep smiling! ${10 - smileCount} to go...`;
+            message.textContent = `Keep smiling! `;
 
             if (smileCount === 10) {
               clearInterval(detectionInterval);
