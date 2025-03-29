@@ -9,9 +9,8 @@
       background: linear-gradient(to bottom right, #f0fff0, #e0f7fa);
       font-family: 'Segoe UI', sans-serif;
       color: #000;
-      margin: 0;
-      padding: 0;
       height: 100vh;
+      margin: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -20,30 +19,24 @@
       position: relative;
     }
 
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
     video {
       border: 5px solid #4CAF50;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.2);
       width: 320px;
       height: 240px;
-      margin: 10px 0;
+      margin-top: 10px;
     }
 
     h2 {
       font-size: 1.6em;
-      margin: 10px 0;
+      margin-bottom: 10px;
     }
 
     #message {
       font-size: 1.2em;
+      margin: 15px 0;
       font-weight: bold;
-      margin: 10px 0;
     }
 
     .nav {
@@ -89,7 +82,7 @@
 
     #celebrationText {
       position: absolute;
-      top: 15%;
+      top: 20%;
       font-size: 2em;
       font-weight: bold;
       color: #4CAF50;
@@ -105,19 +98,17 @@
     <a href="index.html">Home</a>
   </div>
 
-  <div class="container">
-    <h2>Smile Progress: <span id="progress">0</span> / 10</h2>
-    <video id="video" autoplay muted playsinline></video>
-    <p id="message">Loading camera...</p>
-    <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
+  <h2>Smile Progress: <span id="progress">0</span> / 10</h2>
+  <video id="video" autoplay playsinline muted></video>
+  <p id="message">Loading camera...</p>
+  <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 
-    <div id="thankYouBox">
-      <p>✅ Well done! Click the button below to add your smile:</p>
-      <button onclick="handleThankYou()">Thank You</button>
-    </div>
-
-    <div id="celebrationText">🎊 Celebrating your smile!</div>
+  <div id="thankYouBox">
+    <p>✅ Well done! Click the button below to add your smile:</p>
+    <button onclick="handleThankYou()">Thank You</button>
   </div>
+
+  <div id="celebrationText">🎊 Celebrating your smile!</div>
 
   <script>
     const video = document.getElementById('video');
@@ -195,8 +186,6 @@
               message.innerHTML = `<strong>🎉 Well done!</strong>`;
               thankYouBox.style.display = "block";
               showConfettiEmojis();
-            } else {
-              message.textContent = "Keep smiling! 😊";
             }
           } else {
             missedFrames++;
@@ -214,31 +203,32 @@
       }, 1000);
     }
 
-    navigator.mediaDevices.getUserMedia({
-      video: { facingMode: "user" }
-    }).then(stream => {
-      video.srcObject = stream;
-      message.textContent = "Get ready to smile...";
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+      .then(stream => {
+        video.srcObject = stream;
+        message.textContent = "Get ready to smile...";
 
-      const countdownInterval = setInterval(() => {
-        message.textContent = `Starting in ${countdown}...`;
-        countdown--;
-        if (countdown < 0) {
-          clearInterval(countdownInterval);
-          message.textContent = "Smiling... 😊";
-          startSmileDetection();
-        }
-      }, 1000);
-    }).catch(err => {
-      console.error("Camera error:", err);
-      message.textContent = "Camera access failed 😢";
-    });
+        const countdownInterval = setInterval(() => {
+          message.textContent = `Starting in ${countdown}...`;
+          countdown--;
+          if (countdown < 0) {
+            clearInterval(countdownInterval);
+            message.textContent = "Smiling... 😊";
+            startSmileDetection();
+          }
+        }, 1000);
+      })
+      .catch(err => {
+        console.error("Camera error:", err);
+        message.textContent = "Camera access failed 😢";
+      });
 
     function handleThankYou() {
       const compliment = getUniqueCompliment();
       localStorage.setItem("lastSmileMessage", compliment);
       let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
       localStorage.setItem("weeklySmileCount", count + 1);
+
       document.body.innerHTML = `
         <div style="text-align: center; padding: 30px;">
           <h1 style="color: green;">🎉✅ Your smile has been added to the weekly smile count. 😊</h1>
