@@ -84,6 +84,16 @@
         opacity: 0;
       }
     }
+
+    #celebrationText {
+      position: absolute;
+      top: 20%;
+      font-size: 2em;
+      font-weight: bold;
+      color: #4CAF50;
+      display: none;
+      z-index: 999;
+    }
   </style>
 </head>
 <body>
@@ -102,6 +112,8 @@
     <p>✅ Well done! Click the button below to add your smile:</p>
     <button onclick="handleThankYou()">Thank You</button>
   </div>
+
+  <div id="celebrationText">🎊 Celebrating your smile!</div>
 
   <script>
     const video = document.getElementById('video');
@@ -139,6 +151,9 @@
     }
 
     function showConfettiEmojis(count = 20) {
+      const celebrationText = document.getElementById("celebrationText");
+      celebrationText.style.display = "block";
+
       for (let i = 0; i < count; i++) {
         const emoji = document.createElement("div");
         emoji.textContent = "🎉";
@@ -148,6 +163,10 @@
         document.body.appendChild(emoji);
         setTimeout(() => emoji.remove(), 2000);
       }
+
+      setTimeout(() => {
+        celebrationText.style.display = "none";
+      }, 2000);
     }
 
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
@@ -199,7 +218,7 @@
       const compliment = getUniqueCompliment();
       message.innerHTML = `🎉 ${compliment}`;
       thankYouBox.style.display = "block";
-      showConfettiEmojis(); // 🎉 Boom!
+      showConfettiEmojis();
     }
 
     function handleThankYou() {
