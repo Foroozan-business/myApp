@@ -1,76 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Draw a Smile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smile Detection Camera</title>
   <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f0f8ff;
+      background: linear-gradient(to bottom right, #f0fff0, #e0f7fa);
+      font-family: 'Segoe UI', sans-serif;
+      color: #000;
+      height: 100vh;
       margin: 0;
-      padding: 0;
-      text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      text-align: center;
       position: relative;
-      color: #000;
     }
 
-    canvas {
-      border: 2px dashed #999;
-      background: #fff;
-      touch-action: none;
-      border-radius: 8px;
+    video {
+      border: 5px solid #4CAF50;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 320px;
+      height: 240px;
     }
 
-    #controls {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    h2 {
+      font-size: 1.6em;
+      margin-bottom: 10px;
     }
 
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 1em;
-      border: none;
-      border-radius: 6px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-
-    #reason {
-      margin-top: 10px;
-      padding: 10px;
-      font-size: 1em;
-      width: 280px;
-    }
-
-    #error {
+    #message {
+      font-size: 1.1em;
+      margin: 15px 0;
       font-weight: bold;
-      margin-top: 10px;
-      color: black;
     }
 
     .nav {
       position: absolute;
       top: 10px;
-      left: 10px;
+      left: 15px;
     }
 
     .nav a {
       margin-right: 15px;
       text-decoration: none;
-      font-size: 1.2em;
+      font-size: 1.1em;
       color: #333;
     }
 
+    button {
+      margin-top: 12px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    #thankYouBox {
+      margin-top: 20px;
+      display: none;
+    }
+
+    /* Confetti celebration */
     .confetti {
       position: absolute;
       font-size: 2rem;
@@ -107,90 +104,92 @@
     <a href="index.html">Home</a>
   </div>
 
-  <h2>Draw your smile 😊</h2>
-  <canvas id="canvas" width="300" height="200"></canvas>
-  <div id="controls">
-    <button onclick="clearCanvas()">🗑 Clear</button>
-    <input id="reason" type="text" placeholder='Type: I am happy because...'
-           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
-    <button onclick="validateSmile()">Check</button>
-    <div id="error"></div>
-  </div>
+  <h2>Smile Progress: <span id="progress">0</span> / 10</h2>
+  <video id="video" autoplay muted></video>
+  <p id="message">We’re watching for your beautiful smile 😁</p>
+  <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 
-  <!-- Celebration Text & Sound -->
   <div id="celebrationText">🎊 Celebrating your smile!</div>
   <audio id="celebrationSound" src="celebrate.mp3" preload="auto"></audio>
 
+  <div id="thankYouBox">
+    <p>✅ Well done! Click the button below to add your smile:</p>
+    <button onclick="handleThankYou()">Thank You</button>
+  </div>
+
   <script>
-    const canvas = document.getElementById("canvas");
-    const ctx = canvas.getContext("2d");
-    let drawing = false;
-    let points = [];
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const message = document.getElementById('message');
+    const progressDisplay = document.getElementById('progress');
+    const thankYouBox = document.getElementById('thankYouBox');
 
-    function drawSmileTemplate() {
-      ctx.beginPath();
-      ctx.strokeStyle = "#ddd";
-      ctx.lineWidth = 4;
-      ctx.arc(150, 120, 50, 0, Math.PI, false);
-      ctx.stroke();
+    let smileCount = 0;
+    let missedFrames = 0;
+    let done = false;
+
+    const compliments = [
+      "You're glowing today! ✨",
+      "That smile could light up a room! 🌟",
+      "You look amazing when you smile 😍",
+      "Smiling suits you so well 😊",
+      "That’s the spirit! Keep shining!",
+      "Look at that joy! 😊",
+      "You're radiating kindness! 🌈",
+      "Keep smiling, it's contagious! 😄"
+    ];
+
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      video.srcObject = stream;
+      setInterval(checkSmile, 1000);
+    }).catch(() => {
+      message.textContent = "Camera access failed 😢";
+    });
+
+    function checkSmile() {
+      if (done) return;
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const image = canvas.toDataURL('image/jpeg');
+
+      fetch('https://myapp-xn74.onrender.com/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.message.includes("beautiful")) {
+          missedFrames = 0;
+          if (smileCount < 10) smileCount++;
+          progressDisplay.textContent = smileCount;
+          message.textContent = `Keep smiling! ${10 - smileCount} to go...`;
+
+          if (smileCount === 10) {
+            showSuccess();
+          }
+        } else {
+          missedFrames++;
+          if (missedFrames >= 3) {
+            smileCount = 0;
+            progressDisplay.textContent = smileCount;
+            message.textContent = "Smile lost 😐 Let's try again!";
+            missedFrames = 0;
+          }
+        }
+      })
+      .catch(() => {
+        message.textContent = "Smile detection failed.";
+      });
     }
 
-    drawSmileTemplate();
-
-    function getTouchPos(evt) {
-      const rect = canvas.getBoundingClientRect();
-      return {
-        x: evt.touches[0].clientX - rect.left,
-        y: evt.touches[0].clientY - rect.top
-      };
-    }
-
-    canvas.addEventListener("mousedown", (e) => {
-      drawing = true;
-      ctx.beginPath();
-      ctx.moveTo(e.offsetX, e.offsetY);
-    });
-
-    canvas.addEventListener("mousemove", (e) => {
-      if (!drawing) return;
-      ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.strokeStyle = "#000";
-      ctx.lineWidth = 3;
-      ctx.lineCap = "round";
-      ctx.stroke();
-      points.push({ x: e.offsetX, y: e.offsetY });
-    });
-
-    canvas.addEventListener("mouseup", () => drawing = false);
-    canvas.addEventListener("mouseout", () => drawing = false);
-
-    canvas.addEventListener("touchstart", (e) => {
-      drawing = true;
-      const pos = getTouchPos(e);
-      ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y);
-    });
-
-    canvas.addEventListener("touchmove", (e) => {
-      if (!drawing) return;
-      const pos = getTouchPos(e);
-      ctx.lineTo(pos.x, pos.y);
-      ctx.strokeStyle = "#000";
-      ctx.lineWidth = 3;
-      ctx.lineCap = "round";
-      ctx.stroke();
-      points.push({ x: pos.x, y: pos.y });
-      e.preventDefault();
-    });
-
-    canvas.addEventListener("touchend", () => drawing = false);
-
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      points = [];
-      drawSmileTemplate();
-      document.getElementById("error").textContent = "";
-      document.getElementById("reason").value = "";
+    function showSuccess() {
+      done = true;
+      const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+      message.innerHTML = `🎉 ${compliment}`;
+      showConfettiEmojis();
+      thankYouBox.style.display = "block";
     }
 
     function showConfettiEmojis(count = 20) {
@@ -215,44 +214,15 @@
       }, 2000);
     }
 
-    function validateSmile() {
-      const reasonInput = document.getElementById("reason").value.trim();
-      const errorElement = document.getElementById("error");
-
-      const smileZone = points.filter(p =>
-        p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220
-      );
-
-      const leftSide = points.some(p => p.x < 120 && p.y > 100);
-      const rightSide = points.some(p => p.x > 180 && p.y > 100);
-
-      if (smileZone.length < 15 || !leftSide || !rightSide) {
-        errorElement.textContent = "⚠️ That doesn't look like a smile. Try to follow the gray arc.";
-        return;
-      }
-
-      if (!reasonInput.toLowerCase().startsWith("i am happy because")) {
-        errorElement.textContent = "⚠️ Please start with: I am happy because...";
-        return;
-      }
-
-      // 🎉 Celebrate!
-      showConfettiEmojis();
-      errorElement.innerHTML = `🎉🎉🎉 Well done!<br><br><strong>Click below to add your smile:</strong><br>`;
-
-      const btn = document.createElement("button");
-      btn.textContent = "Thank You";
-      btn.onclick = () => {
-        let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-        localStorage.setItem("weeklySmileCount", count + 1);
-        document.body.innerHTML = `
-          <div style="text-align: center; padding: 30px;">
-            <h1 style="color: green;">✅ Your smile has been added to the weekly smile count. 😊</h1>
-            <p><a href="index.html" style="text-decoration: underline;">Return to Home</a></p>
-          </div>
-        `;
-      };
-      errorElement.appendChild(btn);
+    function handleThankYou() {
+      let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+      localStorage.setItem("weeklySmileCount", count + 1);
+      document.body.innerHTML = `
+        <div style="text-align: center; padding: 30px;">
+          <h1 style="color: green;">✅ Your smile has been added to the weekly smile count. 😊</h1>
+          <p><a href="index.html" style="text-decoration: underline;">Return to Home</a></p>
+        </div>
+      `;
     }
   </script>
 </body>
