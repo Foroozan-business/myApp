@@ -99,11 +99,22 @@
     let points = [];
 
     function drawSmileTemplate() {
+      // Clear in case this is a redraw
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Smile (light red lips)
       ctx.beginPath();
-      ctx.strokeStyle = "#ddd";
+      ctx.strokeStyle = "#fbb";
       ctx.lineWidth = 4;
       ctx.arc(150, 120, 50, 0, Math.PI, false);
       ctx.stroke();
+
+      // Eyes (black dots)
+      ctx.beginPath();
+      ctx.fillStyle = "#000";
+      ctx.arc(120, 80, 5, 0, 2 * Math.PI); // Left eye
+      ctx.arc(180, 80, 5, 0, 2 * Math.PI); // Right eye
+      ctx.fill();
     }
 
     drawSmileTemplate();
@@ -124,7 +135,6 @@
       };
     }
 
-    // Mouse Events
     canvas.addEventListener("mousedown", e => {
       drawing = true;
       ctx.beginPath();
@@ -144,7 +154,6 @@
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseout", () => drawing = false);
 
-    // Touch Events
     canvas.addEventListener("touchstart", e => {
       drawing = true;
       const pos = getTouchPos(e);
@@ -177,7 +186,7 @@
       const rightSide = points.some(p => p.x > 180 && p.y > 100);
 
       if (smileZone.length < 15 || !leftSide || !rightSide) {
-        errorElement.textContent = "⚠️ That doesn't look like a smile. Try to follow the gray arc.";
+        errorElement.textContent = "⚠️ That doesn't look like a smile. Try to follow the guide.";
         return;
       }
 
