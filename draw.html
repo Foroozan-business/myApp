@@ -16,12 +16,15 @@
       justify-content: center;
       align-items: center;
       height: 100vh;
+      position: relative;
+      color: #000;
     }
 
     canvas {
       border: 2px dashed #999;
       background: #fff;
       touch-action: none;
+      border-radius: 8px;
     }
 
     #controls {
@@ -37,6 +40,8 @@
       font-size: 1em;
       border: none;
       border-radius: 6px;
+      background-color: #4CAF50;
+      color: white;
       cursor: pointer;
     }
 
@@ -48,8 +53,9 @@
     }
 
     #error {
-      margin-top: 10px;
       font-weight: bold;
+      margin-top: 10px;
+      color: black;
     }
 
     .nav {
@@ -65,9 +71,32 @@
       color: #333;
     }
 
+    .confetti {
+      position: absolute;
+      font-size: 2rem;
+      animation: float 2s ease-out forwards;
+      pointer-events: none;
+    }
+
     @keyframes float {
-      from { transform: translateY(0); }
-      to { transform: translateY(-100px); opacity: 0; }
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-150px) scale(0.5);
+        opacity: 0;
+      }
+    }
+
+    #celebrationText {
+      position: absolute;
+      top: 20%;
+      font-size: 2em;
+      font-weight: bold;
+      color: #4CAF50;
+      display: none;
+      z-index: 999;
     }
   </style>
 </head>
@@ -80,18 +109,17 @@
 
   <h2>Draw your smile 😊</h2>
   <canvas id="canvas" width="300" height="200"></canvas>
-
   <div id="controls">
     <button onclick="clearCanvas()">🗑 Clear</button>
-    <input id="reason" type="text"
-           placeholder='Type: I am happy because...'
-           autocomplete="off"
-           autocorrect="off"
-           autocapitalize="off"
-           spellcheck="false" />
+    <input id="reason" type="text" placeholder='Type: I am happy because...'
+           autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
     <button onclick="validateSmile()">Check</button>
     <div id="error"></div>
   </div>
+
+  <!-- Celebration Text & Sound -->
+  <div id="celebrationText">🎊 Celebrating your smile!</div>
+  <audio id="celebrationSound" src="celebrate.mp3" preload="auto"></audio>
 
   <script>
     const canvas = document.getElementById("canvas");
@@ -101,7 +129,7 @@
 
     function drawSmileTemplate() {
       ctx.beginPath();
-      ctx.strokeStyle = "#ddd"; // light gray
+      ctx.strokeStyle = "#ddd";
       ctx.lineWidth = 4;
       ctx.arc(150, 120, 50, 0, Math.PI, false);
       ctx.stroke();
@@ -165,11 +193,32 @@
       document.getElementById("reason").value = "";
     }
 
+    function showConfettiEmojis(count = 20) {
+      const celebrationText = document.getElementById("celebrationText");
+      const sound = document.getElementById("celebrationSound");
+
+      celebrationText.style.display = "block";
+      if (sound) sound.play();
+
+      for (let i = 0; i < count; i++) {
+        const emoji = document.createElement("div");
+        emoji.textContent = "🎉";
+        emoji.className = "confetti";
+        emoji.style.left = `${Math.random() * 100}%`;
+        emoji.style.top = `${50 + Math.random() * 30}%`;
+        document.body.appendChild(emoji);
+        setTimeout(() => emoji.remove(), 2000);
+      }
+
+      setTimeout(() => {
+        celebrationText.style.display = "none";
+      }, 2000);
+    }
+
     function validateSmile() {
       const reasonInput = document.getElementById("reason").value.trim();
       const errorElement = document.getElementById("error");
 
-      // Smile zone check
       const smileZone = points.filter(p =>
         p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220
       );
@@ -178,34 +227,18 @@
       const rightSide = points.some(p => p.x > 180 && p.y > 100);
 
       if (smileZone.length < 15 || !leftSide || !rightSide) {
-        errorElement.style.color = "red";
         errorElement.textContent = "⚠️ That doesn't look like a smile. Try to follow the gray arc.";
         return;
       }
 
       if (!reasonInput.toLowerCase().startsWith("i am happy because")) {
-        errorElement.style.color = "red";
         errorElement.textContent = "⚠️ Please start with: I am happy because...";
         return;
       }
 
-      // 🎉 Success message in black
-      errorElement.style.color = "black";
+      // 🎉 Celebrate!
+      showConfettiEmojis();
       errorElement.innerHTML = `🎉🎉🎉 Well done!<br><br><strong>Click below to add your smile:</strong><br>`;
-
-      // 🎉 Confetti emojis
-      for (let i = 0; i < 15; i++) {
-        const confetti = document.createElement("div");
-        confetti.textContent = "🎉";
-        confetti.style.position = "absolute";
-        confetti.style.left = `${Math.random() * 100}%`;
-        confetti.style.top = `${Math.random() * 100}%`;
-        confetti.style.fontSize = "2em";
-        confetti.style.opacity = "0.8";
-        confetti.style.animation = "float 2s ease-in-out forwards";
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 2000);
-      }
 
       const btn = document.createElement("button");
       btn.textContent = "Thank You";
@@ -219,7 +252,6 @@
           </div>
         `;
       };
-
       errorElement.appendChild(btn);
     }
   </script>
