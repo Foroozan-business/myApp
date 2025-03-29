@@ -12,6 +12,8 @@
       align-items: center;
       height: 100vh;
       text-align: center;
+      padding: 20px;
+      box-sizing: border-box;
     }
     #controls {
       margin-top: 10px;
@@ -125,6 +127,7 @@
       const pos = getTouchPos(e);
       ctx.beginPath();
       ctx.moveTo(pos.x, pos.y);
+      e.preventDefault();
     });
 
     canvas.addEventListener("touchmove", e => {
