@@ -8,7 +8,7 @@
     body {
       background: linear-gradient(to bottom right, #f0fff0, #e0f7fa);
       font-family: 'Segoe UI', sans-serif;
-      color: #000;
+      color: #333;
       height: 100vh;
       margin: 0;
       display: flex;
@@ -18,7 +18,6 @@
       text-align: center;
       position: relative;
     }
-
     video {
       border: 5px solid #4CAF50;
       border-radius: 10px;
@@ -26,37 +25,27 @@
       width: 320px;
       height: 240px;
     }
-
     h2 {
       font-size: 1.6em;
       margin-bottom: 10px;
     }
-
     #message {
       font-size: 1.1em;
-      margin-top: 10px;
+      margin: 15px 0;
       font-weight: bold;
-      color: #000;
+      color: #444;
     }
-
     .nav {
       position: absolute;
       top: 10px;
       left: 15px;
     }
-
     .nav a {
       margin-right: 15px;
       text-decoration: none;
       font-size: 1.1em;
       color: #333;
     }
-
-    #thankYouBox {
-      margin-top: 20px;
-      display: none;
-    }
-
     button {
       margin-top: 12px;
       padding: 10px 20px;
@@ -67,10 +56,9 @@
       color: white;
       cursor: pointer;
     }
-
-    @keyframes float {
-      from { transform: translateY(0); }
-      to { transform: translateY(-100px); opacity: 0; }
+    #thankYouBox {
+      margin-top: 20px;
+      display: none;
     }
   </style>
 </head>
@@ -108,19 +96,30 @@
       "That smile could light up a room! 🌟",
       "You look amazing when you smile 😍",
       "Smiling suits you so well 😊",
-      "That’s the spirit! Keep shining!"
+      "That’s the spirit! Keep shining!",
+      "You just made the world brighter ☀️",
+      "Smiles like yours are rare 💎",
+      "Keep radiating joy! ✨",
+      "Happiness looks good on you 😄",
+      "That smile is your superpower 💫"
     ];
 
-    const sound = new Audio("yay.mp3"); // Optional sound (must exist in folder)
+    let lastIndex = -1;
+    function getUniqueCompliment() {
+      let index;
+      do {
+        index = Math.floor(Math.random() * compliments.length);
+      } while (index === lastIndex);
+      lastIndex = index;
+      return compliments[index];
+    }
 
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-      .then(stream => {
-        video.srcObject = stream;
-        setInterval(checkSmile, 1000);
-      })
-      .catch(() => {
-        message.textContent = "Camera access failed 😢";
-      });
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      video.srcObject = stream;
+      setInterval(checkSmile, 1000);
+    }).catch(() => {
+      message.textContent = "Camera access failed 😢";
+    });
 
     function checkSmile() {
       if (done) return;
@@ -139,11 +138,7 @@
           missedFrames = 0;
           if (smileCount < 10) smileCount++;
           progressDisplay.textContent = smileCount;
-
-          // Clear "smile lost" message once smile restarts
-          if (smileCount === 1) {
-            message.textContent = "";
-          }
+          message.textContent = `Keep smiling! ${10 - smileCount} to go...`;
 
           if (smileCount === 10) {
             showSuccess();
@@ -165,23 +160,7 @@
 
     function showSuccess() {
       done = true;
-      sound.play();
-
-      // 🎉 Floating confetti
-      for (let i = 0; i < 15; i++) {
-        const confetti = document.createElement("div");
-        confetti.textContent = "🎉";
-        confetti.style.position = "absolute";
-        confetti.style.left = `${Math.random() * 100}%`;
-        confetti.style.top = `${Math.random() * 100}%`;
-        confetti.style.fontSize = "2em";
-        confetti.style.opacity = "0.8";
-        confetti.style.animation = "float 2s ease-in-out forwards";
-        document.body.appendChild(confetti);
-        setTimeout(() => confetti.remove(), 2000);
-      }
-
-      const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+      const compliment = getUniqueCompliment();
       message.innerHTML = `🎉 ${compliment}`;
       thankYouBox.style.display = "block";
     }
