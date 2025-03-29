@@ -1,120 +1,209 @@
-<script>
-  const canvas = document.getElementById("canvas");
-  const ctx = canvas.getContext("2d");
-  const errorElement = document.getElementById("error");
-  let drawing = false;
-  let points = [];
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Draw a Smile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100vh;
+      margin: 0;
+    }
 
-  function drawSmileTemplate() {
-    ctx.beginPath();
-    ctx.strokeStyle = "#ddd";
-    ctx.lineWidth = 4;
-    ctx.arc(150, 120, 50, 0, Math.PI, false);
-    ctx.stroke();
-  }
+    canvas {
+      border: 2px dashed #aaa;
+      background-color: #fff;
+      border-radius: 10px;
+      touch-action: none;
+    }
 
-  drawSmileTemplate();
+    #controls {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-  function clearCanvas() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    points = [];
+    #reason {
+      margin-top: 10px;
+      padding: 10px;
+      font-size: 1em;
+      width: 280px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    #error {
+      margin-top: 12px;
+      font-weight: bold;
+      color: black;
+    }
+
+    .nav {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="intro.html">Go Back</a>
+    <a href="index.html">Home</a>
+  </div>
+
+  <h2>Draw your smile 😊</h2>
+
+  <canvas id="canvas" width="300" height="200"></canvas>
+
+  <div id="controls">
+    <button onclick="clearCanvas()">🗑 Clear</button>
+    <input id="reason" type="text" placeholder='Type: I am happy because...'
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+    <button onclick="validateSmile()">Check</button>
+    <div id="error"></div>
+  </div>
+
+  <audio id="confettiSound" src="celebrate.mp3" preload="auto"></audio>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+    const errorElement = document.getElementById("error");
+    let drawing = false;
+    let points = [];
+
+    function drawSmileTemplate() {
+      ctx.beginPath();
+      ctx.strokeStyle = "#ddd";
+      ctx.lineWidth = 4;
+      ctx.arc(150, 120, 50, 0, Math.PI, false);
+      ctx.stroke();
+    }
+
     drawSmileTemplate();
-    errorElement.textContent = "";
-    document.getElementById("reason").value = "";
-  }
 
-  function getTouchPos(evt) {
-    const rect = canvas.getBoundingClientRect();
-    return {
-      x: evt.touches[0].clientX - rect.left,
-      y: evt.touches[0].clientY - rect.top
-    };
-  }
-
-  // Mouse Events
-  canvas.addEventListener("mousedown", e => {
-    drawing = true;
-    ctx.beginPath();
-    ctx.moveTo(e.offsetX, e.offsetY);
-  });
-
-  canvas.addEventListener("mousemove", e => {
-    if (!drawing) return;
-    ctx.lineTo(e.offsetX, e.offsetY);
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 3;
-    ctx.lineCap = "round";
-    ctx.stroke();
-    points.push({ x: e.offsetX, y: e.offsetY });
-  });
-
-  canvas.addEventListener("mouseup", () => drawing = false);
-  canvas.addEventListener("mouseout", () => drawing = false);
-
-  // Touch Events
-  canvas.addEventListener("touchstart", e => {
-    drawing = true;
-    const pos = getTouchPos(e);
-    ctx.beginPath();
-    ctx.moveTo(pos.x, pos.y);
-    e.preventDefault();
-  });
-
-  canvas.addEventListener("touchmove", e => {
-    if (!drawing) return;
-    const pos = getTouchPos(e);
-    ctx.lineTo(pos.x, pos.y);
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 3;
-    ctx.lineCap = "round";
-    ctx.stroke();
-    points.push({ x: pos.x, y: pos.y });
-    e.preventDefault();
-  });
-
-  canvas.addEventListener("touchend", () => drawing = false);
-
-  function validateSmile() {
-    const reasonInput = document.getElementById("reason").value.trim();
-    errorElement.innerHTML = ""; // Clear any old messages
-
-    // Smile shape detection
-    const smileZone = points.filter(p =>
-      p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220
-    );
-    const leftSide = points.some(p => p.x < 120 && p.y > 100);
-    const rightSide = points.some(p => p.x > 180 && p.y > 100);
-
-    if (smileZone.length < 15 || !leftSide || !rightSide) {
-      errorElement.innerHTML = "⚠️ That doesn't look like a smile. Try to follow the gray arc.";
-      return;
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      points = [];
+      drawSmileTemplate();
+      errorElement.textContent = "";
+      document.getElementById("reason").value = "";
     }
 
-    if (!reasonInput.toLowerCase().startsWith("i am happy because")) {
-      errorElement.innerHTML = "⚠️ Please start with: I am happy because...";
-      return;
+    function getTouchPos(evt) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: evt.touches[0].clientX - rect.left,
+        y: evt.touches[0].clientY - rect.top
+      };
     }
 
-    // 🎉 Celebration
-    const confetti = "🎉🎉🎉🎉🎉🎉🎉🎉🎉🎉";
-    errorElement.innerHTML = `${confetti}<br><strong>Well done!</strong><br><br>Click below to add your smile:`;
+    // Mouse Events
+    canvas.addEventListener("mousedown", e => {
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
 
-    document.getElementById("confettiSound").play();
+    canvas.addEventListener("mousemove", e => {
+      if (!drawing) return;
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.stroke();
+      points.push({ x: e.offsetX, y: e.offsetY });
+    });
 
-    const btn = document.createElement("button");
-    btn.textContent = "Thank You";
-    btn.onclick = () => {
-      let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-      localStorage.setItem("weeklySmileCount", count + 1);
-      document.body.innerHTML = `
-        <div style="text-align: center; padding: 30px;">
-          <h1 style="color: green;">🎉✅ Your smile has been added to the weekly smile count. 😊</h1>
-          <p><a href="index.html" style="text-decoration: underline;">Return to Home</a></p>
-        </div>
-      `;
-    };
+    canvas.addEventListener("mouseup", () => drawing = false);
+    canvas.addEventListener("mouseout", () => drawing = false);
 
-    errorElement.appendChild(document.createElement("br"));
-    errorElement.appendChild(btn);
-  }
-</script>
+    // Touch Events
+    canvas.addEventListener("touchstart", e => {
+      drawing = true;
+      const pos = getTouchPos(e);
+      ctx.beginPath();
+      ctx.moveTo(pos.x, pos.y);
+      e.preventDefault();
+    });
+
+    canvas.addEventListener("touchmove", e => {
+      if (!drawing) return;
+      const pos = getTouchPos(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.stroke();
+      points.push({ x: pos.x, y: pos.y });
+      e.preventDefault();
+    });
+
+    canvas.addEventListener("touchend", () => drawing = false);
+
+    function validateSmile() {
+      const reasonInput = document.getElementById("reason").value.trim();
+
+      const smileZone = points.filter(p =>
+        p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220
+      );
+      const leftSide = points.some(p => p.x < 120 && p.y > 100);
+      const rightSide = points.some(p => p.x > 180 && p.y > 100);
+
+      if (smileZone.length < 15 || !leftSide || !rightSide) {
+        errorElement.textContent = "⚠️ That doesn't look like a smile. Try to follow the gray arc.";
+        return;
+      }
+
+      if (!reasonInput.toLowerCase().startsWith("i am happy because")) {
+        errorElement.textContent = "⚠️ Please start with: I am happy because...";
+        return;
+      }
+
+      errorElement.innerHTML = `🎉🎉🎉🎉🎉<br><strong>Well done!</strong><br><br>Click below to add your smile:`;
+      document.getElementById("confettiSound").play();
+
+      const btn = document.createElement("button");
+      btn.textContent = "Thank You";
+      btn.onclick = () => {
+        let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+        localStorage.setItem("weeklySmileCount", count + 1);
+        document.body.innerHTML = `
+          <div style="text-align: center; padding: 30px;">
+            <h1 style="color: green;">🎉✅ Your smile has been added to the weekly smile count. 😊</h1>
+            <p><a href="index.html" style="text-decoration: underline;">Return to Home</a></p>
+          </div>
+        `;
+      };
+      errorElement.appendChild(document.createElement("br"));
+      errorElement.appendChild(btn);
+    }
+  </script>
+</body>
+</html>
