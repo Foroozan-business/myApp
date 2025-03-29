@@ -67,6 +67,11 @@
       color: white;
       cursor: pointer;
     }
+
+    @keyframes float {
+      from { transform: translateY(0); }
+      to { transform: translateY(-100px); opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -106,6 +111,8 @@
       "That’s the spirit! Keep shining!"
     ];
 
+    const sound = new Audio("yay.mp3"); // Optional sound (must exist in folder)
+
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
       .then(stream => {
         video.srcObject = stream;
@@ -133,6 +140,11 @@
           if (smileCount < 10) smileCount++;
           progressDisplay.textContent = smileCount;
 
+          // Clear "smile lost" message once smile restarts
+          if (smileCount === 1) {
+            message.textContent = "";
+          }
+
           if (smileCount === 10) {
             showSuccess();
           }
@@ -153,6 +165,22 @@
 
     function showSuccess() {
       done = true;
+      sound.play();
+
+      // 🎉 Floating confetti
+      for (let i = 0; i < 15; i++) {
+        const confetti = document.createElement("div");
+        confetti.textContent = "🎉";
+        confetti.style.position = "absolute";
+        confetti.style.left = `${Math.random() * 100}%`;
+        confetti.style.top = `${Math.random() * 100}%`;
+        confetti.style.fontSize = "2em";
+        confetti.style.opacity = "0.8";
+        confetti.style.animation = "float 2s ease-in-out forwards";
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 2000);
+      }
+
       const compliment = compliments[Math.floor(Math.random() * compliments.length)];
       message.innerHTML = `🎉 ${compliment}`;
       thankYouBox.style.display = "block";
