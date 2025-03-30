@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: linear-gradient(to bottom right, #f0fff0, #e0f7fa);
+      background: linear-gradient(to bottom right, #e6fff2, #ccffe6); /* same light green */
       font-family: 'Segoe UI', sans-serif;
       color: #000;
       height: 100vh;
@@ -18,6 +18,7 @@
       text-align: center;
       position: relative;
     }
+
     video {
       border: 5px solid #4CAF50;
       border-radius: 10px;
@@ -26,30 +27,36 @@
       height: 240px;
       margin-top: 10px;
     }
+
     h2 {
       font-size: 1.6em;
       margin-bottom: 10px;
     }
+
     #message {
       font-size: 1.2em;
       margin: 15px 0;
       font-weight: bold;
     }
+
     .nav {
       position: absolute;
       top: 10px;
       left: 15px;
     }
+
     .nav a {
       margin-right: 15px;
       text-decoration: none;
       font-size: 1.1em;
       color: #333;
     }
+
     #thankYouBox {
       margin-top: 20px;
       display: none;
     }
+
     button {
       margin-top: 12px;
       padding: 10px 20px;
@@ -60,16 +67,19 @@
       color: white;
       cursor: pointer;
     }
+
     .confetti {
       position: absolute;
       font-size: 2rem;
       animation: float 2s ease-out forwards;
       pointer-events: none;
     }
+
     @keyframes float {
       0% { transform: translateY(0) scale(1); opacity: 1; }
       100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
     }
+
     #celebrationText {
       position: absolute;
       top: 12%;
@@ -100,9 +110,6 @@
 
   <div id="celebrationText">🎊 Celebrating your smile!</div>
 
-  <!-- 🔊 Background Music -->
-  <audio id="backgroundMusic" src="music.mp3" loop></audio>
-
   <script>
     const video = document.getElementById('video');
     const canvas = document.getElementById('canvas');
@@ -111,7 +118,6 @@
     const progressDisplay = document.getElementById('progress');
     const thankYouBox = document.getElementById('thankYouBox');
     const celebrationText = document.getElementById("celebrationText");
-    const music = document.getElementById("backgroundMusic");
 
     let smileCount = 0;
     let missedFrames = 0;
@@ -201,10 +207,6 @@
       .then(stream => {
         video.srcObject = stream;
         message.textContent = "Get ready to smile...";
-        // 👇 Start music after camera allowed
-        music.play().catch(() => {
-          document.addEventListener("click", () => music.play());
-        });
 
         const countdownInterval = setInterval(() => {
           message.textContent = `Starting in ${countdown}...`;
