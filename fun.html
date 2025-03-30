@@ -1,69 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fun of the Day 🎁</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       background-color: #d7fdd7;
       font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
       text-align: center;
+      margin: 0;
       padding: 20px;
     }
 
-    .nav {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-    }
-
-    .nav a {
-      margin-right: 15px;
-      text-decoration: none;
-;
-      font-size: 1.1em;
-      color: #333;
-    }
-
     h1 {
-      margin-bottom: 10px;
-    }
-
-    .info-box {
-      font-size: 1em;
-      color: #333;
-      max-width: 500px;
-      margin: 0 auto 20px;
+      margin-top: 60px;
     }
 
     .gift-container {
       display: flex;
-      gap: 30px;
-      flex-wrap: wrap;
       justify-content: center;
+      gap: 30px;
+      margin-top: 40px;
     }
 
     .gift-box {
-      width: 130px;
-;
-      height: 130px;
-      background: linear-gradient(to bottom, #ff8c8c, #ffcccc);
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(to bottom, #ff8c8c, #ffc1c1);
       border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
       font-size: 2em;
-      position: relative;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       transition: transform 0.2s;
     }
 
@@ -72,117 +44,175 @@
     }
 
     .label {
-      margin-top: 8px;
+      margin-top: 10px;
       font-weight: bold;
-      color: #000;
     }
 
-    #result {
-      margin-top: 30px;
-      font-size: 1.1em;
-      max-width: 400px;
-      line-height: 1.5;
-      color: #000;
+    .popup {
       background: #fff;
       padding: 20px;
-      border-radius: 12px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: 40px auto 20px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      border: 2px dashed #888;
       position: relative;
     }
 
     .arrow {
-      position: absolute;
-      bottom: -20px;
-      left: 50%;
-      transform: translateX(-50%);
+      animation: bounce 1.2s infinite;
       font-size: 1.5em;
-      animation: bounce 1.5s infinite;
     }
 
     @keyframes bounce {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-5px);
-      }
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(5px); }
     }
 
-    .action-button {
+    .close-btn {
       margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 1em;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
+      font-weight: bold;
       cursor: pointer;
+      color: green;
     }
 
-    .action-button:hover {
-      background-color: #45a049;
+    .menu {
+      position: fixed;
+      bottom: 10px;
+      right: 15px;
+    }
+
+    .menu button {
+      font-size: 1.3em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      bottom: 40px;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+
+    .menu-content a {
+      display: block;
+      padding: 6px 10px;
+      font-size: 0.95em;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .menu-content a:hover {
+      background-color: #f0f0f0;
+    }
+
+    .info-note {
+      margin-top: 25px;
+      font-size: 0.95em;
+      color: #333;
+      font-style: italic;
     }
   </style>
 </head>
 <body>
-  <div class="nav">
-    <a href="exit.html">Exit</a>
-    <a href="intro.html">Go Back</a>
-  </div>
 
   <h1>🎉 Fun of the Day 🎉</h1>
-  <p class="info-box">
-    You receive <strong>one surprise joke</strong> and <strong>one positive quote</strong> each day 😊.<br>
-    If you visit again today, you’ll see the same ones — fresh smiles arrive every 24 hours (Greek time 🇬🇷)!
-  </p>
 
   <div class="gift-container">
-    <div onclick="showJoke()">
-      <div class="gift-box">🎁</div>
-      <div class="label">Joke of the Day</div>
-    </div>
-    <div onclick="showQuote()">
-      <div class="gift-box">🎁</div>
-      <div class="label">Quote of the Day</div>
+    <div onclick="openGift('joke')" class="gift-box">🎁</div>
+    <div class="label">Joke of the Day</div>
+
+    <div onclick="openGift('quote')" class="gift-box">🎁</div>
+    <div class="label">Quote of the Day</div>
+  </div>
+
+  <div id="popup"></div>
+
+  <p class="info-note">You get one surprise per type each day (Greek time)! 🇬🇷</p>
+
+  <!-- Menu -->
+  <div class="menu">
+    <button onclick="toggleMenu()">☰ Menu</button>
+    <div class="menu-content" id="menuContent">
+      <a href="index.html">🏠 Homepage</a>
+      <a href="smile-options.html">😊 Smile Option Page</a>
+      <a href="camera.html">📷 Smile Record Page</a>
+      <a href="draw.html">🎨 Smile Paint Page</a>
+      <a href="fun.html">🎁 Fun Page</a>
+      <a href="calender-tracker.html">🗓️ Calendar Tracker</a>
     </div>
   </div>
 
-  <div id="result">Click a gift box to open it!</div>
-
   <script>
-    const jokeAPI = 'https://icanhazdadjoke.com/';
-    const quoteAPI = 'https://api.quotable.io/random';
+    function getGreekDate() {
+      const now = new Date();
+      const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+      const greek = new Date(utc + 3600000 * 2);
+      return greek.toISOString().split("T")[0];
+    }
 
-    async function fetchContent(url, type) {
+    async function openGift(type) {
+      const today = getGreekDate();
+      const key = `fun-${type}-${today}`;
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        showPopup(type, saved);
+        return;
+      }
+
       try {
-        const response = await fetch(url, {
-          headers: { 'Accept': 'application/json' }
-        });
-        const data = await response.json();
-        return type === 'joke' ? data.joke : `${data.content} — ${data.author}`;
-      } catch (error) {
-        console.error(`Error fetching ${type}:`, error);
-        return `Failed to load ${type}. Please try again later.`;
+        let content;
+        if (type === "joke") {
+          const res = await fetch("https://official-joke-api.appspot.com/jokes/random");
+          const data = await res.json();
+          content = `${data.setup}<br><em>${data.punchline}</em>`;
+        } else {
+          // backup quote
+          const res = await fetch("https://api.quotable.io/random");
+          const data = await res.json();
+          content = `"${data.content}"<br>– <em>${data.author}</em>`;
+        }
+        localStorage.setItem(key, content);
+        showPopup(type, content);
+      } catch {
+        showPopup(type, "⚠️ Failed to load. Please try again later.");
       }
     }
 
-    async function showJoke() {
-      const today = new Date().toISOString().split('T')[0];
-      if (localStorage.getItem('jokeDate') === today) {
-        displayResult(localStorage.getItem('jokeText'), 'Hahaha!');
-      } else {
-        const joke = await fetchContent(jokeAPI, 'joke');
-        localStorage.setItem('jokeDate', today);
-        localStorage.setItem('jokeText', joke);
-        displayResult(joke, 'Hahaha!');
-      }
+    function showPopup(type, content) {
+      const action = type === "joke" ? "😂 Hahaha" : "🌟 Beautiful";
+      const popup = `
+        <div class="popup">
+          ⬇️
+          <p>${content}</p>
+          <div class="arrow">⬇️</div>
+          <div class="close-btn" onclick="document.getElementById('popup').innerHTML=''">${action}</div>
+        </div>
+      `;
+      document.getElementById("popup").innerHTML = popup;
     }
 
-    async function showQuote() {
-      const today = new Date().toISOString().split('T')[0];
-      if (localStorage.getItem('quoteDate') === today) {
-        displayResult(localStorage.getItem('quoteText'), 'Beautiful');
-      } else {
-        const quote = await
-::contentReference[oaicite:14]{index=14}
- 
+    function toggleMenu() {
+      const menu = document.getElementById("menuContent");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    document.addEventListener("click", function (e) {
+      const menu = document.getElementById("menuContent");
+      const button = document.querySelector(".menu button");
+      if (!menu.contains(e.target) && !button.contains(e.target)) {
+        menu.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
