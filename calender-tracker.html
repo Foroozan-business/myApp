@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,9 +8,13 @@
     body {
       flex-direction: column;
       padding: 20px;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4fff4;
     }
 
     h2 {
+      margin-top: 80px;
       margin-bottom: 10px;
     }
 
@@ -21,6 +24,7 @@
       gap: 10px;
       width: 100%;
       max-width: 500px;
+      margin: auto;
     }
 
     .day {
@@ -42,8 +46,11 @@
       background-color: #e3f2fd;
     }
 
+    /* Top Left Navigation */
     .nav {
-      margin-bottom: 20px;
+      position: absolute;
+      top: 10px;
+      left: 15px;
     }
 
     .nav a {
@@ -53,10 +60,10 @@
       color: #000;
     }
 
-    /* 🌟 Menu Styles */
+    /* 🌟 Top Right Menu */
     .menu {
-      position: fixed;
-      top: 15px;
+      position: absolute;
+      top: 10px;
       right: 15px;
       z-index: 1000;
     }
@@ -98,16 +105,13 @@
 </head>
 <body>
 
+  <!-- 🔙 Top Left Navigation -->
   <div class="nav">
-    <a href="intro.html">Smile Booth</a>
     <a href="exit.html">Exit</a>
+    <a href="smile-options.html">Back</a>
   </div>
 
-  <h2>Your Smile Calendar 📅</h2>
-  <p>Green = days you smiled or drew!</p>
-  <div class="calendar" id="calendar"></div>
-
-  <!-- 🌟 Universal Menu -->
+  <!-- ☰ Top Right Menu -->
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -120,14 +124,17 @@
     </div>
   </div>
 
+  <h2>Your Smile Calendar 📅</h2>
+  <p>Green = days you smiled or drew!</p>
+  <div class="calendar" id="calendar"></div>
+
   <script>
-    // 🌈 Calendar generation
     const calendarEl = document.getElementById("calendar");
     const smileData = JSON.parse(localStorage.getItem("smileCalendar") || "{}");
 
     const today = new Date();
     const year = today.getFullYear();
-    const month = today.getMonth(); // 0-indexed
+    const month = today.getMonth();
     const start = new Date(year, month, 1);
     const end = new Date(year, month + 1, 0);
     const totalDays = end.getDate();
@@ -151,13 +158,11 @@
       calendarEl.appendChild(div);
     }
 
-    // 🌟 Menu toggle
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    // Close menu if click outside
     document.addEventListener("click", function (event) {
       const menu = document.getElementById("menuContent");
       const button = document.querySelector(".menu button");
@@ -166,6 +171,5 @@
       }
     });
   </script>
-
 </body>
 </html>
