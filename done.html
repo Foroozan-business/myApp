@@ -5,6 +5,15 @@
   <link rel="stylesheet" href="styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #e8fce8;
+      text-align: center;
+      position: relative;
+      padding-top: 80px; /* Space for dropdown menu */
+    }
+
     .celebration {
       font-size: 3em;
       margin-bottom: 10px;
@@ -29,18 +38,31 @@
       100% { transform: translateY(-200px) scale(0.5); opacity: 0; }
     }
 
+    .exit-button {
+      position: fixed;
+      top: 10px;
+      left: 15px;
+      font-size: 2em;
+      color: red;
+      text-decoration: none;
+      z-index: 1001;
+    }
+
     .menu {
-      position: absolute;
+      position: fixed;
       top: 10px;
       right: 15px;
+      z-index: 1001;
     }
 
     .menu button {
       font-size: 1.3em;
-      background: none;
+      background: #4CAF50;
+      color: white;
       border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
-      color: #333;
     }
 
     .menu-content {
@@ -53,7 +75,7 @@
       border-radius: 8px;
       padding: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 999;
+      z-index: 9999;
     }
 
     .menu-content a {
@@ -68,13 +90,15 @@
       background-color: #f0f0f0;
     }
 
-    .exit-button {
-      position: absolute;
-      top: 10px;
-      left: 15px;
-      font-size: 2em;
-      color: red;
-      text-decoration: none;
+    .home-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -100,6 +124,8 @@
   <h1>Your smile has been added to the weekly smile count! 😄</h1>
   <p>You're spreading happiness one smile at a time.</p>
   <p id="compliment"></p>
+
+  <button class="home-button" onclick="location.href='index.html'">Go to Home Page 🏠</button>
 
   <script>
     const compliment = localStorage.getItem("lastSmileMessage");
