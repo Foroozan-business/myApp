@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: linear-gradient(to bottom right, #e6fff2, #ccffe6); /* same light green */
+      background: linear-gradient(to bottom right, #eaffea, #c8f7c8);
       font-family: 'Segoe UI', sans-serif;
       color: #000;
       height: 100vh;
@@ -28,44 +28,14 @@
       margin-top: 10px;
     }
 
-    h2 {
-      font-size: 1.6em;
-      margin-bottom: 10px;
-    }
-
-    #message {
-      font-size: 1.2em;
-      margin: 15px 0;
-      font-weight: bold;
-    }
-
-    .nav {
+    #celebrationText {
       position: absolute;
-      top: 10px;
-      left: 15px;
-    }
-
-    .nav a {
-      margin-right: 15px;
-      text-decoration: none;
-      font-size: 1.1em;
-      color: #333;
-    }
-
-    #thankYouBox {
-      margin-top: 20px;
+      top: 12%;
+      font-size: 2em;
+      font-weight: bold;
+      color: #4CAF50;
       display: none;
-    }
-
-    button {
-      margin-top: 12px;
-      padding: 10px 20px;
-      font-size: 1em;
-      border: none;
-      border-radius: 8px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
+      z-index: 999;
     }
 
     .confetti {
@@ -80,14 +50,17 @@
       100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
     }
 
-    #celebrationText {
+    .nav {
       position: absolute;
-      top: 12%;
-      font-size: 2em;
-      font-weight: bold;
-      color: #4CAF50;
-      display: none;
-      z-index: 999;
+      top: 10px;
+      left: 15px;
+    }
+
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #333;
     }
   </style>
 </head>
@@ -103,12 +76,14 @@
   <p id="message">Loading camera...</p>
   <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 
-  <div id="thankYouBox">
+  <div id="thankYouBox" style="display:none; margin-top: 20px;">
     <p>✅ Well done! Click the button below to add your smile:</p>
     <button onclick="handleThankYou()">Thank You</button>
   </div>
 
   <div id="celebrationText">🎊 Celebrating your smile!</div>
+
+  <audio id="backgroundMusic" src="music.mp3" loop></audio>
 
   <script>
     const video = document.getElementById('video');
@@ -118,6 +93,7 @@
     const progressDisplay = document.getElementById('progress');
     const thankYouBox = document.getElementById('thankYouBox');
     const celebrationText = document.getElementById("celebrationText");
+    const music = document.getElementById("backgroundMusic");
 
     let smileCount = 0;
     let missedFrames = 0;
@@ -126,23 +102,17 @@
     let lastIndex = -1;
 
     const compliments = [
-      "You're glowing today! ✨",
-      "That smile could light up a room! 🌟",
-      "You look amazing when you smile 😍",
-      "Smiling suits you so well 😊",
-      "That’s the spirit! Keep shining!",
-      "You just made the world brighter ☀️",
-      "Smiles like yours are rare 💎",
-      "Keep radiating joy! ✨",
-      "Happiness looks good on you 😄",
-      "That smile is your superpower 💫"
+      "You're glowing today! ✨", "That smile could light up a room! 🌟",
+      "You look amazing when you smile 😍", "Smiling suits you so well 😊",
+      "That’s the spirit! Keep shining!", "You just made the world brighter ☀️",
+      "Smiles like yours are rare 💎", "Keep radiating joy! ✨",
+      "Happiness looks good on you 😄", "That smile is your superpower 💫"
     ];
 
     function getUniqueCompliment() {
       let index;
-      do {
-        index = Math.floor(Math.random() * compliments.length);
-      } while (index === lastIndex);
+      do { index = Math.floor(Math.random() * compliments.length); }
+      while (index === lastIndex);
       lastIndex = index;
       return compliments[index];
     }
@@ -207,6 +177,12 @@
       .then(stream => {
         video.srcObject = stream;
         message.textContent = "Get ready to smile...";
+
+        music.play().catch(() => {
+          document.addEventListener("click", () => {
+            if (music.paused) music.play();
+          });
+        });
 
         const countdownInterval = setInterval(() => {
           message.textContent = `Starting in ${countdown}...`;
