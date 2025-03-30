@@ -2,8 +2,8 @@
 <html>
 <head>
   <title>Draw a Smile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
   <style>
     body {
       display: flex;
@@ -68,24 +68,69 @@
       color: #333;
     }
 
-    .confetti {
-      position: absolute;
-      font-size: 2rem;
-      animation: float 2s ease-out forwards;
-      pointer-events: none;
+    /* 🌟 Menu Styles */
+    .menu {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
     }
 
-    @keyframes float {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
+    .menu button {
+      font-size: 1.2em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      padding: 10px;
+    }
+
+    .menu-content a {
+      display: block;
+      text-decoration: none;
+      padding: 6px 10px;
+      color: #333;
+      font-size: 1em;
+    }
+
+    .menu-content a:hover {
+      background-color: #f0f0f0;
     }
   </style>
 </head>
 <body>
+
+  <!-- Navigation -->
   <div class="nav">
     <a href="exit.html">Exit</a>
     <a href="intro.html">Go Back</a>
     <a href="index.html">Home</a>
+  </div>
+
+  <!-- 🌟 Universal Menu -->
+  <div class="menu">
+    <button onclick="toggleMenu()">☰ Menu</button>
+    <div class="menu-content" id="menuContent">
+      <a href="index.html">🏠 Homepage</a>
+      <a href="smile-options.html">😊 Smile Option Page</a>
+      <a href="camera.html">📷 Smile Record Page</a>
+      <a href="draw.html">🎨 Smile Paint Page</a>
+      <a href="fun.html">🎁 Fun Page</a>
+      <a href="calender-tracker.html">🗓️ Calendar Tracker</a>
+    </div>
   </div>
 
   <h2>Draw your smile 😊</h2>
@@ -94,38 +139,35 @@
 
   <div id="controls">
     <button onclick="clearCanvas()">🗑 Clear</button>
-    <input id="reason" type="text" placeholder="Type: I am happy because..." />
+    <input id="reason" type="text" placeholder='Type: I am happy because...'
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
     <button onclick="validateSmile()">Check</button>
     <div id="error"></div>
   </div>
 
   <audio id="confettiSound" src="celebrate.mp3" preload="auto"></audio>
-  <audio id="backgroundMusic" src="music.mp3" loop preload="auto"></audio>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const errorElement = document.getElementById("error");
-    const music = document.getElementById("backgroundMusic");
-
     let drawing = false;
     let points = [];
 
     function drawSmileTemplate() {
-      // Smile line
       ctx.beginPath();
-      ctx.strokeStyle = "#f2a8a8"; // light red
+      ctx.strokeStyle = "#f2a8a8"; // light red smile
       ctx.lineWidth = 4;
       ctx.arc(150, 120, 50, 0, Math.PI, false);
       ctx.stroke();
 
-      // Eyes
       ctx.beginPath();
       ctx.fillStyle = "#000";
-      ctx.arc(120, 70, 5, 0, 2 * Math.PI); // left
+      ctx.arc(120, 70, 5, 0, 2 * Math.PI); // left eye
       ctx.fill();
+
       ctx.beginPath();
-      ctx.arc(180, 70, 5, 0, 2 * Math.PI); // right
+      ctx.arc(180, 70, 5, 0, 2 * Math.PI); // right eye
       ctx.fill();
     }
 
@@ -147,7 +189,6 @@
       };
     }
 
-    // Mouse Events
     canvas.addEventListener("mousedown", e => {
       drawing = true;
       ctx.beginPath();
@@ -157,7 +198,7 @@
     canvas.addEventListener("mousemove", e => {
       if (!drawing) return;
       ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.strokeStyle = "#e60000";
+      ctx.strokeStyle = "#e60000"; // red pen
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
       ctx.stroke();
@@ -167,7 +208,6 @@
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseout", () => drawing = false);
 
-    // Touch Events
     canvas.addEventListener("touchstart", e => {
       drawing = true;
       const pos = getTouchPos(e);
@@ -190,21 +230,11 @@
 
     canvas.addEventListener("touchend", () => drawing = false);
 
-    function showConfetti(count = 20) {
-      for (let i = 0; i < count; i++) {
-        const emoji = document.createElement("div");
-        emoji.textContent = "🎉";
-        emoji.className = "confetti";
-        emoji.style.left = `${Math.random() * 100}%`;
-        emoji.style.top = `${50 + Math.random() * 30}%`;
-        document.body.appendChild(emoji);
-        setTimeout(() => emoji.remove(), 2000);
-      }
-    }
-
     function validateSmile() {
       const reasonInput = document.getElementById("reason").value.trim();
-      const smileZone = points.filter(p => p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220);
+      const smileZone = points.filter(p =>
+        p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220
+      );
       const leftSide = points.some(p => p.x < 120 && p.y > 100);
       const rightSide = points.some(p => p.x > 180 && p.y > 100);
 
@@ -220,19 +250,19 @@
 
       errorElement.innerHTML = `🎉🎉🎉🎉🎉<br><strong>Well done!</strong><br><br>Click below to add your smile:`;
       document.getElementById("confettiSound").play();
-      showConfetti();
-
-      // ✅ Save to smileCalendar
-      const dateKey = new Date().toISOString().split("T")[0];
-      const calendarData = JSON.parse(localStorage.getItem("smileCalendar") || '{}');
-      calendarData[dateKey] = (calendarData[dateKey] || 0) + 1;
-      localStorage.setItem("smileCalendar", JSON.stringify(calendarData));
 
       const btn = document.createElement("button");
       btn.textContent = "Thank You";
       btn.onclick = () => {
         let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
         localStorage.setItem("weeklySmileCount", count + 1);
+
+        // ✅ Update calendar
+        const dateKey = new Date().toISOString().split("T")[0];
+        const calendarData = JSON.parse(localStorage.getItem("smileCalendar") || '{}');
+        calendarData[dateKey] = (calendarData[dateKey] || 0) + 1;
+        localStorage.setItem("smileCalendar", JSON.stringify(calendarData));
+
         document.body.innerHTML = `
           <div style="text-align: center; padding: 30px;">
             <h1 style="color: green;">🎉✅ Your smile has been added to the weekly smile count. 😊</h1>
@@ -244,13 +274,18 @@
       errorElement.appendChild(btn);
     }
 
-    // 🎵 Start music auto or on click
-    window.addEventListener("DOMContentLoaded", () => {
-      music.play().catch(() => {
-        document.addEventListener("click", () => {
-          if (music.paused) music.play();
-        });
-      });
+    // 🌟 Toggle universal menu
+    function toggleMenu() {
+      const menu = document.getElementById("menuContent");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    document.addEventListener("click", function (event) {
+      const menu = document.getElementById("menuContent");
+      const button = document.querySelector(".menu button");
+      if (!menu.contains(event.target) && event.target !== button) {
+        menu.style.display = "none";
+      }
     });
   </script>
 </body>
