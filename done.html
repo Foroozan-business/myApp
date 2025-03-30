@@ -1,18 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <title>Smile Added!</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #e8fce8;
       text-align: center;
-      padding-top: 80px;
-      position: relative;
-      overflow-x: hidden;
+      padding: 30px;
+      background: linear-gradient(to bottom right, #e8fce8, #d8f8e8);
     }
 
     .celebration {
@@ -39,31 +36,34 @@
       100% { transform: translateY(-200px) scale(0.5); opacity: 0; }
     }
 
-    .exit-button {
-      position: fixed;
+    /* Top left navigation */
+    .nav {
+      position: absolute;
       top: 10px;
       left: 15px;
-      font-size: 2em;
-      color: red;
-      text-decoration: none;
-      z-index: 1001;
     }
 
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #000;
+    }
+
+    /* Top right menu */
     .menu {
-      position: fixed;
+      position: absolute;
       top: 10px;
       right: 15px;
-      z-index: 1001;
+      z-index: 1000;
     }
 
     .menu button {
       font-size: 1.3em;
-      background-color: #4CAF50;
-      color: white;
+      background: none;
       border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
       cursor: pointer;
+      color: #333;
     }
 
     .menu-content {
@@ -76,7 +76,7 @@
       border-radius: 8px;
       padding: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 9999;
+      z-index: 999;
     }
 
     .menu-content a {
@@ -90,24 +90,17 @@
     .menu-content a:hover {
       background-color: #f0f0f0;
     }
-
-    .home-button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 1em;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
-  <!-- Exit Button -->
-  <a href="exit.html" class="exit-button" aria-label="Exit Page">&times;</a>
 
-  <!-- Universal Menu -->
+  <!-- 🔙 Top Left Navigation -->
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="intro.html">Go Back</a>
+  </div>
+
+  <!-- ☰ Top Right Universal Menu -->
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -120,27 +113,24 @@
     </div>
   </div>
 
-  <!-- Main Content -->
+  <!-- 🎉 Smile Added Message -->
   <div class="celebration">🎉🎉🎉</div>
   <h1>Your smile has been added to the weekly smile count! 😄</h1>
   <p>You're spreading happiness one smile at a time.</p>
   <p id="compliment"></p>
 
-  <button class="home-button" onclick="location.href='index.html'">Go to Home Page 🏠</button>
-
+  <!-- 🎈 Confetti emojis -->
   <script>
     const compliment = localStorage.getItem("lastSmileMessage");
     if (compliment) {
       document.getElementById("compliment").textContent = compliment;
     }
 
-    // Toggle Menu
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    // Close menu if clicked outside
     document.addEventListener("click", function (event) {
       const menu = document.getElementById("menuContent");
       const button = document.querySelector(".menu button");
@@ -149,7 +139,6 @@
       }
     });
 
-    // Floating Emojis
     function showFloatingEmojis(count = 20) {
       for (let i = 0; i < count; i++) {
         const emoji = document.createElement("div");
