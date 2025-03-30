@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <title>Smile Added!</title>
-  <link rel="stylesheet" href="styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
       background-color: #e8fce8;
       text-align: center;
+      padding-top: 80px;
       position: relative;
-      padding-top: 80px; /* Space for dropdown menu */
+      overflow-x: hidden;
     }
 
     .celebration {
@@ -57,7 +58,7 @@
 
     .menu button {
       font-size: 1.3em;
-      background: #4CAF50;
+      background-color: #4CAF50;
       color: white;
       border: none;
       padding: 6px 12px;
@@ -104,9 +105,9 @@
 </head>
 <body>
   <!-- Exit Button -->
-  <a href="exit.html" class="exit-button">&times;</a>
+  <a href="exit.html" class="exit-button" aria-label="Exit Page">&times;</a>
 
-  <!-- Menu -->
+  <!-- Universal Menu -->
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -133,20 +134,22 @@
       document.getElementById("compliment").textContent = compliment;
     }
 
+    // Toggle Menu
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
+    // Close menu if clicked outside
     document.addEventListener("click", function (event) {
       const menu = document.getElementById("menuContent");
       const button = document.querySelector(".menu button");
-      if (!menu.contains(event.target) && !button.contains(event.target)) {
+      if (!menu.contains(event.target) && event.target !== button) {
         menu.style.display = "none";
       }
     });
 
-    // 🎈 Floating emojis
+    // Floating Emojis
     function showFloatingEmojis(count = 20) {
       for (let i = 0; i < count; i++) {
         const emoji = document.createElement("div");
