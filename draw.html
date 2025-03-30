@@ -89,14 +89,11 @@
   </div>
 
   <audio id="confettiSound" src="celebrate.mp3" preload="auto"></audio>
-  <audio id="backgroundMusic" src="music.mp3" preload="auto" loop></audio>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const errorElement = document.getElementById("error");
-    const music = document.getElementById("backgroundMusic");
-
     let drawing = false;
     let points = [];
 
@@ -212,15 +209,6 @@
       errorElement.appendChild(document.createElement("br"));
       errorElement.appendChild(btn);
     }
-
-    // 🎵 Start music when page loads or on click fallback
-    window.addEventListener("DOMContentLoaded", () => {
-      music.play().catch(() => {
-        document.addEventListener("click", () => {
-          if (music.paused) music.play();
-        });
-      });
-    });
   </script>
 </body>
 </html>
