@@ -38,15 +38,5 @@
     document.getElementById("global-count").innerHTML =
       `So far, <strong>${global}</strong> people have smiled in Smile Booth today! 😄`;
   </script>
-
-  <!-- 🔊 Background Music -->
-  <audio id="backgroundMusic" src="music.mp3" autoplay loop></audio>
-  <script>
-    const music = document.getElementById('backgroundMusic');
-    music.volume = 0.3;
-    document.addEventListener("click", () => {
-      if (music.paused) music.play().catch(() => {});
-    });
-  </script>
 </body>
 </html>
