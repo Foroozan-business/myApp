@@ -28,50 +28,9 @@
     .nav a {
       margin-right: 15px;
       text-decoration: none;
+;
       font-size: 1.1em;
       color: #333;
-    }
-
-    .menu {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-    }
-
-    .menu button {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      font-size: 1em;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .menu-content {
-      display: none;
-      position: absolute;
-      top: 40px;
-      right: 0;
-      background-color: #ffffff;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      z-index: 1000;
-    }
-
-    .menu-content a {
-      display: block;
-      padding: 6px 12px;
-      text-decoration: none;
-      color: #000;
-      font-size: 0.95em;
-    }
-
-    .menu-content a:hover {
-      background-color: #f0f0f0;
-      border-radius: 4px;
     }
 
     h1 {
@@ -94,6 +53,7 @@
 
     .gift-box {
       width: 130px;
+;
       height: 130px;
       background: linear-gradient(to bottom, #ff8c8c, #ffcccc);
       border-radius: 16px;
@@ -123,6 +83,44 @@
       max-width: 400px;
       line-height: 1.5;
       color: #000;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      position: relative;
+    }
+
+    .arrow {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5em;
+      animation: bounce 1.5s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    .action-button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .action-button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
@@ -130,18 +128,6 @@
   <div class="nav">
     <a href="exit.html">Exit</a>
     <a href="intro.html">Go Back</a>
-  </div>
-
-  <div class="menu">
-    <button onclick="toggleMenu()">☰ Menu</button>
-    <div class="menu-content" id="menuContent">
-      <a href="index.html">🏠 Homepage</a>
-      <a href="smile-options.html">😊 Smile Option Page</a>
-      <a href="camera.html">📷 Smile Record Page</a>
-      <a href="draw.html">🎨 Smile Paint Page</a>
-      <a href="fun.html">🎁 Fun Page</a>
-      <a href="calender-tracker.html">🗓️ Calendar Tracker</a>
-    </div>
   </div>
 
   <h1>🎉 Fun of the Day 🎉</h1>
@@ -164,51 +150,39 @@
   <div id="result">Click a gift box to open it!</div>
 
   <script>
-    function toggleMenu() {
-      const menu = document.getElementById("menuContent");
-      menu.style.display = menu.style.display === "block" ? "none" : "block";
-    }
+    const jokeAPI = 'https://icanhazdadjoke.com/';
+    const quoteAPI = 'https://api.quotable.io/random';
 
-    async function showQuote() {
+    async function fetchContent(url, type) {
       try {
-        const res = await fetch('https://type.fit/api/quotes');
-        const quotes = await res.json();
-        const today = new Date().toISOString().split('T')[0];
-        const stored = localStorage.getItem('quoteDate');
-
-        if (stored === today && localStorage.getItem('quoteText')) {
-          document.getElementById("result").innerHTML = `<strong>💬 ${localStorage.getItem('quoteText')}</strong>`;
-        } else {
-          const quote = quotes[Math.floor(Math.random() * quotes.length)];
-          const quoteText = `${quote.text} – ${quote.author || 'Unknown'}`;
-          localStorage.setItem('quoteDate', today);
-          localStorage.setItem('quoteText', quoteText);
-          document.getElementById("result").innerHTML = `<strong>💬 ${quoteText}</strong>`;
-        }
-      } catch (err) {
-        document.getElementById("result").textContent = "⚠️ Failed to load quote.";
+        const response = await fetch(url, {
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await response.json();
+        return type === 'joke' ? data.joke : `${data.content} — ${data.author}`;
+      } catch (error) {
+        console.error(`Error fetching ${type}:`, error);
+        return `Failed to load ${type}. Please try again later.`;
       }
     }
 
     async function showJoke() {
-      try {
-        const today = new Date().toISOString().split('T')[0];
-        const stored = localStorage.getItem('jokeDate');
-
-        if (stored === today && localStorage.getItem('jokeText')) {
-          document.getElementById("result").innerHTML = `<strong>😂 ${localStorage.getItem('jokeText')}</strong>`;
-        } else {
-          const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
-          const data = await res.json();
-          const joke = `${data.setup}<br><em>${data.punchline}</em>`;
-          localStorage.setItem('jokeDate', today);
-          localStorage.setItem('jokeText', joke);
-          document.getElementById("result").innerHTML = `<strong>😂 ${joke}</strong>`;
-        }
-      } catch (err) {
-        document.getElementById("result").textContent = "⚠️ Failed to load joke.";
+      const today = new Date().toISOString().split('T')[0];
+      if (localStorage.getItem('jokeDate') === today) {
+        displayResult(localStorage.getItem('jokeText'), 'Hahaha!');
+      } else {
+        const joke = await fetchContent(jokeAPI, 'joke');
+        localStorage.setItem('jokeDate', today);
+        localStorage.setItem('jokeText', joke);
+        displayResult(joke, 'Hahaha!');
       }
     }
-  </script>
-</body>
-</html>
+
+    async function showQuote() {
+      const today = new Date().toISOString().split('T')[0];
+      if (localStorage.getItem('quoteDate') === today) {
+        displayResult(localStorage.getItem('quoteText'), 'Beautiful');
+      } else {
+        const quote = await
+::contentReference[oaicite:14]{index=14}
+ 
