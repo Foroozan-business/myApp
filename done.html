@@ -9,29 +9,131 @@
       font-size: 3em;
       margin-bottom: 10px;
     }
+
     #compliment {
       font-size: 1.2em;
       font-style: italic;
       color: #333;
       margin-top: 20px;
     }
+
+    .emoji {
+      position: absolute;
+      font-size: 2rem;
+      animation: floatUp 2.5s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-200px) scale(0.5); opacity: 0; }
+    }
+
+    .menu {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+    }
+
+    .menu button {
+      font-size: 1.3em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+
+    .menu-content a {
+      display: block;
+      text-decoration: none;
+      padding: 6px 10px;
+      font-size: 0.95em;
+      color: #333;
+    }
+
+    .menu-content a:hover {
+      background-color: #f0f0f0;
+    }
+
+    .exit-button {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      font-size: 2em;
+      color: red;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
+  <!-- Exit Button -->
   <a href="exit.html" class="exit-button">&times;</a>
 
+  <!-- Menu -->
+  <div class="menu">
+    <button onclick="toggleMenu()">☰ Menu</button>
+    <div class="menu-content" id="menuContent">
+      <a href="index.html">🏠 Homepage</a>
+      <a href="smile-options.html">😊 Smile Option Page</a>
+      <a href="camera.html">📷 Smile Record Page</a>
+      <a href="draw.html">🎨 Smile Paint Page</a>
+      <a href="fun.html">🎁 Fun Page</a>
+      <a href="calender-tracker.html">🗓️ Calendar Tracker</a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
   <div class="celebration">🎉🎉🎉</div>
   <h1>Your smile has been added to the weekly smile count! 😄</h1>
   <p>You're spreading happiness one smile at a time.</p>
   <p id="compliment"></p>
-
-  <button class="home-button" onclick="location.href='index.html'">Go to Home Page 🏠</button>
 
   <script>
     const compliment = localStorage.getItem("lastSmileMessage");
     if (compliment) {
       document.getElementById("compliment").textContent = compliment;
     }
+
+    function toggleMenu() {
+      const menu = document.getElementById("menuContent");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    document.addEventListener("click", function (event) {
+      const menu = document.getElementById("menuContent");
+      const button = document.querySelector(".menu button");
+      if (!menu.contains(event.target) && !button.contains(event.target)) {
+        menu.style.display = "none";
+      }
+    });
+
+    // 🎈 Floating emojis
+    function showFloatingEmojis(count = 20) {
+      for (let i = 0; i < count; i++) {
+        const emoji = document.createElement("div");
+        emoji.className = "emoji";
+        emoji.textContent = "😄";
+        emoji.style.left = Math.random() * 100 + "vw";
+        emoji.style.bottom = "0px";
+        document.body.appendChild(emoji);
+        setTimeout(() => emoji.remove(), 2500);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", showFloatingEmojis);
   </script>
 </body>
 </html>
