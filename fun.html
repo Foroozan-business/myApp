@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fun of the Day 🎁</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
   <style>
     body {
       background-color: #d7fdd7;
       font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
       text-align: center;
       padding: 20px;
     }
@@ -33,11 +39,11 @@
     }
 
     .menu button {
-      font-size: 1em;
-      padding: 6px 12px;
       background-color: #4CAF50;
       color: white;
       border: none;
+      padding: 8px 12px;
+      font-size: 1em;
       border-radius: 6px;
       cursor: pointer;
     }
@@ -47,36 +53,43 @@
       position: absolute;
       top: 40px;
       right: 0;
-      background: white;
+      background-color: #ffffff;
       border: 1px solid #ccc;
       border-radius: 8px;
       padding: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 999;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
     }
 
     .menu-content a {
       display: block;
+      padding: 6px 12px;
       text-decoration: none;
-      padding: 6px 10px;
+      color: #000;
       font-size: 0.95em;
-      color: #333;
     }
 
     .menu-content a:hover {
       background-color: #f0f0f0;
+      border-radius: 4px;
     }
 
     h1 {
-      margin-top: 60px;
+      margin-bottom: 10px;
+    }
+
+    .info-box {
+      font-size: 1em;
+      color: #333;
+      max-width: 500px;
+      margin: 0 auto 20px;
     }
 
     .gift-container {
       display: flex;
-      justify-content: center;
       gap: 30px;
-      margin-top: 20px;
       flex-wrap: wrap;
+      justify-content: center;
     }
 
     .gift-box {
@@ -88,8 +101,9 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2em;
       cursor: pointer;
+      font-size: 2em;
+      position: relative;
       transition: transform 0.2s;
     }
 
@@ -105,46 +119,14 @@
 
     #result {
       margin-top: 30px;
-      padding: 20px;
-      border: 2px dashed #aaa;
-      border-radius: 12px;
-      background: #fff;
+      font-size: 1.1em;
       max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      font-size: 1.1em;
-      display: none;
-    }
-
-    .arrow {
-      font-size: 1.5em;
-      animation: bounce 1.5s infinite;
-      display: block;
-      margin-bottom: 10px;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-
-    .close-btn {
-      font-weight: bold;
-      color: green;
-      font-size: 1.1em;
-      cursor: pointer;
-      margin-top: 15px;
-    }
-
-    .quote-author {
-      font-style: italic;
-      margin-top: 10px;
+      line-height: 1.5;
+      color: #000;
     }
   </style>
 </head>
 <body>
-
-  <!-- Navigation and Menu -->
   <div class="nav">
     <a href="exit.html">Exit</a>
     <a href="intro.html">Go Back</a>
@@ -163,6 +145,10 @@
   </div>
 
   <h1>🎉 Fun of the Day 🎉</h1>
+  <p class="info-box">
+    You receive <strong>one surprise joke</strong> and <strong>one positive quote</strong> each day 😊.<br>
+    If you visit again today, you’ll see the same ones — fresh smiles arrive every 24 hours (Greek time 🇬🇷)!
+  </p>
 
   <div class="gift-container">
     <div onclick="showJoke()">
@@ -175,7 +161,7 @@
     </div>
   </div>
 
-  <div id="result"></div>
+  <div id="result">Click a gift box to open it!</div>
 
   <script>
     function toggleMenu() {
@@ -183,58 +169,46 @@
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    // Hide menu if clicked outside
-    document.addEventListener("click", function (event) {
-      const menu = document.getElementById("menuContent");
-      const button = document.querySelector(".menu button");
-      if (!menu.contains(event.target) && !button.contains(event.target)) {
-        menu.style.display = "none";
-      }
-    });
+    async function showQuote() {
+      try {
+        const res = await fetch('https://type.fit/api/quotes');
+        const quotes = await res.json();
+        const today = new Date().toISOString().split('T')[0];
+        const stored = localStorage.getItem('quoteDate');
 
-    function resetBox() {
-      document.getElementById("result").style.display = "none";
-      document.getElementById("result").innerHTML = "";
+        if (stored === today && localStorage.getItem('quoteText')) {
+          document.getElementById("result").innerHTML = `<strong>💬 ${localStorage.getItem('quoteText')}</strong>`;
+        } else {
+          const quote = quotes[Math.floor(Math.random() * quotes.length)];
+          const quoteText = `${quote.text} – ${quote.author || 'Unknown'}`;
+          localStorage.setItem('quoteDate', today);
+          localStorage.setItem('quoteText', quoteText);
+          document.getElementById("result").innerHTML = `<strong>💬 ${quoteText}</strong>`;
+        }
+      } catch (err) {
+        document.getElementById("result").textContent = "⚠️ Failed to load quote.";
+      }
     }
 
     async function showJoke() {
-      resetBox();
       try {
-        const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
-        const data = await res.json();
-        const jokeHTML = `
-          <div class="arrow">⬇️</div>
-          😂 <strong>${data.setup}</strong><br>
-          <em>${data.punchline}</em><br>
-          <div class="close-btn" onclick="resetBox()">😂 Hahaha</div>
-        `;
-        document.getElementById("result").innerHTML = jokeHTML;
-        document.getElementById("result").style.display = "block";
-      } catch (err) {
-        document.getElementById("result").innerHTML = "⚠️ Failed to load joke.";
-        document.getElementById("result").style.display = "block";
-      }
-    }
+        const today = new Date().toISOString().split('T')[0];
+        const stored = localStorage.getItem('jokeDate');
 
-    async function showQuote() {
-      resetBox();
-      try {
-        const res = await fetch('https://api.quotable.io/random');
-        const data = await res.json();
-        const quoteHTML = `
-          <div class="arrow">⬇️</div>
-          💬 <strong>${data.content}</strong><br>
-          <div class="quote-author">– ${data.author}</div>
-          <div class="close-btn" onclick="resetBox()">💚 Beautiful</div>
-        `;
-        document.getElementById("result").innerHTML = quoteHTML;
-        document.getElementById("result").style.display = "block";
+        if (stored === today && localStorage.getItem('jokeText')) {
+          document.getElementById("result").innerHTML = `<strong>😂 ${localStorage.getItem('jokeText')}</strong>`;
+        } else {
+          const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
+          const data = await res.json();
+          const joke = `${data.setup}<br><em>${data.punchline}</em>`;
+          localStorage.setItem('jokeDate', today);
+          localStorage.setItem('jokeText', joke);
+          document.getElementById("result").innerHTML = `<strong>😂 ${joke}</strong>`;
+        }
       } catch (err) {
-        document.getElementById("result").innerHTML = "⚠️ Failed to load quote.";
-        document.getElementById("result").style.display = "block";
+        document.getElementById("result").textContent = "⚠️ Failed to load joke.";
       }
     }
   </script>
-
 </body>
 </html>
