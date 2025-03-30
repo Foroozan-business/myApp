@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fun of the Day 🎁</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
@@ -12,7 +12,19 @@
       text-align: center;
       margin: 0;
       padding: 20px;
-      position: relative;
+    }
+
+    .nav {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #333;
     }
 
     .menu {
@@ -22,13 +34,11 @@
     }
 
     .menu button {
-      font-size: 1.2em;
-      background-color: #4CAF50;
-      color: white;
+      font-size: 1.3em;
+      background: none;
       border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
       cursor: pointer;
+      color: #333;
     }
 
     .menu-content {
@@ -36,17 +46,19 @@
       position: absolute;
       top: 40px;
       right: 0;
-      background-color: white;
+      background: white;
       border: 1px solid #ccc;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      border-radius: 8px;
       padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 999;
     }
 
     .menu-content a {
       display: block;
       text-decoration: none;
       padding: 6px 10px;
+      font-size: 0.95em;
       color: #333;
     }
 
@@ -56,15 +68,14 @@
 
     h1 {
       margin-top: 60px;
-      margin-bottom: 30px;
     }
 
     .gift-container {
       display: flex;
-      justify-content: center;
       gap: 30px;
       flex-wrap: wrap;
-      margin-top: 20px;
+      justify-content: center;
+      margin-top: 40px;
     }
 
     .gift-box {
@@ -73,11 +84,12 @@
       background: linear-gradient(to bottom, #ff8c8c, #ffcccc);
       border-radius: 16px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      font-size: 2em;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      font-size: 2em;
+      position: relative;
       transition: transform 0.2s;
     }
 
@@ -88,43 +100,56 @@
     .label {
       margin-top: 8px;
       font-weight: bold;
+      color: #000;
     }
 
-    #resultBox {
-      margin-top: 40px;
+    #result {
+      margin-top: 30px;
+      font-size: 1.1em;
       max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.5;
       background: #fff;
-      padding: 20px;
+      padding: 15px;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 2px solid #4CAF50;
       display: none;
       position: relative;
     }
 
-    #resultBox::before {
-      content: "⬇️";
-      position: absolute;
-      top: -24px;
-      left: 50%;
-      transform: translateX(-50%);
+    .close-button {
+      margin-top: 15px;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      color: #4CAF50;
+    }
+
+    .arrow {
+      animation: bounce 1s infinite;
       font-size: 1.5em;
     }
 
-    .close-btn {
-      margin-top: 15px;
-      font-size: 1.1em;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    #note {
+      margin-top: 30px;
+      font-size: 0.95em;
+      color: #333;
     }
   </style>
 </head>
 <body>
 
-  <!-- 🌟 Universal Menu -->
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="fun.html">Go Back</a>
+  </div>
+
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -137,8 +162,7 @@
     </div>
   </div>
 
-  <h1>🎁 Fun of the Day</h1>
-  <p><em>You get one positive or funny surprise per day!</em></p>
+  <h1>🎉 Fun of the Day 🎉</h1>
 
   <div class="gift-container">
     <div onclick="showJoke()">
@@ -151,99 +175,66 @@
     </div>
   </div>
 
-  <div id="resultBox">
-    <div id="result"></div>
-    <button id="closeBtn" class="close-btn" onclick="hideResult()">Close</button>
-  </div>
+  <div id="result"></div>
+
+  <p id="note">💡 You can only see one joke and one quote per day (Greek time).</p>
 
   <script>
-    // 🌍 Menu
+    const fallbackQuotes = [
+      "Happiness is not something ready made. It comes from your own actions. – Dalai Lama",
+      "Keep your face to the sunshine and you cannot see a shadow. – Helen Keller",
+      "Every day may not be good, but there's something good in every day.",
+      "A smile is a curve that sets everything straight. – Phyllis Diller",
+      "The more you smile, the more people will smile back."
+    ];
+
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    document.addEventListener("click", function (event) {
-      const menu = document.getElementById("menuContent");
-      const button = document.querySelector(".menu button");
-      if (!menu.contains(event.target) && event.target !== button) {
-        menu.style.display = "none";
-      }
-    });
-
-    function hideResult() {
-      document.getElementById("resultBox").style.display = "none";
+    function showResult(content, buttonText) {
+      const result = document.getElementById("result");
+      result.innerHTML = `${content}<br><div class="arrow">⬇️</div><div class="close-button" onclick="closeResult()">${buttonText}</div>`;
+      result.style.display = "block";
     }
 
-    async function showQuote() {
-      const resultBox = document.getElementById("resultBox");
-      const result = document.getElementById("result");
-      const closeBtn = document.getElementById("closeBtn");
-
-      const sources = [
-        async () => {
-          const res = await fetch('https://api.quotable.io/random');
-          const data = await res.json();
-          return `${data.content} – ${data.author}`;
-        },
-        async () => {
-          const res = await fetch('https://type.fit/api/quotes');
-          const data = await res.json();
-          const quote = data[Math.floor(Math.random() * data.length)];
-          return `${quote.text} – ${quote.author || 'Unknown'}`;
-        },
-        async () => {
-          const fallback = [
-            { q: "Be yourself; everyone else is already taken.", a: "Oscar Wilde" },
-            { q: "Happiness is a direction, not a place.", a: "Sydney J. Harris" },
-            { q: "The best way to cheer yourself is to try to cheer someone else up.", a: "Mark Twain" },
-            { q: "Let your smile change the world.", a: "Unknown" },
-            { q: "Smiles are contagious. Be a carrier.", a: "Unknown" },
-            { q: "You are enough just as you are.", a: "Meghan Markle" },
-            { q: "Be the reason someone smiles today.", a: "Roy T. Bennett" },
-            { q: "A warm smile is the universal language of kindness.", a: "William Arthur Ward" },
-            { q: "Stay close to people who feel like sunshine.", a: "Unknown" },
-            { q: "Every day is a new beginning. Take a deep breath and start again.", a: "Unknown" }
-          ];
-          const pick = fallback[Math.floor(Math.random() * fallback.length)];
-          return `${pick.q} – ${pick.a}`;
-        }
-      ];
-
-      for (let getQuote of sources) {
-        try {
-          const msg = await getQuote();
-          result.innerHTML = `<strong>${msg}</strong>`;
-          closeBtn.textContent = "Beautiful";
-          resultBox.style.display = "block";
-          return;
-        } catch (err) {
-          console.warn("Quote source failed, trying next...");
-        }
-      }
-
-      result.textContent = "⚠️ Could not load a quote today.";
-      closeBtn.textContent = "Close";
-      resultBox.style.display = "block";
+    function closeResult() {
+      document.getElementById("result").style.display = "none";
     }
 
     async function showJoke() {
-      const resultBox = document.getElementById("resultBox");
-      const result = document.getElementById("result");
-      const closeBtn = document.getElementById("closeBtn");
-
       try {
         const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
         const data = await res.json();
-        result.innerHTML = `<strong>${data.setup}<br><em>${data.punchline}</em></strong>`;
-        closeBtn.textContent = "Hahaha";
-        resultBox.style.display = "block";
-      } catch {
-        result.textContent = "⚠️ Couldn't load a joke right now.";
-        closeBtn.textContent = "Close";
-        resultBox.style.display = "block";
+        const joke = `<strong>😂 ${data.setup}</strong><br><em>${data.punchline}</em>`;
+        showResult(joke, "Hahaha");
+      } catch (err) {
+        showResult("Failed to load a joke. Please try again later.", "Close");
       }
     }
+
+    async function showQuote() {
+      try {
+        const res = await fetch('https://type.fit/api/quotes');
+        const quotes = await res.json();
+        const quote = quotes[Math.floor(Math.random() * quotes.length)];
+        const text = `<strong>💬 ${quote.text}</strong><br><em>${quote.author || "Unknown"}</em>`;
+        showResult(text, "Beautiful");
+      } catch (err) {
+        const fallback = fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
+        showResult(`💬 ${fallback}`, "Beautiful");
+      }
+    }
+
+    // Close menu if clicking outside
+    document.addEventListener("click", function (event) {
+      const menu = document.getElementById("menuContent");
+      const button = document.querySelector(".menu button");
+      if (!menu.contains(event.target) && !button.contains(event.target)) {
+        menu.style.display = "none";
+      }
+    });
   </script>
 </body>
 </html>
