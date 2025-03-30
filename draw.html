@@ -70,7 +70,6 @@
   </style>
 </head>
 <body>
-
   <div class="nav">
     <a href="exit.html">Exit</a>
     <a href="intro.html">Go Back</a>
@@ -90,17 +89,20 @@
   </div>
 
   <audio id="confettiSound" src="celebrate.mp3" preload="auto"></audio>
+  <audio id="backgroundMusic" src="music.mp3" preload="auto" loop></audio>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const errorElement = document.getElementById("error");
+    const music = document.getElementById("backgroundMusic");
+
     let drawing = false;
     let points = [];
 
     function drawSmileTemplate() {
       ctx.beginPath();
-      ctx.strokeStyle = "#f2a8a8"; // light red
+      ctx.strokeStyle = "#f2a8a8"; // light red smile
       ctx.lineWidth = 4;
       ctx.arc(150, 120, 50, 0, Math.PI, false);
       ctx.stroke();
@@ -142,7 +144,7 @@
     canvas.addEventListener("mousemove", e => {
       if (!drawing) return;
       ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.strokeStyle = "#e60000";
+      ctx.strokeStyle = "#e60000"; // red pen
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
       ctx.stroke();
@@ -176,7 +178,6 @@
 
     function validateSmile() {
       const reasonInput = document.getElementById("reason").value.trim();
-
       const smileZone = points.filter(p =>
         p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220
       );
@@ -211,6 +212,15 @@
       errorElement.appendChild(document.createElement("br"));
       errorElement.appendChild(btn);
     }
+
+    // 🎵 Start music when page loads or on click fallback
+    window.addEventListener("DOMContentLoaded", () => {
+      music.play().catch(() => {
+        document.addEventListener("click", () => {
+          if (music.paused) music.play();
+        });
+      });
+    });
   </script>
 </body>
 </html>
