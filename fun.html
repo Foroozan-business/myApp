@@ -32,6 +32,191 @@
       color: #333;
     }
 
+    .menu {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+    }
+
+    .menu button {
+      font-size: 1.3em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+
+    .menu-content a {
+      display: block;
+      text-decoration: none;
+      padding: 6px 10px;
+      font-size: 0.95em;
+      color: #333;
+    }
+
+    .menu-content a:hover {
+      background-color: #f0f0f0;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .gift-container {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .gift-box {
+      width: 130px;
+      height: 130px;
+      background: linear-gradient(to bottom, #ff8c8c, #ffcccc);
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 2em;
+      position: relative;
+      transition: transform 0.2s;
+    }
+
+    .gift-box:hover {
+      transform: scale(1.05);
+    }
+
+    .label {
+      margin-top: 8px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    #result {
+      margin-top: 30px;
+      font-size: 1.1em;
+      max-width: 400px;
+      line-height: 1.5;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="intro.html">Go Back</a>
+    <a href="index.html">Home</a>
+  </div>
+
+  <!-- Top Right Menu -->
+  <div class="menu">
+    <button onclick="toggleMenu()">☰ Menu</button>
+    <div class="menu-content" id="menuContent">
+      <a href="index.html">🏠 Homepage</a>
+      <a href="smile-options.html">😊 Smile Option Page</a>
+      <a href="camera.html">📷 Smile Record Page</a>
+      <a href="draw.html">🎨 Smile Paint Page</a>
+      <a href="fun.html">🎁 Fun Page</a>
+      <a href="calender-tracker.html">🗓️ Calendar Tracker</a>
+    </div>
+  </div>
+
+  <h1>🎉 Fun of the Day 🎉</h1>
+
+  <div class="gift-container">
+    <div onclick="showJoke()">
+      <div class="gift-box">🎁</div>
+      <div class="label">Joke of the Day</div>
+    </div>
+    <div onclick="showQuote()">
+      <div class="gift-box">🎁</div>
+      <div class="label">Quote of the Day</div>
+    </div>
+  </div>
+
+  <div id="result">Click a gift box to open it!</div>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("menuContent");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    async function showQuote() {
+      try {
+        const res = await fetch('https://zenquotes.io/api/today');
+        const data = await res.json();
+        const quote = data[0].q + " – " + data[0].a;
+        document.getElementById("result").innerHTML = `<strong>💬 ${quote}</strong>`;
+      } catch (err) {
+        document.getElementById("result").textContent = "⚠️ Failed to load quote.";
+      }
+    }
+
+    async function showJoke() {
+      try {
+        const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
+        const data = await res.json();
+        const joke = `${data.setup}<br><em>${data.punchline}</em>`;
+        document.getElementById("result").innerHTML = `<strong>😂 ${joke}</strong>`;
+      } catch (err) {
+        document.getElementById("result").textContent = "⚠️ Failed to load joke.";
+      }
+    }
+  </script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fun of the Day 🎁</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      background-color: #d7fdd7;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .nav {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
+
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #333;
+    }
+
     h1 {
       margin-bottom: 20px;
     }
