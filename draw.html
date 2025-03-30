@@ -2,8 +2,8 @@
 <html>
 <head>
   <title>Draw a Smile</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       display: flex;
@@ -67,6 +67,18 @@
       font-size: 1.1em;
       color: #333;
     }
+
+    .confetti {
+      position: absolute;
+      font-size: 2rem;
+      animation: float 2s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -82,16 +94,13 @@
 
   <div id="controls">
     <button onclick="clearCanvas()">🗑 Clear</button>
-    <input id="reason" type="text" placeholder='Type: I am happy because...'
-      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+    <input id="reason" type="text" placeholder="Type: I am happy because..." />
     <button onclick="validateSmile()">Check</button>
     <div id="error"></div>
   </div>
 
   <audio id="confettiSound" src="celebrate.mp3" preload="auto"></audio>
-
-  <!-- 🔊 Background Music -->
-  <audio id="backgroundMusic" src="music.mp3" autoplay loop></audio>
+  <audio id="backgroundMusic" src="music.mp3" loop preload="auto"></audio>
 
   <script>
     const canvas = document.getElementById("canvas");
@@ -103,19 +112,20 @@
     let points = [];
 
     function drawSmileTemplate() {
+      // Smile line
       ctx.beginPath();
-      ctx.strokeStyle = "#f2a8a8"; // light red smile
+      ctx.strokeStyle = "#f2a8a8"; // light red
       ctx.lineWidth = 4;
       ctx.arc(150, 120, 50, 0, Math.PI, false);
       ctx.stroke();
 
+      // Eyes
       ctx.beginPath();
       ctx.fillStyle = "#000";
-      ctx.arc(120, 70, 5, 0, 2 * Math.PI); // left eye
+      ctx.arc(120, 70, 5, 0, 2 * Math.PI); // left
       ctx.fill();
-
       ctx.beginPath();
-      ctx.arc(180, 70, 5, 0, 2 * Math.PI); // right eye
+      ctx.arc(180, 70, 5, 0, 2 * Math.PI); // right
       ctx.fill();
     }
 
@@ -137,6 +147,7 @@
       };
     }
 
+    // Mouse Events
     canvas.addEventListener("mousedown", e => {
       drawing = true;
       ctx.beginPath();
@@ -146,7 +157,7 @@
     canvas.addEventListener("mousemove", e => {
       if (!drawing) return;
       ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.strokeStyle = "#e60000"; // red pen
+      ctx.strokeStyle = "#e60000";
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
       ctx.stroke();
@@ -156,6 +167,7 @@
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseout", () => drawing = false);
 
+    // Touch Events
     canvas.addEventListener("touchstart", e => {
       drawing = true;
       const pos = getTouchPos(e);
@@ -178,11 +190,21 @@
 
     canvas.addEventListener("touchend", () => drawing = false);
 
+    function showConfetti(count = 20) {
+      for (let i = 0; i < count; i++) {
+        const emoji = document.createElement("div");
+        emoji.textContent = "🎉";
+        emoji.className = "confetti";
+        emoji.style.left = `${Math.random() * 100}%`;
+        emoji.style.top = `${50 + Math.random() * 30}%`;
+        document.body.appendChild(emoji);
+        setTimeout(() => emoji.remove(), 2000);
+      }
+    }
+
     function validateSmile() {
       const reasonInput = document.getElementById("reason").value.trim();
-      const smileZone = points.filter(p =>
-        p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220
-      );
+      const smileZone = points.filter(p => p.y >= 100 && p.y <= 140 && p.x >= 80 && p.x <= 220);
       const leftSide = points.some(p => p.x < 120 && p.y > 100);
       const rightSide = points.some(p => p.x > 180 && p.y > 100);
 
@@ -198,6 +220,13 @@
 
       errorElement.innerHTML = `🎉🎉🎉🎉🎉<br><strong>Well done!</strong><br><br>Click below to add your smile:`;
       document.getElementById("confettiSound").play();
+      showConfetti();
+
+      // ✅ Save to smileCalendar
+      const dateKey = new Date().toISOString().split("T")[0];
+      const calendarData = JSON.parse(localStorage.getItem("smileCalendar") || '{}');
+      calendarData[dateKey] = (calendarData[dateKey] || 0) + 1;
+      localStorage.setItem("smileCalendar", JSON.stringify(calendarData));
 
       const btn = document.createElement("button");
       btn.textContent = "Thank You";
@@ -215,11 +244,11 @@
       errorElement.appendChild(btn);
     }
 
-    // 🎵 Autoplay fallback for music
+    // 🎵 Start music auto or on click
     window.addEventListener("DOMContentLoaded", () => {
       music.play().catch(() => {
         document.addEventListener("click", () => {
-          if (music.paused) music.play().catch(() => {});
+          if (music.paused) music.play();
         });
       });
     });
