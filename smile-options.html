@@ -33,31 +33,27 @@
       color: white;
     }
 
-    .exit-button {
+    .nav {
       position: absolute;
       top: 10px;
       left: 15px;
-      font-size: 2em;
-      color: red;
-      background: none;
-      border: none;
-      cursor: pointer;
     }
 
-    .back-button {
-      position: absolute;
-      bottom: 15px;
-      left: 15px;
-      font-size: 1.5em;
-      color: gray;
-      background: none;
-      border: none;
-      cursor: pointer;
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #000;
     }
   </style>
 </head>
 <body>
-  <button class="exit-button" onclick="window.location.href='exit.html'">✖</button>
+  <!-- ✅ Updated top nav -->
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="intro.html">Go Back</a>
+    <a href="index.html">Home</a>
+  </div>
 
   <div class="centered-content">
     <h2>Are you ready to capture your beautiful smile?</h2>
@@ -66,7 +62,5 @@
       <button onclick="window.location.href='draw.html'">No 😐</button>
     </div>
   </div>
-
-  <button class="back-button" onclick="window.history.back()">← Back</button>
 </body>
 </html>
