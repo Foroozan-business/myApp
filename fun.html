@@ -2,21 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fun of the Day 🎁</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       background-color: #d7fdd7;
       font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 20px;
       text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
+      padding: 20px;
     }
 
     .nav {
@@ -39,11 +33,13 @@
     }
 
     .menu button {
-      font-size: 1.3em;
-      background: none;
+      font-size: 1em;
+      padding: 6px 12px;
+      background-color: #4CAF50;
+      color: white;
       border: none;
+      border-radius: 6px;
       cursor: pointer;
-      color: #333;
     }
 
     .menu-content {
@@ -72,14 +68,15 @@
     }
 
     h1 {
-      margin-bottom: 20px;
+      margin-top: 60px;
     }
 
     .gift-container {
       display: flex;
-      gap: 30px;
-      flex-wrap: wrap;
       justify-content: center;
+      gap: 30px;
+      margin-top: 20px;
+      flex-wrap: wrap;
     }
 
     .gift-box {
@@ -92,7 +89,6 @@
       align-items: center;
       justify-content: center;
       font-size: 2em;
-      position: relative;
       cursor: pointer;
       transition: transform 0.2s;
     }
@@ -107,51 +103,53 @@
       color: #000;
     }
 
-    .letter {
-      display: none;
+    #result {
       margin-top: 30px;
-      background-color: #fff;
-      border: 2px dashed #ccc;
-      border-radius: 12px;
       padding: 20px;
+      border: 2px dashed #aaa;
+      border-radius: 12px;
+      background: #fff;
       max-width: 400px;
-      line-height: 1.5;
-      position: relative;
-    }
-
-    .letter p {
+      margin-left: auto;
+      margin-right: auto;
       font-size: 1.1em;
-      color: #333;
-    }
-
-    .close-button {
-      margin-top: 15px;
-      font-weight: bold;
-      cursor: pointer;
-      color: #4CAF50;
+      display: none;
     }
 
     .arrow {
       font-size: 1.5em;
-      animation: bounce 1s infinite;
-      margin-top: 10px;
+      animation: bounce 1.5s infinite;
+      display: block;
+      margin-bottom: 10px;
     }
 
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-5px); }
     }
+
+    .close-btn {
+      font-weight: bold;
+      color: green;
+      font-size: 1.1em;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .quote-author {
+      font-style: italic;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Top Left Nav -->
+  <!-- Navigation and Menu -->
   <div class="nav">
     <a href="exit.html">Exit</a>
     <a href="intro.html">Go Back</a>
   </div>
 
-  <!-- Top Right Menu -->
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -177,11 +175,7 @@
     </div>
   </div>
 
-  <div class="letter" id="letterBox">
-    <div class="arrow">⬇️</div>
-    <p id="result">Loading...</p>
-    <div id="closeBtn" class="close-button"></div>
-  </div>
+  <div id="result"></div>
 
   <script>
     function toggleMenu() {
@@ -189,6 +183,7 @@
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
+    // Hide menu if clicked outside
     document.addEventListener("click", function (event) {
       const menu = document.getElementById("menuContent");
       const button = document.querySelector(".menu button");
@@ -197,43 +192,48 @@
       }
     });
 
-    const letterBox = document.getElementById("letterBox");
-    const result = document.getElementById("result");
-    const closeBtn = document.getElementById("closeBtn");
-
-    function showJoke() {
-      fetch("https://official-joke-api.appspot.com/jokes/random")
-        .then(res => res.json())
-        .then(data => {
-          result.innerHTML = `<strong>😂 ${data.setup}</strong><br><em>${data.punchline}</em>`;
-          closeBtn.innerText = "😂 Hahaha";
-          letterBox.style.display = "block";
-        })
-        .catch(() => {
-          result.textContent = "⚠️ Failed to load joke.";
-          closeBtn.innerText = "Try Again";
-          letterBox.style.display = "block";
-        });
+    function resetBox() {
+      document.getElementById("result").style.display = "none";
+      document.getElementById("result").innerHTML = "";
     }
 
-    function showQuote() {
-      fetch("https://api.quotable.io/random")
-        .then(res => res.json())
-        .then(data => {
-          result.innerHTML = `<strong>💬 "${data.content}"</strong><br><em>– ${data.author}</em>`;
-          closeBtn.innerText = "🌸 Beautiful";
-          letterBox.style.display = "block";
-        })
-        .catch(() => {
-          result.textContent = "⚠️ Failed to load quote.";
-          closeBtn.innerText = "Try Again";
-          letterBox.style.display = "block";
-        });
+    async function showJoke() {
+      resetBox();
+      try {
+        const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
+        const data = await res.json();
+        const jokeHTML = `
+          <div class="arrow">⬇️</div>
+          😂 <strong>${data.setup}</strong><br>
+          <em>${data.punchline}</em><br>
+          <div class="close-btn" onclick="resetBox()">😂 Hahaha</div>
+        `;
+        document.getElementById("result").innerHTML = jokeHTML;
+        document.getElementById("result").style.display = "block";
+      } catch (err) {
+        document.getElementById("result").innerHTML = "⚠️ Failed to load joke.";
+        document.getElementById("result").style.display = "block";
+      }
     }
 
-    closeBtn.addEventListener("click", () => {
-      letterBox.style.display = "none";
-    });
+    async function showQuote() {
+      resetBox();
+      try {
+        const res = await fetch('https://api.quotable.io/random');
+        const data = await res.json();
+        const quoteHTML = `
+          <div class="arrow">⬇️</div>
+          💬 <strong>${data.content}</strong><br>
+          <div class="quote-author">– ${data.author}</div>
+          <div class="close-btn" onclick="resetBox()">💚 Beautiful</div>
+        `;
+        document.getElementById("result").innerHTML = quoteHTML;
+        document.getElementById("result").style.display = "block";
+      } catch (err) {
+        document.getElementById("result").innerHTML = "⚠️ Failed to load quote.";
+        document.getElementById("result").style.display = "block";
+      }
+    }
   </script>
 
 </body>
