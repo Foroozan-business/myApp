@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fun of the Day 🎁</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
   <style>
     body {
       background-color: #d7fdd7;
       font-family: 'Segoe UI', sans-serif;
-      text-align: center;
       margin: 0;
       padding: 20px;
+      text-align: center;
     }
 
     .nav {
       position: absolute;
       top: 10px;
-      left: 10px;
+      left: 15px;
     }
 
     .nav a {
       margin-right: 15px;
       text-decoration: none;
       font-size: 1.1em;
-      color: #333;
+      color: #000;
     }
 
     .menu {
@@ -68,6 +68,7 @@
 
     h1 {
       margin-top: 60px;
+      margin-bottom: 30px;
     }
 
     .gift-container {
@@ -75,7 +76,6 @@
       gap: 30px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-top: 40px;
     }
 
     .gift-box {
@@ -89,7 +89,6 @@
       justify-content: center;
       cursor: pointer;
       font-size: 2em;
-      position: relative;
       transition: transform 0.2s;
     }
 
@@ -103,53 +102,55 @@
       color: #000;
     }
 
-    #result {
-      margin-top: 30px;
-      font-size: 1.1em;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.5;
+    #resultBox {
+      margin-top: 40px;
+      max-width: 500px;
       background: #fff;
-      padding: 15px;
-      border-radius: 12px;
-      border: 2px solid #4CAF50;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       display: none;
       position: relative;
     }
 
+    #resultText {
+      font-size: 1.2em;
+      color: #333;
+      line-height: 1.6;
+    }
+
     .close-button {
-      margin-top: 15px;
-      font-size: 1.1em;
-      font-weight: bold;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 1em;
+      margin-top: 20px;
       cursor: pointer;
-      color: #4CAF50;
     }
 
     .arrow {
+      font-size: 2em;
+      margin-top: 10px;
       animation: bounce 1s infinite;
-      font-size: 1.5em;
     }
 
     @keyframes bounce {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
-
-    #note {
-      margin-top: 30px;
-      font-size: 0.95em;
-      color: #333;
+      50% { transform: translateY(-10px); }
     }
   </style>
 </head>
 <body>
 
+  <!-- 🔙 Top Left Nav -->
   <div class="nav">
     <a href="exit.html">Exit</a>
-    <a href="fun.html">Go Back</a>
+    <a href="smile-options.html">Back</a>
   </div>
 
+  <!-- ☰ Top Right Menu -->
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -175,66 +176,64 @@
     </div>
   </div>
 
-  <div id="result"></div>
-
-  <p id="note">💡 You can only see one joke and one quote per day (Greek time).</p>
+  <div id="resultBox">
+    <div id="resultText"></div>
+    <div class="arrow">⬆️</div>
+    <button class="close-button" id="closeButton" onclick="hideBox()">Close</button>
+  </div>
 
   <script>
-    const fallbackQuotes = [
-      "Happiness is not something ready made. It comes from your own actions. – Dalai Lama",
-      "Keep your face to the sunshine and you cannot see a shadow. – Helen Keller",
-      "Every day may not be good, but there's something good in every day.",
-      "A smile is a curve that sets everything straight. – Phyllis Diller",
-      "The more you smile, the more people will smile back."
-    ];
+    const resultBox = document.getElementById("resultBox");
+    const resultText = document.getElementById("resultText");
+    const closeButton = document.getElementById("closeButton");
+
+    function showJoke() {
+      fetch('https://official-joke-api.appspot.com/jokes/random')
+        .then(res => res.json())
+        .then(data => {
+          resultText.innerHTML = `😂 ${data.setup}<br><em>${data.punchline}</em>`;
+          closeButton.textContent = "Haha!";
+          resultBox.style.display = "block";
+        })
+        .catch(() => {
+          resultText.textContent = "⚠️ Failed to load joke.";
+          closeButton.textContent = "Close";
+          resultBox.style.display = "block";
+        });
+    }
+
+    function showQuote() {
+      fetch('https://api.quotable.io/random')
+        .then(res => res.json())
+        .then(data => {
+          resultText.innerHTML = `💬 "${data.content}"<br><em>– ${data.author}</em>`;
+          closeButton.textContent = "Beautiful!";
+          resultBox.style.display = "block";
+        })
+        .catch(() => {
+          resultText.textContent = "⚠️ Failed to load quote.";
+          closeButton.textContent = "Close";
+          resultBox.style.display = "block";
+        });
+    }
+
+    function hideBox() {
+      resultBox.style.display = "none";
+    }
 
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    function showResult(content, buttonText) {
-      const result = document.getElementById("result");
-      result.innerHTML = `${content}<br><div class="arrow">⬇️</div><div class="close-button" onclick="closeResult()">${buttonText}</div>`;
-      result.style.display = "block";
-    }
-
-    function closeResult() {
-      document.getElementById("result").style.display = "none";
-    }
-
-    async function showJoke() {
-      try {
-        const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
-        const data = await res.json();
-        const joke = `<strong>😂 ${data.setup}</strong><br><em>${data.punchline}</em>`;
-        showResult(joke, "Hahaha");
-      } catch (err) {
-        showResult("Failed to load a joke. Please try again later.", "Close");
-      }
-    }
-
-    async function showQuote() {
-      try {
-        const res = await fetch('https://type.fit/api/quotes');
-        const quotes = await res.json();
-        const quote = quotes[Math.floor(Math.random() * quotes.length)];
-        const text = `<strong>💬 ${quote.text}</strong><br><em>${quote.author || "Unknown"}</em>`;
-        showResult(text, "Beautiful");
-      } catch (err) {
-        const fallback = fallbackQuotes[Math.floor(Math.random() * fallbackQuotes.length)];
-        showResult(`💬 ${fallback}`, "Beautiful");
-      }
-    }
-
-    // Close menu if clicking outside
     document.addEventListener("click", function (event) {
       const menu = document.getElementById("menuContent");
       const button = document.querySelector(".menu button");
-      if (!menu.contains(event.target) && !button.contains(event.target)) {
+      if (!menu.contains(event.target) && event.target !== button) {
         menu.style.display = "none";
       }
     });
   </script>
+
 </body>
 </html>
