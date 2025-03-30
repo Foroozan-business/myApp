@@ -1,6 +1,6 @@
 /* Global page background and layout */
 body {
-  background-color: #88E788; /* ✅ Light green */
+  background: linear-gradient(to bottom right, #e8fce8, #d8f8e8); /* 🌿 Softer green gradient */
   font-family: 'Segoe UI', sans-serif;
   color: #000; /* ✅ Black text */
   margin: 0;
