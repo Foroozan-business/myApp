@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Fun of the Day 🎁</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       background-color: #d7fdd7;
@@ -93,7 +93,6 @@
       justify-content: center;
       cursor: pointer;
       font-size: 2em;
-      position: relative;
       transition: transform 0.2s;
     }
 
@@ -124,7 +123,6 @@
     <a href="index.html">Home</a>
   </div>
 
-  <!-- Top Right Menu -->
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -158,17 +156,6 @@
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    async function showQuote() {
-      try {
-        const res = await fetch('https://zenquotes.io/api/today');
-        const data = await res.json();
-        const quote = data[0].q + " – " + data[0].a;
-        document.getElementById("result").innerHTML = `<strong>💬 ${quote}</strong>`;
-      } catch (err) {
-        document.getElementById("result").textContent = "⚠️ Failed to load quote.";
-      }
-    }
-
     async function showJoke() {
       try {
         const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
@@ -179,132 +166,15 @@
         document.getElementById("result").textContent = "⚠️ Failed to load joke.";
       }
     }
-  </script>
 
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fun of the Day 🎁</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    body {
-      background-color: #d7fdd7;
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .nav {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-    }
-
-    .nav a {
-      margin-right: 15px;
-      text-decoration: none;
-      font-size: 1.1em;
-      color: #333;
-    }
-
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    .gift-container {
-      display: flex;
-      gap: 30px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .gift-box {
-      width: 130px;
-      height: 130px;
-      background: linear-gradient(to bottom, #ff8c8c, #ffcccc);
-      border-radius: 16px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 2em;
-      position: relative;
-      transition: transform 0.2s;
-    }
-
-    .gift-box:hover {
-      transform: scale(1.05);
-    }
-
-    .label {
-      margin-top: 8px;
-      font-weight: bold;
-      color: #000;
-    }
-
-    #result {
-      margin-top: 30px;
-      font-size: 1.1em;
-      max-width: 400px;
-      line-height: 1.5;
-      color: #000;
-    }
-  </style>
-</head>
-<body>
-
-  <div class="nav">
-    <a href="exit.html">Exit</a>
-    <a href="intro.html">Go Back</a>
-    <a href="index.html">Home</a>
-  </div>
-
-  <h1>🎉 Fun of the Day 🎉</h1>
-
-  <div class="gift-container">
-    <div onclick="showJoke()">
-      <div class="gift-box">🎁</div>
-      <div class="label">Joke of the Day</div>
-    </div>
-    <div onclick="showQuote()">
-      <div class="gift-box">🎁</div>
-      <div class="label">Quote of the Day</div>
-    </div>
-  </div>
-
-  <div id="result">Click a gift box to open it!</div>
-
-  <script>
     async function showQuote() {
       try {
-        const res = await fetch('https://zenquotes.io/api/today');
+        const res = await fetch('https://api.quotable.io/random');
         const data = await res.json();
-        const quote = data[0].q + " – " + data[0].a;
+        const quote = `${data.content} — <em>${data.author}</em>`;
         document.getElementById("result").innerHTML = `<strong>💬 ${quote}</strong>`;
       } catch (err) {
         document.getElementById("result").textContent = "⚠️ Failed to load quote.";
-      }
-    }
-
-    async function showJoke() {
-      try {
-        const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
-        const data = await res.json();
-        const joke = `${data.setup}<br><em>${data.punchline}</em>`;
-        document.getElementById("result").innerHTML = `<strong>😂 ${joke}</strong>`;
-      } catch (err) {
-        document.getElementById("result").textContent = "⚠️ Failed to load joke.";
       }
     }
   </script>
