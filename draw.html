@@ -90,23 +90,23 @@
   </div>
 
   <audio id="confettiSound" src="celebrate.mp3" preload="auto"></audio>
+  <audio id="backgroundMusic" src="music.mp3" preload="auto" loop></audio>
 
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const errorElement = document.getElementById("error");
+    const music = document.getElementById("backgroundMusic");
     let drawing = false;
     let points = [];
 
     function drawSmileTemplate() {
-      // Smile line (light red)
       ctx.beginPath();
-      ctx.strokeStyle = "#f2a8a8";
+      ctx.strokeStyle = "#f2a8a8"; // light red
       ctx.lineWidth = 4;
       ctx.arc(150, 120, 50, 0, Math.PI, false);
       ctx.stroke();
 
-      // Eyes
       ctx.beginPath();
       ctx.fillStyle = "#000";
       ctx.arc(120, 70, 5, 0, 2 * Math.PI); // left eye
@@ -135,7 +135,6 @@
       };
     }
 
-    // Mouse Events
     canvas.addEventListener("mousedown", e => {
       drawing = true;
       ctx.beginPath();
@@ -145,7 +144,7 @@
     canvas.addEventListener("mousemove", e => {
       if (!drawing) return;
       ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.strokeStyle = "#e60000"; // red pen
+      ctx.strokeStyle = "#e60000";
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
       ctx.stroke();
@@ -155,7 +154,6 @@
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseout", () => drawing = false);
 
-    // Touch Events
     canvas.addEventListener("touchstart", e => {
       drawing = true;
       const pos = getTouchPos(e);
@@ -168,7 +166,7 @@
       if (!drawing) return;
       const pos = getTouchPos(e);
       ctx.lineTo(pos.x, pos.y);
-      ctx.strokeStyle = "#e60000"; // red pen
+      ctx.strokeStyle = "#e60000";
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
       ctx.stroke();
@@ -215,6 +213,16 @@
       errorElement.appendChild(document.createElement("br"));
       errorElement.appendChild(btn);
     }
+
+    // 🎵 Start music automatically
+    window.addEventListener("DOMContentLoaded", () => {
+      music.play().catch(() => {
+        console.warn("Autoplay blocked — will try on click");
+      });
+      document.addEventListener("click", () => {
+        if (music.paused) music.play().catch(() => {});
+      });
+    });
   </script>
 </body>
 </html>
