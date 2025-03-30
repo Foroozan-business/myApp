@@ -1,103 +1,172 @@
-<script>
-  const video = document.getElementById('video');
-  const countdown = document.getElementById('countdown');
-  const canvas = document.createElement('canvas');
-  canvas.width = 320;
-  canvas.height = 240;
-  const ctx = canvas.getContext('2d');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smile Detection</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      background: linear-gradient(to bottom right, #eaffea, #c8f7c8);
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+    }
 
-  let smileDuration = 0;
-  let detecting = true;
-  let missedFrames = 0;
+    video {
+      width: 320px;
+      height: 240px;
+      border: 5px solid #4CAF50;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      margin-top: 20px;
+    }
 
-  const compliments = [
-    "You're glowing today! ✨",
-    "That smile could light up a room! 🌟",
-    "You look amazing when you smile 😍",
-    "Smiling suits you so well 😊",
-    "That’s the spirit! Keep shining!"
-  ];
+    #countdown {
+      font-size: 1.5em;
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
 
-  canvas.style.display = "none";
-  document.body.appendChild(canvas);
+    #message {
+      margin-top: 20px;
+      font-size: 1.1em;
+      color: #000;
+    }
 
-  navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-      video.srcObject = stream;
-    })
-    .catch(err => {
-      countdown.textContent = "Cannot access camera 😢";
-      console.error("Camera error:", err);
-    });
+    .nav {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+    }
 
-  function showSuccessFlow(compliment) {
-    countdown.textContent = "";
-    const message = document.getElementById('message');
-    message.innerHTML = `🎉 ${compliment}<br><strong>Well done!</strong>`;
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
 
-    const existingBtn = document.getElementById("thankYouBtn");
-    if (existingBtn) return; // prevent multiple buttons
+  <!-- Navigation -->
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="intro.html">Go Back</a>
+    <a href="index.html">Home</a>
+  </div>
 
-    const thankYouBtn = document.createElement("button");
-    thankYouBtn.textContent = "Thank You";
-    thankYouBtn.id = "thankYouBtn";
-    thankYouBtn.style.marginTop = "20px";
-    thankYouBtn.style.padding = "10px 20px";
-    thankYouBtn.style.fontSize = "1em";
-    thankYouBtn.style.backgroundColor = "#4CAF50";
-    thankYouBtn.style.color = "white";
-    thankYouBtn.style.border = "none";
-    thankYouBtn.style.borderRadius = "8px";
-    thankYouBtn.style.cursor = "pointer";
+  <h1>Smile Detection Page 😊</h1>
+  <video id="video" autoplay playsinline muted></video>
+  <div id="countdown">Loading camera...</div>
+  <div id="message"></div>
 
-    thankYouBtn.onclick = () => {
-      message.innerHTML = "✅ Your smile has been added to your Smile Booth. 😊<br><br><a href='index.html'>Return to Home</a>";
-    };
+  <script>
+    const video = document.getElementById('video');
+    const countdown = document.getElementById('countdown');
+    const canvas = document.createElement('canvas');
+    canvas.width = 320;
+    canvas.height = 240;
+    const ctx = canvas.getContext('2d');
 
-    message.appendChild(document.createElement("br"));
-    message.appendChild(thankYouBtn);
-  }
+    let smileDuration = 0;
+    let detecting = true;
+    let missedFrames = 0;
 
-  function detectSmile() {
-    if (!detecting) return;
+    const compliments = [
+      "You're glowing today! ✨",
+      "That smile could light up a room! 🌟",
+      "You look amazing when you smile 😍",
+      "Smiling suits you so well 😊",
+      "That’s the spirit! Keep shining!"
+    ];
 
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    const image = canvas.toDataURL('image/jpeg');
+    canvas.style.display = "none";
+    document.body.appendChild(canvas);
 
-    fetch('https://myapp-xn74.onrender.com/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ image })
-    })
-    .then(res => res.json())
-    .then(data => {
-      if (data.success && data.message.includes("beautiful")) {
-        missedFrames = 0;
-        if (smileDuration < 10) smileDuration++;
-        countdown.textContent = `Smiling... ${smileDuration}/10`;
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        video.srcObject = stream;
+      })
+      .catch(err => {
+        countdown.textContent = "Cannot access camera 😢";
+        console.error("Camera error:", err);
+      });
 
-        if (smileDuration === 10) {
-          detecting = false;
-          const compliment = compliments[Math.floor(Math.random() * compliments.length)];
-          localStorage.setItem("lastSmileMessage", compliment);
-          let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
-          localStorage.setItem("weeklySmileCount", count + 1);
-          showSuccessFlow(compliment);
-        }
-      } else {
-        missedFrames++;
-        if (missedFrames >= 3) {
-          smileDuration = 0;
-          countdown.textContent = "Smile lost! Restarting...";
+    function showSuccessFlow(compliment) {
+      countdown.textContent = "";
+      const message = document.getElementById('message');
+      message.innerHTML = `🎉 ${compliment}<br><strong>Well done!</strong>`;
+
+      const existingBtn = document.getElementById("thankYouBtn");
+      if (existingBtn) return;
+
+      const thankYouBtn = document.createElement("button");
+      thankYouBtn.textContent = "Thank You";
+      thankYouBtn.id = "thankYouBtn";
+      thankYouBtn.style.marginTop = "20px";
+      thankYouBtn.style.padding = "10px 20px";
+      thankYouBtn.style.fontSize = "1em";
+      thankYouBtn.style.backgroundColor = "#4CAF50";
+      thankYouBtn.style.color = "white";
+      thankYouBtn.style.border = "none";
+      thankYouBtn.style.borderRadius = "8px";
+      thankYouBtn.style.cursor = "pointer";
+
+      thankYouBtn.onclick = () => {
+        message.innerHTML = "✅ Your smile has been added to your Smile Booth. 😊<br><br><a href='index.html'>Return to Home</a>";
+      };
+
+      message.appendChild(document.createElement("br"));
+      message.appendChild(thankYouBtn);
+    }
+
+    function detectSmile() {
+      if (!detecting) return;
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const image = canvas.toDataURL('image/jpeg');
+
+      fetch('https://myapp-xn74.onrender.com/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.message.includes("beautiful")) {
           missedFrames = 0;
-        }
-      }
-    })
-    .catch(err => {
-      console.error("Smile detection error:", err);
-      countdown.textContent = "Error detecting smile.";
-    });
-  }
+          if (smileDuration < 10) smileDuration++;
+          countdown.textContent = `Smiling... ${smileDuration}/10`;
 
-  setInterval(detectSmile, 1000);
-</script>
+          if (smileDuration === 10) {
+            detecting = false;
+            const compliment = compliments[Math.floor(Math.random() * compliments.length)];
+            localStorage.setItem("lastSmileMessage", compliment);
+            let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
+            localStorage.setItem("weeklySmileCount", count + 1);
+            showSuccessFlow(compliment);
+          }
+        } else {
+          missedFrames++;
+          if (missedFrames >= 3) {
+            smileDuration = 0;
+            countdown.textContent = "Smile lost! Restarting...";
+            missedFrames = 0;
+          }
+        }
+      })
+      .catch(err => {
+        console.error("Smile detection error:", err);
+        countdown.textContent = "Error detecting smile.";
+      });
+    }
+
+    setInterval(detectSmile, 1000);
+  </script>
+
+</body>
+</html>
