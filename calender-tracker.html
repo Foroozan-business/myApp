@@ -6,9 +6,8 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     body {
-      flex-direction: column;
-      padding: 20px;
       margin: 0;
+      padding: 20px;
       font-family: 'Segoe UI', sans-serif;
       background-color: #f4fff4;
     }
@@ -16,6 +15,7 @@
     h2 {
       margin-top: 80px;
       margin-bottom: 10px;
+      text-align: center;
     }
 
     .calendar {
@@ -34,6 +34,7 @@
       border: 2px solid #4CAF50;
       font-weight: bold;
       color: #333;
+      text-align: center;
     }
 
     .day.filled {
@@ -46,7 +47,7 @@
       background-color: #e3f2fd;
     }
 
-    /* Top Left Navigation */
+    /* Top Left Nav */
     .nav {
       position: absolute;
       top: 10px;
@@ -60,7 +61,7 @@
       color: #000;
     }
 
-    /* 🌟 Top Right Menu */
+    /* Menu */
     .menu {
       position: absolute;
       top: 10px;
@@ -125,7 +126,7 @@
   </div>
 
   <h2>Your Smile Calendar 📅</h2>
-  <p>Green = days you smiled or drew!</p>
+  <p style="text-align: center;">Green = days you smiled or drew!</p>
   <div class="calendar" id="calendar"></div>
 
   <script>
