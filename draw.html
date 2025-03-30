@@ -90,10 +90,15 @@
 
   <audio id="confettiSound" src="celebrate.mp3" preload="auto"></audio>
 
+  <!-- 🔊 Background Music -->
+  <audio id="backgroundMusic" src="music.mp3" autoplay loop></audio>
+
   <script>
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const errorElement = document.getElementById("error");
+    const music = document.getElementById("backgroundMusic");
+
     let drawing = false;
     let points = [];
 
@@ -209,6 +214,15 @@
       errorElement.appendChild(document.createElement("br"));
       errorElement.appendChild(btn);
     }
+
+    // 🎵 Autoplay fallback for music
+    window.addEventListener("DOMContentLoaded", () => {
+      music.play().catch(() => {
+        document.addEventListener("click", () => {
+          if (music.paused) music.play().catch(() => {});
+        });
+      });
+    });
   </script>
 </body>
 </html>
