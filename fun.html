@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fun of the Day 🎁</title>
   <link rel="stylesheet" href="styles.css" />
   <style>
@@ -17,6 +17,7 @@
       margin: 0;
       text-align: center;
       padding: 20px;
+      position: relative;
     }
 
     .nav {
@@ -72,7 +73,7 @@
     }
 
     h1 {
-      margin-bottom: 20px;
+      margin-bottom: 30px;
     }
 
     .gift-container {
@@ -93,6 +94,7 @@
       justify-content: center;
       cursor: pointer;
       font-size: 2em;
+      position: relative;
       transition: transform 0.2s;
     }
 
@@ -106,12 +108,49 @@
       color: #000;
     }
 
-    #result {
-      margin-top: 30px;
+    .letter-popup {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 1000;
+      width: 300px;
+      max-width: 80%;
+      transition: transform 0.3s ease;
+    }
+
+    .letter-popup.open {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .letter-popup strong {
       font-size: 1.1em;
-      max-width: 400px;
-      line-height: 1.5;
-      color: #000;
+    }
+
+    .popup-button {
+      margin-top: 15px;
+      padding: 8px 16px;
+      font-size: 1em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .arrow {
+      margin-top: 12px;
+      font-size: 1.3em;
+      animation: bounce 1.2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
     }
   </style>
 </head>
@@ -148,7 +187,11 @@
     </div>
   </div>
 
-  <div id="result">Click a gift box to open it!</div>
+  <div id="letterPopup" class="letter-popup">
+    <div id="letterContent">Loading...</div>
+    <div class="arrow">⬇️ Click to close ⬇️</div>
+    <button class="popup-button" id="popupCloseBtn">Close</button>
+  </div>
 
   <script>
     function toggleMenu() {
@@ -156,25 +199,45 @@
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    async function showJoke() {
-      try {
-        const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
-        const data = await res.json();
-        const joke = `${data.setup}<br><em>${data.punchline}</em>`;
-        document.getElementById("result").innerHTML = `<strong>😂 ${joke}</strong>`;
-      } catch (err) {
-        document.getElementById("result").textContent = "⚠️ Failed to load joke.";
-      }
-    }
+    const popup = document.getElementById("letterPopup");
+    const content = document.getElementById("letterContent");
+    const closeBtn = document.getElementById("popupCloseBtn");
+
+    closeBtn.onclick = () => {
+      popup.classList.remove("open");
+    };
 
     async function showQuote() {
       try {
         const res = await fetch('https://api.quotable.io/random');
         const data = await res.json();
-        const quote = `${data.content} — <em>${data.author}</em>`;
-        document.getElementById("result").innerHTML = `<strong>💬 ${quote}</strong>`;
-      } catch (err) {
-        document.getElementById("result").textContent = "⚠️ Failed to load quote.";
+        const quote = `${data.content} – ${data.author}`;
+        content.innerHTML = `<strong>💬 ${quote}</strong><br><br><button class="popup-button">Beautiful</button>`;
+        popup.classList.add("open");
+
+        popup.querySelector(".popup-button").onclick = () => {
+          popup.classList.remove("open");
+        };
+      } catch {
+        content.innerHTML = "⚠️ Failed to load quote.";
+        popup.classList.add("open");
+      }
+    }
+
+    async function showJoke() {
+      try {
+        const res = await fetch('https://official-joke-api.appspot.com/jokes/random');
+        const data = await res.json();
+        const joke = `${data.setup}<br><em>${data.punchline}</em>`;
+        content.innerHTML = `<strong>😂 ${joke}</strong><br><br><button class="popup-button">Haha</button>`;
+        popup.classList.add("open");
+
+        popup.querySelector(".popup-button").onclick = () => {
+          popup.classList.remove("open");
+        };
+      } catch {
+        content.innerHTML = "⚠️ Failed to load joke.";
+        popup.classList.add("open");
       }
     }
   </script>
