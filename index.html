@@ -56,28 +56,13 @@
       background-color: #f0f0f0;
       border-radius: 4px;
     }
-
-    button {
-      padding: 12px 24px;
-      font-size: 1.1em;
-      border-radius: 8px;
-      border: none;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
   </style>
 </head>
 <body>
   <!-- Exit Button -->
   <a href="exit.html" class="exit-button" aria-label="Exit Smile Booth">&times;</a>
 
-  <!-- Universal Menu -->
+  <!-- Menu -->
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -90,15 +75,14 @@
     </div>
   </div>
 
-  <!-- Welcome Messages -->
+  <!-- Welcome Message -->
   <h1>Hi Smilie! Welcome to Smile Booth 😊</h1>
   <p id="weekly-count">Smile of this week: <strong>0</strong></p>
   <p id="global-count">So far, <strong>523</strong> people have smiled in Smile Booth today! 😄</p>
 
-  <!-- Button to Go to Smile Options Page -->
-  <button onclick="location.href='smile-options.html'">Take me to my Smile Booth ➡️</button>
+  <!-- Corrected Button Link -->
+  <button onclick="location.href='smile-options.html'">Take me to my Smile Booth 📸</button>
 
-  <!-- Smile Count Script -->
   <script>
     const smileCount = parseInt(localStorage.getItem("weeklySmileCount") || "0", 10);
     document.getElementById("weekly-count").innerHTML =
@@ -108,13 +92,11 @@
     document.getElementById("global-count").innerHTML =
       `So far, <strong>${global}</strong> people have smiled in Smile Booth today! 😄`;
 
-    // Toggle menu function
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
     }
 
-    // Hide menu if clicked outside
     document.addEventListener("click", function (event) {
       const menu = document.getElementById("menuContent");
       const button = document.querySelector(".menu button");
