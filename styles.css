@@ -1,12 +1,12 @@
 /* Global page background and layout */
 body {
-  background: linear-gradient(to bottom right, #e6fff2, #ccffe6);
+  background-color: #88E788; /* ✅ Light green */
   font-family: 'Segoe UI', sans-serif;
   color: #000; /* ✅ Black text */
   margin: 0;
   padding: 0;
   text-align: center;
-  display: flex;              /* ✅ Centering */
+  display: flex;              
   flex-direction: column;
   justify-content: center;
   align-items: center;
