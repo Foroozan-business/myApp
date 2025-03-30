@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="styles.css">
   <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #d7fdd7;
+    }
+
     .centered-content {
       display: flex;
       flex-direction: column;
@@ -45,14 +51,67 @@
       font-size: 1.1em;
       color: #000;
     }
+
+    .menu {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+    }
+
+    .menu button {
+      font-size: 1.3em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+
+    .menu-content a {
+      display: block;
+      text-decoration: none;
+      padding: 6px 10px;
+      font-size: 0.95em;
+      color: #333;
+    }
+
+    .menu-content a:hover {
+      background-color: #f0f0f0;
+    }
   </style>
 </head>
 <body>
-  <!-- ✅ Updated top nav -->
+
+  <!-- Top Left Nav -->
   <div class="nav">
     <a href="exit.html">Exit</a>
     <a href="intro.html">Go Back</a>
     <a href="index.html">Home</a>
+  </div>
+
+  <!-- Top Right Menu -->
+  <div class="menu">
+    <button onclick="toggleMenu()">☰ Menu</button>
+    <div class="menu-content" id="menuContent">
+      <a href="index.html">🏠 Homepage</a>
+      <a href="smile-options.html">😊 Smile Option Page</a>
+      <a href="camera.html">📷 Smile Record Page</a>
+      <a href="draw.html">🎨 Smile Paint Page</a>
+      <a href="fun.html">🎁 Fun Page</a>
+      <a href="calender-tracker.html">🗓️ Calendar Tracker</a>
+    </div>
   </div>
 
   <div class="centered-content">
@@ -62,5 +121,12 @@
       <button onclick="window.location.href='draw.html'">No 😐</button>
     </div>
   </div>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("menuContent");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+  </script>
 </body>
 </html>
