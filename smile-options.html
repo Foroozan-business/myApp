@@ -1,4 +1,155 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smile Options</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      background-color: #d7fdd7;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 30px;
+      font-size: 1.8em;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .button-group button {
+      padding: 14px 28px;
+      font-size: 1.1em;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .button-group button:nth-child(2) {
+      background-color: #e74c3c;
+    }
+
+    .button-group button:hover {
+      transform: scale(1.05);
+    }
+
+    /* Top Nav (Left) */
+    .nav {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+    }
+
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #000;
+    }
+
+    /* Menu (Right) */
+    .menu {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+    }
+
+    .menu button {
+      font-size: 1.3em;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+
+    .menu-content a {
+      display: block;
+      text-decoration: none;
+      padding: 6px 10px;
+      font-size: 0.95em;
+      color: #333;
+    }
+
+    .menu-content a:hover {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Left Nav -->
+  <div class="nav">
+    <a href="exit.html">Exit</a>
+    <a href="intro.html">Go Back</a>
+  </div>
+
+  <!-- Top Right Menu -->
+  <div class="menu">
+    <button onclick="toggleMenu()">☰ Menu</button>
+    <div class="menu-content" id="menuContent">
+      <a href="index.html">🏠 Homepage</a>
+      <a href="smile-options.html">😊 Smile Option Page</a>
+      <a href="camera.html">📷 Smile Record Page</a>
+      <a href="draw.html">🎨 Smile Paint Page</a>
+      <a href="fun.html">🎁 Fun Page</a>
+      <a href="calender-tracker.html">🗓️ Calendar Tracker</a>
+    </div>
+  </div>
+
+  <h2>Are you ready to capture your beautiful smile? 😊</h2>
+
+  <div class="button-group">
+    <button onclick="window.location.href='camera.html'">Yes, let’s go! 😄</button>
+    <button onclick="window.location.href='draw.html'">No 😔</button>
+  </div>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById("menuContent");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    document.addEventListener("click", function (event) {
+      const menu = document.getElementById("menuContent");
+      const button = document.querySelector(".menu button");
+      if (!menu.contains(event.target) && !button.contains(event.target)) {
+        menu.style.display = "none";
+      }
+    });
+  </script>
+
+</body>
+</html>
+<!DOCTYPE html>
 <html>
 <head>
   <title>Smile Options</title>
