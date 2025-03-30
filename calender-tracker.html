@@ -51,6 +51,48 @@
       font-size: 1.1em;
       color: #000;
     }
+
+    /* 🌟 Menu Styles */
+    .menu {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+    }
+
+    .menu button {
+      font-size: 1.2em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .menu-content {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background-color: white;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      padding: 10px;
+    }
+
+    .menu-content a {
+      display: block;
+      text-decoration: none;
+      padding: 6px 10px;
+      color: #333;
+      font-size: 1em;
+    }
+
+    .menu-content a:hover {
+      background-color: #f0f0f0;
+    }
   </style>
 </head>
 <body>
@@ -65,22 +107,32 @@
   <p>Green = days you smiled or drew!</p>
   <div class="calendar" id="calendar"></div>
 
+  <!-- 🌟 Universal Menu -->
+  <div class="menu">
+    <button onclick="toggleMenu()">☰ Menu</button>
+    <div class="menu-content" id="menuContent">
+      <a href="index.html">🏠 Homepage</a>
+      <a href="smile-options.html">😊 Smile Option Page</a>
+      <a href="camera.html">📷 Smile Record Page</a>
+      <a href="draw.html">🎨 Smile Paint Page</a>
+      <a href="fun.html">🎁 Fun Page</a>
+      <a href="calender-tracker.html">🗓️ Calendar Tracker</a>
+    </div>
+  </div>
+
   <script>
+    // 🌈 Calendar generation
     const calendarEl = document.getElementById("calendar");
     const smileData = JSON.parse(localStorage.getItem("smileCalendar") || "{}");
 
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth(); // 0-indexed
-
     const start = new Date(year, month, 1);
     const end = new Date(year, month + 1, 0);
     const totalDays = end.getDate();
-
-    // Get which day of week the month starts on (0 = Sunday)
     const firstDayOfWeek = start.getDay();
 
-    // Add empty blocks before month start
     for (let i = 0; i < firstDayOfWeek; i++) {
       const empty = document.createElement("div");
       calendarEl.appendChild(empty);
@@ -98,6 +150,22 @@
       div.innerHTML = `${day}<br><small>${count > 0 ? count + " 😊" : ""}</small>`;
       calendarEl.appendChild(div);
     }
+
+    // 🌟 Menu toggle
+    function toggleMenu() {
+      const menu = document.getElementById("menuContent");
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    }
+
+    // Close menu if click outside
+    document.addEventListener("click", function (event) {
+      const menu = document.getElementById("menuContent");
+      const button = document.querySelector(".menu button");
+      if (!menu.contains(event.target) && event.target !== button) {
+        menu.style.display = "none";
+      }
+    });
   </script>
+
 </body>
 </html>
