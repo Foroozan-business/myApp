@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smile Tracker Calendar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .day {
+      padding: 10px;
+      border-radius: 10px;
+      background: #fff;
+      border: 2px solid #4CAF50;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .day.filled {
+      background-color: #c8f7c5;
+      border-color: #2e7d32;
+    }
+
+    .day.today {
+      border: 2px dashed #2196f3;
+      background-color: #e3f2fd;
+    }
+
+    .nav {
+      margin-bottom: 20px;
+    }
+
+    .nav a {
+      margin-right: 15px;
+      text-decoration: none;
+      font-size: 1.1em;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="nav">
+    <a href="index.html">Home</a>
+    <a href="intro.html">Smile Booth</a>
+    <a href="exit.html">Exit</a>
+  </div>
+
+  <h2>Your Smile Calendar 📅</h2>
+  <p>Green = days you smiled or drew!</p>
+  <div class="calendar" id="calendar"></div>
+
+  <script>
+    const calendarEl = document.getElementById("calendar");
+    const smileData = JSON.parse(localStorage.getItem("smileCalendar") || "{}");
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0-indexed
+
+    const start = new Date(year, month, 1);
+    const end = new Date(year, month + 1, 0);
+    const totalDays = end.getDate();
+
+    // Get which day of week the month starts on (0 = Sunday)
+    const firstDayOfWeek = start.getDay();
+
+    // Add empty blocks before month start
+    for (let i = 0; i < firstDayOfWeek; i++) {
+      const empty = document.createElement("div");
+      calendarEl.appendChild(empty);
+    }
+
+    for (let day = 1; day <= totalDays; day++) {
+      const div = document.createElement("div");
+      const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+      const count = smileData[dateKey] || 0;
+
+      div.classList.add("day");
+      if (count > 0) div.classList.add("filled");
+      if (dateKey === today.toISOString().split("T")[0]) div.classList.add("today");
+
+      div.innerHTML = `${day}<br><small>${count > 0 ? count + " 😊" : ""}</small>`;
+      calendarEl.appendChild(div);
+    }
+  </script>
+</body>
+</html>
