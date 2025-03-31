@@ -42,7 +42,6 @@
       border-color: #2e7d32;
     }
 
-    /* Top Left Nav */
     .nav {
       position: absolute;
       top: 10px;
@@ -56,7 +55,6 @@
       color: #000;
     }
 
-    /* Menu */
     .menu {
       position: absolute;
       top: 10px;
@@ -97,13 +95,6 @@
     .menu-content a:hover {
       background-color: #f0f0f0;
     }
-
-    #weekly {
-      margin-top: 10px;
-      text-align: center;
-      font-weight: bold;
-      color: #4CAF50;
-    }
   </style>
 </head>
 <body>
@@ -129,12 +120,10 @@
 
   <h2>Your Smile Calendar 📅</h2>
   <p style="text-align: center;">Green = days you smiled or drew!</p>
-  <div id="weekly"></div>
   <div class="calendar" id="calendar"></div>
 
   <script>
     const calendarEl = document.getElementById("calendar");
-    const weeklyEl = document.getElementById("weekly");
     const smileData = JSON.parse(localStorage.getItem("smileCalendar") || "{}");
 
     const today = new Date();
@@ -144,26 +133,8 @@
     const end = new Date(year, month + 1, 0);
     const totalDays = end.getDate();
     const firstDayOfWeek = start.getDay();
+    const todayStr = today.toISOString().split("T")[0];
 
-    const currentWeekStart = new Date(today);
-    currentWeekStart.setDate(today.getDate() - today.getDay());
-    currentWeekStart.setHours(0, 0, 0, 0);
-
-    const currentWeekEnd = new Date(currentWeekStart);
-    currentWeekEnd.setDate(currentWeekStart.getDate() + 6);
-    currentWeekEnd.setHours(23, 59, 59, 999);
-
-    let weeklyCount = 0;
-
-    // Count smiles for this week
-    for (const dateKey in smileData) {
-      const date = new Date(dateKey);
-      if (date >= currentWeekStart && date <= currentWeekEnd) {
-        weeklyCount += smileData[dateKey];
-      }
-    }
-
-    // Render calendar grid
     for (let i = 0; i < firstDayOfWeek; i++) {
       const empty = document.createElement("div");
       calendarEl.appendChild(empty);
@@ -171,18 +142,19 @@
 
     for (let day = 1; day <= totalDays; day++) {
       const div = document.createElement("div");
-      const dateObj = new Date(year, month, day);
-      const dateKey = dateObj.toISOString().split("T")[0];
+      const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
       const count = smileData[dateKey] || 0;
 
       div.classList.add("day");
-      if (count > 0) div.classList.add("filled");
+
+      // Mark today and smile-filled day
+      if (count > 0) {
+        div.classList.add("filled");
+      }
 
       div.innerHTML = `${day}<br><small>${count > 0 ? count + " 😊" : ""}</small>`;
       calendarEl.appendChild(div);
     }
-
-    weeklyEl.textContent = `Smiles this week: ${weeklyCount} 🎉`;
 
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
