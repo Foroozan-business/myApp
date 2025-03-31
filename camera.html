@@ -2,8 +2,8 @@
 <html>
 <head>
   <title>Smile Detection Camera</title>
-  <link rel="stylesheet" href="styles.css">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       background: linear-gradient(to bottom right, #eaffea, #c8f7c8);
@@ -30,7 +30,7 @@
     .nav {
       position: absolute;
       top: 10px;
-      left: 15px;
+      left: 10px;
     }
 
     .nav a {
@@ -102,9 +102,20 @@
     .menu-content a:hover {
       background-color: #f0f0f0;
     }
+
+    .arrow {
+      font-size: 2rem;
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
   </style>
 </head>
 <body>
+
   <div class="nav">
     <a href="exit.html">Exit</a>
     <a href="smile-options.html">Go Back</a>
@@ -122,13 +133,15 @@
     </div>
   </div>
 
-  <h2>Smile Progress: <span id="progress">0</span> / 10</h2>
+  <h2>Smile and keep it for 10 seconds: <span id="progress">0</span>/10</h2>
   <video id="video" autoplay playsinline muted></video>
   <p id="message">Loading camera...</p>
   <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 
   <div id="thankYouBox" style="display:none; margin-top: 20px;">
-    <p>✅ Well done! Click the button below to add your smile:</p>
+    <p id="finalMsg" style="font-weight: bold; font-size: 1.1em;"></p>
+    <p>Press below to add your smile to weekly smile.</p>
+    <div class="arrow">⬇️</div>
     <button onclick="handleThankYou()">Thank You</button>
   </div>
 
@@ -143,12 +156,29 @@
     const progressDisplay = document.getElementById('progress');
     const thankYouBox = document.getElementById('thankYouBox');
     const celebrationText = document.getElementById("celebrationText");
+    const finalMsg = document.getElementById("finalMsg");
     const music = document.getElementById("backgroundMusic");
 
     let smileCount = 0;
     let missedFrames = 0;
     let done = false;
     let countdown = 3;
+    let lastIndex = -1;
+
+    const compliments = [
+      "You're glowing today! ✨", "That smile could light up a room! 🌟",
+      "You look amazing when you smile 😍", "Smiling suits you so well 😊",
+      "Keep radiating joy! ✨", "Smiles like yours are rare 💎",
+      "That smile is your superpower 💫", "You make the world brighter! ☀️"
+    ];
+
+    function getRandomCompliment() {
+      let index;
+      do { index = Math.floor(Math.random() * compliments.length); }
+      while (index === lastIndex);
+      lastIndex = index;
+      return compliments[index];
+    }
 
     function showConfettiEmojis(count = 20) {
       celebrationText.style.display = "block";
@@ -181,25 +211,22 @@
             missedFrames = 0;
             if (smileCount < 10) smileCount++;
             progressDisplay.textContent = smileCount;
+            message.textContent = "Keep smiling! 😊";
 
             if (smileCount === 10) {
               clearInterval(interval);
               done = true;
-              message.innerHTML = `<strong>🎉 Well done!</strong>`;
+              const compliment = getRandomCompliment();
+              finalMsg.textContent = "🎉 " + compliment;
               thankYouBox.style.display = "block";
               showConfettiEmojis();
-
-              const dateKey = new Date().toISOString().split("T")[0];
-              const calendarData = JSON.parse(localStorage.getItem("smileCalendar") || '{}');
-              calendarData[dateKey] = (calendarData[dateKey] || 0) + 1;
-              localStorage.setItem("smileCalendar", JSON.stringify(calendarData));
             }
           } else {
             missedFrames++;
             if (missedFrames >= 3) {
               smileCount = 0;
               progressDisplay.textContent = smileCount;
-              message.textContent = "Smile lost 😐 Let's try again!";
+              message.textContent = "You stopped smiling 😐 Try again!";
               missedFrames = 0;
             }
           }
@@ -214,7 +241,6 @@
       .then(stream => {
         video.srcObject = stream;
         message.textContent = "Get ready to smile...";
-
         music.play().catch(() => {
           document.addEventListener("click", () => {
             if (music.paused) music.play();
@@ -226,7 +252,7 @@
           countdown--;
           if (countdown < 0) {
             clearInterval(countdownInterval);
-            message.textContent = "Smiling... 😊";
+            message.textContent = "Smile and hold it! 😊";
             startSmileDetection();
           }
         }, 1000);
@@ -240,10 +266,14 @@
       let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
       localStorage.setItem("weeklySmileCount", count + 1);
 
-      const compliment = "🎉✅ Your smile has been added to the weekly smile count. 😊";
-      localStorage.setItem("lastSmileMessage", compliment);
+      const dateKey = new Date().toISOString().split("T")[0];
+      const calendarData = JSON.parse(localStorage.getItem("smileCalendar") || '{}');
+      calendarData[dateKey] = (calendarData[dateKey] || 0) + 1;
+      localStorage.setItem("smileCalendar", JSON.stringify(calendarData));
 
-      window.location.href = "index.html";
+      localStorage.setItem("celebrateOnHome", "true");
+
+      location.href = "index.html";
     }
 
     function toggleMenu() {
