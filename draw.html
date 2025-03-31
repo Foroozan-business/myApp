@@ -68,7 +68,6 @@
       color: #333;
     }
 
-    /* 🌟 Menu Styles */
     .menu {
       position: fixed;
       top: 15px;
@@ -113,13 +112,11 @@
 </head>
 <body>
 
-  <!-- Navigation -->
   <div class="nav">
     <a href="exit.html">Exit</a>
     <a href="smile-options.html">Go Back</a>
   </div>
 
-  <!-- 🌟 Universal Menu -->
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -133,6 +130,7 @@
   </div>
 
   <h2>Draw your smile 😊</h2>
+  <p style="margin-top: -10px;">Draw your smile and write a positive sentence.</p>
 
   <canvas id="canvas" width="300" height="200"></canvas>
 
@@ -206,7 +204,6 @@
 
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseout", () => drawing = false);
-
     canvas.addEventListener("touchstart", e => {
       drawing = true;
       const pos = getTouchPos(e);
@@ -214,7 +211,6 @@
       ctx.moveTo(pos.x, pos.y);
       e.preventDefault();
     });
-
     canvas.addEventListener("touchmove", e => {
       if (!drawing) return;
       const pos = getTouchPos(e);
@@ -226,7 +222,6 @@
       points.push({ x: pos.x, y: pos.y });
       e.preventDefault();
     });
-
     canvas.addEventListener("touchend", () => drawing = false);
 
     function validateSmile() {
@@ -261,10 +256,7 @@
         calendarData[dateKey] = (calendarData[dateKey] || 0) + 1;
         localStorage.setItem("smileCalendar", JSON.stringify(calendarData));
 
-        // Flag to show celebration on home page
         localStorage.setItem("justSmiled", "true");
-
-        // Redirect to home
         window.location.href = "index.html";
       };
       errorElement.appendChild(document.createElement("br"));
