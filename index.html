@@ -68,6 +68,21 @@
       0% { transform: translateY(0) scale(1); opacity: 1; }
       100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
     }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
@@ -95,17 +110,27 @@
   <button onclick="location.href='smile-options.html'">Take me to my Smile Booth 📸</button>
 
   <script>
-    const smileCount = parseInt(localStorage.getItem("weeklySmileCount") || "0", 10);
-    const justSmiled = localStorage.getItem("justSmiled") === "true";
     const weeklyCountEl = document.getElementById("weekly-count");
     const globalCountEl = document.getElementById("global-count");
+    const smileData = JSON.parse(localStorage.getItem("smileCalendar") || "{}");
+    const today = new Date();
+    const oneWeekAgo = new Date(today);
+    oneWeekAgo.setDate(today.getDate() - 6);
 
-    // Update counts
-    weeklyCountEl.innerHTML = `Smile of this week: <strong>${smileCount}</strong>`;
-    const global = 523 + smileCount;
+    let weeklySmileCount = 0;
+
+    for (const date in smileData) {
+      const smileDate = new Date(date);
+      if (smileDate >= oneWeekAgo && smileDate <= today) {
+        weeklySmileCount += smileData[date];
+      }
+    }
+
+    weeklyCountEl.innerHTML = `Smile of this week: <strong>${weeklySmileCount}</strong>`;
+    const global = 523 + weeklySmileCount;
     globalCountEl.innerHTML = `So far, <strong>${global}</strong> people have smiled in Smile Booth today! 😄`;
 
-    // 🎉 If user just smiled, celebrate
+    const justSmiled = localStorage.getItem("justSmiled") === "true";
     if (justSmiled) {
       for (let i = 0; i < 15; i++) {
         const emoji = document.createElement("div");
@@ -116,12 +141,9 @@
         document.body.appendChild(emoji);
         setTimeout(() => emoji.remove(), 2000);
       }
-
-      // Reset flag after showing
       localStorage.setItem("justSmiled", "false");
     }
 
-    // 🌐 Menu toggle
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
