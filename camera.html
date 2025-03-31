@@ -164,6 +164,7 @@
     let done = false;
     let countdown = 3;
     let lastIndex = -1;
+    let busy = false;
 
     const compliments = [
       "You're glowing today! ✨", "That smile could light up a room! 🌟",
@@ -196,7 +197,9 @@
 
     function startSmileDetection() {
       const interval = setInterval(() => {
-        if (done) return;
+        if (done || busy) return;
+        busy = true;
+
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         const image = canvas.toDataURL('image/jpeg');
 
@@ -232,9 +235,12 @@
           }
         })
         .catch(() => {
-          message.textContent = "Smile detection failed.";
+          message.textContent = "Server busy. Please wait...";
+        })
+        .finally(() => {
+          busy = false;
         });
-      }, 1000);
+      }, 1200);
     }
 
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
