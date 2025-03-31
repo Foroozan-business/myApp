@@ -1,42 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Smile Added!</title>
+  <title>Smile Detection Camera</title>
   <link rel="stylesheet" href="styles.css" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
+      background: linear-gradient(to bottom right, #eaffea, #c8f7c8);
       font-family: 'Segoe UI', sans-serif;
+      color: #000;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
-      padding: 30px;
-      background: linear-gradient(to bottom right, #e8fce8, #d8f8e8);
+      position: relative;
     }
 
-    .celebration {
-      font-size: 3em;
-      margin-bottom: 10px;
+    video {
+      border: 5px solid #4CAF50;
+      border-radius: 10px;
+      width: 320px;
+      height: 240px;
+      margin-top: 10px;
     }
 
-    #compliment {
-      font-size: 1.2em;
-      font-style: italic;
-      color: #333;
-      margin-top: 20px;
-    }
-
-    .emoji {
-      position: absolute;
-      font-size: 2rem;
-      animation: floatUp 2.5s ease-out forwards;
-      pointer-events: none;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(0) scale(1); opacity: 1; }
-      100% { transform: translateY(-200px) scale(0.5); opacity: 0; }
-    }
-
-    /* Top left navigation */
     .nav {
       position: absolute;
       top: 10px;
@@ -47,23 +37,45 @@
       margin-right: 15px;
       text-decoration: none;
       font-size: 1.1em;
-      color: #000;
+      color: #333;
     }
 
-    /* Top right menu */
+    #celebrationText {
+      position: absolute;
+      top: 12%;
+      font-size: 2em;
+      font-weight: bold;
+      color: #4CAF50;
+      display: none;
+      z-index: 999;
+    }
+
+    .confetti {
+      position: absolute;
+      font-size: 2rem;
+      animation: float 2s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
+    }
+
     .menu {
       position: absolute;
       top: 10px;
       right: 15px;
-      z-index: 1000;
     }
 
     .menu button {
-      font-size: 1.3em;
-      background: none;
+      background-color: #4CAF50;
+      color: white;
       border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
       cursor: pointer;
-      color: #333;
+      font-size: 1em;
     }
 
     .menu-content {
@@ -71,36 +83,37 @@
       position: absolute;
       top: 40px;
       right: 0;
-      background: white;
+      background-color: #ffffff;
       border: 1px solid #ccc;
       border-radius: 8px;
       padding: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 999;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      z-index: 1000;
     }
 
     .menu-content a {
       display: block;
+      padding: 6px 12px;
       text-decoration: none;
-      padding: 6px 10px;
+      color: #000;
       font-size: 0.95em;
-      color: #333;
     }
 
     .menu-content a:hover {
       background-color: #f0f0f0;
+      border-radius: 4px;
     }
   </style>
 </head>
 <body>
 
-  <!-- 🔙 Top Left Navigation -->
+  <!-- Top Nav -->
   <div class="nav">
     <a href="exit.html">Exit</a>
-    <a href="intro.html">Go Back</a>
+    <a href="smile-options.html">Go Back</a>
   </div>
 
-  <!-- ☰ Top Right Universal Menu -->
+  <!-- Universal Menu -->
   <div class="menu">
     <button onclick="toggleMenu()">☰ Menu</button>
     <div class="menu-content" id="menuContent">
@@ -113,19 +126,147 @@
     </div>
   </div>
 
-  <!-- 🎉 Smile Added Message -->
-  <div class="celebration">🎉🎉🎉</div>
-  <h1>Your smile has been added to the weekly smile count! 😄</h1>
-  <p>You're spreading happiness one smile at a time.</p>
-  <p id="compliment"></p>
+  <h2>Smile Progress: <span id="progress">0</span> / 10</h2>
+  <video id="video" autoplay playsinline muted></video>
+  <p id="message">Loading camera...</p>
+  <canvas id="canvas" width="320" height="240" style="display: none;"></canvas>
 
-  <!-- 🎈 Confetti emojis -->
+  <div id="thankYouBox" style="display:none; margin-top: 20px;">
+    <p>✅ Well done! Click the button below to add your smile:</p>
+    <button onclick="handleThankYou()">Thank You</button>
+  </div>
+
+  <div id="celebrationText">🎊 Celebrating your smile!</div>
+  <audio id="backgroundMusic" src="music.mp3" loop></audio>
+
   <script>
-    const compliment = localStorage.getItem("lastSmileMessage");
-    if (compliment) {
-      document.getElementById("compliment").textContent = compliment;
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const message = document.getElementById('message');
+    const progressDisplay = document.getElementById('progress');
+    const thankYouBox = document.getElementById('thankYouBox');
+    const celebrationText = document.getElementById("celebrationText");
+    const music = document.getElementById("backgroundMusic");
+
+    let smileCount = 0;
+    let missedFrames = 0;
+    let done = false;
+    let countdown = 3;
+    let lastIndex = -1;
+
+    const compliments = [
+      "You're glowing today! ✨", "That smile could light up a room! 🌟",
+      "You look amazing when you smile 😍", "Smiling suits you so well 😊",
+      "That’s the spirit! Keep shining!", "You just made the world brighter ☀️",
+      "Smiles like yours are rare 💎", "Keep radiating joy! ✨",
+      "Happiness looks good on you 😄", "That smile is your superpower 💫"
+    ];
+
+    function getUniqueCompliment() {
+      let index;
+      do { index = Math.floor(Math.random() * compliments.length); }
+      while (index === lastIndex);
+      lastIndex = index;
+      return compliments[index];
     }
 
+    function showConfettiEmojis(count = 20) {
+      celebrationText.style.display = "block";
+      for (let i = 0; i < count; i++) {
+        const emoji = document.createElement("div");
+        emoji.textContent = "🎉";
+        emoji.className = "confetti";
+        emoji.style.left = `${Math.random() * 100}%`;
+        emoji.style.top = `${50 + Math.random() * 30}%`;
+        document.body.appendChild(emoji);
+        setTimeout(() => emoji.remove(), 2000);
+      }
+      setTimeout(() => celebrationText.style.display = "none", 2000);
+    }
+
+    function startSmileDetection() {
+      const interval = setInterval(() => {
+        if (done) return;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const image = canvas.toDataURL('image/jpeg');
+
+        fetch('https://myapp-xn74.onrender.com/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.message.includes("beautiful")) {
+            missedFrames = 0;
+            if (smileCount < 10) smileCount++;
+            progressDisplay.textContent = smileCount;
+
+            if (smileCount === 10) {
+              clearInterval(interval);
+              done = true;
+              message.innerHTML = `<strong>🎉 ${getUniqueCompliment()}</strong>`;
+              thankYouBox.style.display = "block";
+              showConfettiEmojis();
+
+              const dateKey = new Date().toISOString().split("T")[0];
+              const calendarData = JSON.parse(localStorage.getItem("smileCalendar") || '{}');
+              calendarData[dateKey] = (calendarData[dateKey] || 0) + 1;
+              localStorage.setItem("smileCalendar", JSON.stringify(calendarData));
+            }
+          } else {
+            missedFrames++;
+            if (missedFrames >= 3) {
+              smileCount = 0;
+              progressDisplay.textContent = smileCount;
+              message.textContent = "Smile lost 😐 Let's try again!";
+              missedFrames = 0;
+            }
+          }
+        })
+        .catch(() => {
+          message.textContent = "Smile detection failed.";
+        });
+      }, 1000);
+    }
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+      .then(stream => {
+        video.srcObject = stream;
+        message.textContent = "Get ready to smile...";
+        music.play().catch(() => {
+          document.addEventListener("click", () => {
+            if (music.paused) music.play();
+          });
+        });
+
+        const countdownInterval = setInterval(() => {
+          message.textContent = `Starting in ${countdown}...`;
+          countdown--;
+          if (countdown < 0) {
+            clearInterval(countdownInterval);
+            message.textContent = "Smiling... 😊";
+            startSmileDetection();
+          }
+        }, 1000);
+      })
+      .catch(err => {
+        console.error("Camera error:", err);
+        message.textContent = "Camera access failed 😢";
+      });
+
+    function handleThankYou() {
+      let count = parseInt(localStorage.getItem("weeklySmileCount") || "0");
+      localStorage.setItem("weeklySmileCount", count + 1);
+
+      // 🎉 For animation on homepage
+      localStorage.setItem("justSmiled", "true");
+
+      window.location.href = "index.html";
+    }
+
+    // 🌟 Menu toggle
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
@@ -138,20 +279,6 @@
         menu.style.display = "none";
       }
     });
-
-    function showFloatingEmojis(count = 20) {
-      for (let i = 0; i < count; i++) {
-        const emoji = document.createElement("div");
-        emoji.className = "emoji";
-        emoji.textContent = "😄";
-        emoji.style.left = Math.random() * 100 + "vw";
-        emoji.style.bottom = "0px";
-        document.body.appendChild(emoji);
-        setTimeout(() => emoji.remove(), 2500);
-      }
-    }
-
-    window.addEventListener("DOMContentLoaded", showFloatingEmojis);
   </script>
 </body>
 </html>
