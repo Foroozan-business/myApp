@@ -143,8 +143,23 @@
   </div>
 
   <audio id="confettiSound" src="celebrate.mp3" preload="auto"></audio>
+  <audio id="backgroundMusic" src="music.mp3" loop autoplay></audio>
 
   <script>
+    const music = document.getElementById("backgroundMusic");
+
+    // Ensure autoplay works with user interaction fallback
+    window.addEventListener("load", () => {
+      const playPromise = music.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          document.body.addEventListener("click", () => {
+            if (music.paused) music.play();
+          }, { once: true });
+        });
+      }
+    });
+
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
     const errorElement = document.getElementById("error");
@@ -204,6 +219,7 @@
 
     canvas.addEventListener("mouseup", () => drawing = false);
     canvas.addEventListener("mouseout", () => drawing = false);
+
     canvas.addEventListener("touchstart", e => {
       drawing = true;
       const pos = getTouchPos(e);
@@ -211,6 +227,7 @@
       ctx.moveTo(pos.x, pos.y);
       e.preventDefault();
     });
+
     canvas.addEventListener("touchmove", e => {
       if (!drawing) return;
       const pos = getTouchPos(e);
@@ -222,6 +239,7 @@
       points.push({ x: pos.x, y: pos.y });
       e.preventDefault();
     });
+
     canvas.addEventListener("touchend", () => drawing = false);
 
     function validateSmile() {
