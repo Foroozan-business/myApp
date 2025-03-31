@@ -116,7 +116,7 @@
   <!-- Navigation -->
   <div class="nav">
     <a href="exit.html">Exit</a>
-    <a href="intro.html">Go Back</a>
+    <a href="smile-options.html">Go Back</a>
   </div>
 
   <!-- 🌟 Universal Menu -->
@@ -155,18 +155,18 @@
 
     function drawSmileTemplate() {
       ctx.beginPath();
-      ctx.strokeStyle = "#f2a8a8"; // light red smile
+      ctx.strokeStyle = "#f2a8a8";
       ctx.lineWidth = 4;
       ctx.arc(150, 120, 50, 0, Math.PI, false);
       ctx.stroke();
 
       ctx.beginPath();
       ctx.fillStyle = "#000";
-      ctx.arc(120, 70, 5, 0, 2 * Math.PI); // left eye
+      ctx.arc(120, 70, 5, 0, 2 * Math.PI);
       ctx.fill();
 
       ctx.beginPath();
-      ctx.arc(180, 70, 5, 0, 2 * Math.PI); // right eye
+      ctx.arc(180, 70, 5, 0, 2 * Math.PI);
       ctx.fill();
     }
 
@@ -197,7 +197,7 @@
     canvas.addEventListener("mousemove", e => {
       if (!drawing) return;
       ctx.lineTo(e.offsetX, e.offsetY);
-      ctx.strokeStyle = "#e60000"; // red pen
+      ctx.strokeStyle = "#e60000";
       ctx.lineWidth = 3;
       ctx.lineCap = "round";
       ctx.stroke();
@@ -256,24 +256,21 @@
         let count = parseInt(localStorage.getItem("weeklySmileCount") || 0);
         localStorage.setItem("weeklySmileCount", count + 1);
 
-        // ✅ Update calendar
         const dateKey = new Date().toISOString().split("T")[0];
         const calendarData = JSON.parse(localStorage.getItem("smileCalendar") || '{}');
         calendarData[dateKey] = (calendarData[dateKey] || 0) + 1;
         localStorage.setItem("smileCalendar", JSON.stringify(calendarData));
 
-        document.body.innerHTML = `
-          <div style="text-align: center; padding: 30px;">
-            <h1 style="color: green;">🎉✅ Your smile has been added to the weekly smile count. 😊</h1>
-            <p><a href="index.html" style="text-decoration: underline;">Return to Home</a></p>
-          </div>
-        `;
+        // Flag to show celebration on home page
+        localStorage.setItem("justSmiled", "true");
+
+        // Redirect to home
+        window.location.href = "index.html";
       };
       errorElement.appendChild(document.createElement("br"));
       errorElement.appendChild(btn);
     }
 
-    // 🌟 Toggle universal menu
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
