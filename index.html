@@ -56,6 +56,18 @@
       background-color: #f0f0f0;
       border-radius: 4px;
     }
+
+    .celebration-emoji {
+      position: absolute;
+      font-size: 2rem;
+      animation: floatUp 2s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-150px) scale(0.5); opacity: 0; }
+    }
   </style>
 </head>
 <body>
@@ -80,18 +92,36 @@
   <p id="weekly-count">Smile of this week: <strong>0</strong></p>
   <p id="global-count">So far, <strong>523</strong> people have smiled in Smile Booth today! 😄</p>
 
-  <!-- Corrected Button Link -->
   <button onclick="location.href='smile-options.html'">Take me to my Smile Booth 📸</button>
 
   <script>
     const smileCount = parseInt(localStorage.getItem("weeklySmileCount") || "0", 10);
-    document.getElementById("weekly-count").innerHTML =
-      `Smile of this week: <strong>${smileCount}</strong>`;
+    const justSmiled = localStorage.getItem("justSmiled") === "true";
+    const weeklyCountEl = document.getElementById("weekly-count");
+    const globalCountEl = document.getElementById("global-count");
 
+    // Update counts
+    weeklyCountEl.innerHTML = `Smile of this week: <strong>${smileCount}</strong>`;
     const global = 523 + smileCount;
-    document.getElementById("global-count").innerHTML =
-      `So far, <strong>${global}</strong> people have smiled in Smile Booth today! 😄`;
+    globalCountEl.innerHTML = `So far, <strong>${global}</strong> people have smiled in Smile Booth today! 😄`;
 
+    // 🎉 If user just smiled, celebrate
+    if (justSmiled) {
+      for (let i = 0; i < 15; i++) {
+        const emoji = document.createElement("div");
+        emoji.className = "celebration-emoji";
+        emoji.textContent = "🎉";
+        emoji.style.left = Math.random() * 100 + "vw";
+        emoji.style.top = Math.random() * 50 + 50 + "vh";
+        document.body.appendChild(emoji);
+        setTimeout(() => emoji.remove(), 2000);
+      }
+
+      // Reset flag after showing
+      localStorage.setItem("justSmiled", "false");
+    }
+
+    // 🌐 Menu toggle
     function toggleMenu() {
       const menu = document.getElementById("menuContent");
       menu.style.display = menu.style.display === "block" ? "none" : "block";
@@ -100,7 +130,7 @@
     document.addEventListener("click", function (event) {
       const menu = document.getElementById("menuContent");
       const button = document.querySelector(".menu button");
-      if (!menu.contains(event.target) && !button.contains(event.target)) {
+      if (!menu.contains(event.target) && event.target !== button) {
         menu.style.display = "none";
       }
     });
