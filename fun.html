@@ -1,30 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Fun of the Day 🎁</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       background-color: #d7fdd7;
       font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
       margin: 0;
-      padding: 20px;
       text-align: center;
+      padding: 20px;
     }
 
     .nav {
       position: absolute;
       top: 10px;
-      left: 15px;
+      left: 10px;
     }
 
     .nav a {
       margin-right: 15px;
       text-decoration: none;
       font-size: 1.1em;
-      color: #000;
+      color: #333;
     }
 
     .menu {
@@ -34,11 +39,13 @@
     }
 
     .menu button {
-      font-size: 1.3em;
-      background: none;
+      font-size: 1.2em;
+      background-color: #4CAF50;
+      color: white;
       border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
       cursor: pointer;
-      color: #333;
     }
 
     .menu-content {
@@ -48,9 +55,9 @@
       right: 0;
       background: white;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 10px;
+      border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      padding: 10px;
       z-index: 999;
     }
 
@@ -67,8 +74,7 @@
     }
 
     h1 {
-      margin-top: 60px;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .gift-container {
@@ -89,6 +95,7 @@
       justify-content: center;
       cursor: pointer;
       font-size: 2em;
+      position: relative;
       transition: transform 0.2s;
     }
 
@@ -102,43 +109,44 @@
       color: #000;
     }
 
-    #resultBox {
-      margin-top: 40px;
-      max-width: 500px;
+    #popup {
+      margin-top: 30px;
       background: #fff;
-      border-radius: 16px;
       padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      max-width: 400px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       display: none;
       position: relative;
     }
 
-    #resultText {
+    #popup strong {
+      display: block;
       font-size: 1.2em;
-      color: #333;
-      line-height: 1.6;
+      margin-bottom: 10px;
     }
 
-    .close-button {
+    #popup button {
+      margin-top: 15px;
+      padding: 10px 20px;
       background-color: #4CAF50;
       color: white;
       border: none;
       border-radius: 8px;
-      padding: 10px 20px;
       font-size: 1em;
-      margin-top: 20px;
       cursor: pointer;
     }
 
     .arrow {
-      font-size: 2em;
-      margin-top: 10px;
+      margin-top: 5px;
       animation: bounce 1s infinite;
+      font-size: 1.5em;
     }
 
     @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
     }
   </style>
 </head>
@@ -147,7 +155,7 @@
   <!-- 🔙 Top Left Nav -->
   <div class="nav">
     <a href="exit.html">Exit</a>
-    <a href="smile-options.html">Back</a>
+    <a href="smile-options.html">Go Back</a>
   </div>
 
   <!-- ☰ Top Right Menu -->
@@ -170,55 +178,52 @@
       <div class="gift-box">🎁</div>
       <div class="label">Joke of the Day</div>
     </div>
-    <div onclick="showQuote()">
+    <div onclick="showFact()">
       <div class="gift-box">🎁</div>
-      <div class="label">Quote of the Day</div>
+      <div class="label">Fun Fact</div>
     </div>
   </div>
 
-  <div id="resultBox">
-    <div id="resultText"></div>
-    <div class="arrow">⬆️</div>
-    <button class="close-button" id="closeButton" onclick="hideBox()">Close</button>
-  </div>
+  <div id="popup"></div>
 
   <script>
-    const resultBox = document.getElementById("resultBox");
-    const resultText = document.getElementById("resultText");
-    const closeButton = document.getElementById("closeButton");
+    const jokes = [
+      "Why don’t scientists trust atoms?<br><em>Because they make up everything!</em>",
+      "Why did the math book look sad?<br><em>Because it had too many problems.</em>",
+      "What do you call cheese that isn’t yours?<br><em>Nacho cheese!</em>",
+      "Why don’t eggs tell jokes?<br><em>Because they’d crack each other up.</em>"
+    ];
+
+    const facts = [
+      "Bananas are berries, but strawberries are not!",
+      "Honey never spoils. Archaeologists found 3,000-year-old honey in Egyptian tombs!",
+      "A group of flamingos is called a 'flamboyance'.",
+      "Octopuses have three hearts!",
+      "The Eiffel Tower can grow over 6 inches in summer heat!"
+    ];
 
     function showJoke() {
-      fetch('https://official-joke-api.appspot.com/jokes/random')
-        .then(res => res.json())
-        .then(data => {
-          resultText.innerHTML = `😂 ${data.setup}<br><em>${data.punchline}</em>`;
-          closeButton.textContent = "Haha!";
-          resultBox.style.display = "block";
-        })
-        .catch(() => {
-          resultText.textContent = "⚠️ Failed to load joke.";
-          closeButton.textContent = "Close";
-          resultBox.style.display = "block";
-        });
+      const random = jokes[Math.floor(Math.random() * jokes.length)];
+      document.getElementById("popup").innerHTML = `
+        <strong>😂 ${random}</strong>
+        <div class="arrow">⬇️</div>
+        <button onclick="hidePopup()">Hahaha</button>
+      `;
+      document.getElementById("popup").style.display = "block";
     }
 
-    function showQuote() {
-      fetch('https://api.quotable.io/random')
-        .then(res => res.json())
-        .then(data => {
-          resultText.innerHTML = `💬 "${data.content}"<br><em>– ${data.author}</em>`;
-          closeButton.textContent = "Beautiful!";
-          resultBox.style.display = "block";
-        })
-        .catch(() => {
-          resultText.textContent = "⚠️ Failed to load quote.";
-          closeButton.textContent = "Close";
-          resultBox.style.display = "block";
-        });
+    function showFact() {
+      const random = facts[Math.floor(Math.random() * facts.length)];
+      document.getElementById("popup").innerHTML = `
+        <strong>🤓 ${random}</strong>
+        <div class="arrow">⬇️</div>
+        <button onclick="hidePopup()">Wow!</button>
+      `;
+      document.getElementById("popup").style.display = "block";
     }
 
-    function hideBox() {
-      resultBox.style.display = "none";
+    function hidePopup() {
+      document.getElementById("popup").style.display = "none";
     }
 
     function toggleMenu() {
@@ -234,6 +239,5 @@
       }
     });
   </script>
-
 </body>
 </html>
