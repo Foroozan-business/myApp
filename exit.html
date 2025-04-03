@@ -17,19 +17,18 @@
     .message {
       text-align: center;
       color: black;
-      font-size: 1.8em;
-      position: relative;
+      font-size: 2em;
     }
 
-    .wave {
+    .wave-hand {
       display: inline-block;
-      animation: wave-animation 1.5s infinite;
+      animation: wave 2s infinite;
       transform-origin: 70% 70%;
-      font-size: 2em;
+      font-size: 1.2em;
       margin-left: 10px;
     }
 
-    @keyframes wave-animation {
+    @keyframes wave {
       0% { transform: rotate(0deg); }
       10% { transform: rotate(14deg); }
       20% { transform: rotate(-8deg); }
@@ -43,8 +42,8 @@
 </head>
 <body>
   <div class="message">
-    Come back when you wanna smile again.
-    <span class="wave">🖐️</span>
+    Come back when you wanna smile again
+    <span class="wave-hand">👋</span>
   </div>
 </body>
 </html>
