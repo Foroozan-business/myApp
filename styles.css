@@ -3,11 +3,9 @@
 <head>
   <title>See You Soon!</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Link to your shared green background + styles -->
   <link rel="stylesheet" href="styles.css">
   <style>
     body {
-      /* Remove this if your styles.css already handles background color */
       display: flex;
       justify-content: center;
       align-items: center;
